@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-set -o errexit
 
 echo "==> Running migrations..."
 python manage.py migrate --no-input
 
 echo "==> Seeding data..."
-python manage.py seed
+python manage.py seed || echo "==> Seed skipped (may already exist)"
 
 echo "==> Starting server..."
 exec gunicorn config.wsgi:application
