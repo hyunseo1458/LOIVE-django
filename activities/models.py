@@ -48,7 +48,7 @@ class Activity(models.Model):
     address = models.CharField("상세 주소", max_length=300, blank=True)
     latitude = models.DecimalField("위도", max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField("경도", max_digits=9, decimal_places=6, null=True, blank=True)
-    thumbnail_url = models.URLField("썸네일 URL", blank=True, help_text="외부 이미지 URL (개발용)")
+    thumbnail_url = models.URLField("썸네일 URL", max_length=500, blank=True, help_text="외부 이미지 URL (개발용)")
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.DRAFT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
