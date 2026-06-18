@@ -63,31 +63,60 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
         .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-        html { padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); }
+
+        /* Mobile: safe-area padding on html */
+        @media (max-width: 767px) {
+            html { padding: 0; }
+            .phone-frame-decoration { display: none !important; }
+            .phone-body { width: 100% !important; height: 100vh !important; height: 100dvh !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; }
+            .phone-wrapper { width: 100% !important; height: 100% !important; margin: 0 !important; flex-shrink: unset !important; }
+            .desktop-empty { display: none !important; }
+            body { background: white !important; }
+        }
+        @media (min-width: 768px) {
+            html { padding: 0; }
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-full flex flex-col font-sans">
-    {% include "components/navbar.html" %}
+<body class="min-h-screen bg-gray-100 font-sans flex">
+    <!-- Phone wrapper -->
+    <div class="phone-wrapper relative flex-shrink-0 md:ml-8 md:my-8" style="width: 390px; height: 844px;">
+        <div class="phone-body w-full h-full md:rounded-[44px] md:border-[3px] md:border-gray-800 bg-surface overflow-hidden md:shadow-2xl flex flex-col relative">
+            <!-- Notch (desktop only) -->
+            <div class="phone-frame-decoration absolute top-0 left-1/2 -translate-x-1/2 z-[999] w-[126px] h-[34px] bg-gray-800 rounded-b-2xl"></div>
 
-    <main class="pt-[72px] pb-32 max-w-7xl mx-auto w-full" style="padding-top: calc(56px + env(safe-area-inset-top))">
-        {% if messages %}
-        <div class="px-4 mt-4 space-y-2">
-            {% for message in messages %}
-            <div class="p-3 rounded-lg text-sm
-                {% if message.tags == 'error' %}bg-red-50 text-error-red border border-error-red/20
-                {% elif message.tags == 'success' %}bg-green-50 text-success-green border border-success-green/20
-                {% else %}bg-blue-50 text-primary border border-primary/20{% endif %}">
-                {{ message }}
+            <div class="flex-1 overflow-y-auto no-scrollbar relative">
+                {% include "components/navbar.html" %}
+
+                <main class="pb-4 w-full">
+                    {% if messages %}
+                    <div class="px-4 mt-4 space-y-2">
+                        {% for message in messages %}
+                        <div class="p-3 rounded-lg text-sm
+                            {% if message.tags == 'error' %}bg-red-50 text-error-red border border-error-red/20
+                            {% elif message.tags == 'success' %}bg-green-50 text-success-green border border-success-green/20
+                            {% else %}bg-blue-50 text-primary border border-primary/20{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% block content %}{% endblock %}
+                </main>
+
+                {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
             </div>
-            {% endfor %}
+
+            <!-- Home Indicator (desktop only) -->
+            <div class="phone-frame-decoration absolute bottom-2 left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-gray-800 rounded-full z-[999]"></div>
         </div>
-        {% endif %}
+    </div>
 
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Right area (desktop only) -->
+    <div class="desktop-empty flex-1"></div>
 
-    {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

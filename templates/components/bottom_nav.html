@@ -1,6 +1,6 @@
 {% load core_tags %}
 
-<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/80 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0px_-8px_24px_rgba(0,0,0,0.05)] flex justify-around items-center px-4 h-20" style="padding-bottom: env(safe-area-inset-bottom)">
+<nav class="sticky bottom-0 w-full z-50 rounded-t-xl bg-surface/80 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0px_-8px_24px_rgba(0,0,0,0.05)] flex justify-around items-center px-4 h-20" style="padding-bottom: env(safe-area-inset-bottom)">
     {% with path=request.path %}
 
     <a href="{% url 'core:home' %}" class="flex flex-col items-center justify-center active:scale-95 transition-all w-16 h-full {% if path == '/' %}text-ocean-blue{% else %}text-outline hover:text-on-surface-variant{% endif %}">

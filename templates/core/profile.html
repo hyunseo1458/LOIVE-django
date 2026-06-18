@@ -4,11 +4,13 @@
 {% block title %}마이페이지{% endblock %}
 
 {% block extra_head %}
-<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+<style>
+header { display: none !important; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="px-5 mt-2">
+<div class="px-5 mt-2" style="padding-top: env(safe-area-inset-top, 0px);">
     <!-- Profile Header -->
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-[28px] font-bold text-on-surface">마이페이지</h1>
