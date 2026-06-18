@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}로그인{% endblock %}
+
+{% block extra_head %}
+<style>
+header.fixed { display: none !important; }
+main { padding-top: 0 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex flex-col items-center justify-center px-5">
+    <div class="w-full max-w-sm flex flex-col items-center">
+        <span class="text-ocean-blue text-[40px] font-extrabold tracking-tight mb-2">로이브</span>
+        <p class="text-[16px] text-on-surface-variant text-center mb-8">
+            전국 곳곳, 몰랐던 로컬 체험을 찾아 떠나보세요
+        </p>
+
+        <div class="w-full flex flex-col gap-3 mb-6">
+            {% load socialaccount %}
+            {% get_providers as socialaccount_providers %}
+
+            {% for provider in socialaccount_providers %}
+            {% if provider.id == 'kakao' %}
+            <a href="{% provider_login_url 'kakao' %}"
+               class="w-full h-14 rounded-lg flex items-center justify-center gap-2 font-medium text-[20px] transition-all active:scale-[0.98] shadow-sm bg-[#FEE500] text-black">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-black text-[#FEE500]">K</span>
+                카카오로 시작하기
+            </a>
+            {% elif provider.id == 'naver' %}
+            <a href="{% provider_login_url 'naver' %}"
+               class="w-full h-14 rounded-lg flex items-center justify-center gap-2 font-medium text-[20px] transition-all active:scale-[0.98] shadow-sm bg-[#03C75A] text-white">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-white text-[#03C75A]">N</span>
+                네이버로 시작하기
+            </a>
+            {% elif provider.id == 'google' %}
+            <a href="{% provider_login_url 'google' %}"
+               class="w-full h-14 rounded-lg flex items-center justify-center gap-2 font-medium text-[20px] transition-all active:scale-[0.98] shadow-sm bg-white text-on-surface border border-outline-variant">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-surface-container-high text-on-surface">G</span>
+                Google로 시작하기
+            </a>
+            {% endif %}
+            {% endfor %}
+
+            {% if not socialaccount_providers %}
+            <div class="w-full h-14 rounded-lg flex items-center justify-center gap-2 font-medium text-[14px] bg-surface-container-low text-outline border border-outline-variant/30 opacity-60">
+                소셜 로그인은 준비 중입니다
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="w-full flex items-center gap-4 mb-6">
+            <div class="flex-1 h-px bg-outline-variant/30"></div>
+            <span class="text-[12px] text-outline">또는</span>
+            <div class="flex-1 h-px bg-outline-variant/30"></div>
+        </div>
+
+        <form method="post" action="{% url 'account_login' %}" class="w-full flex flex-col gap-3 mb-6">
+            {% csrf_token %}
+            <input type="email" name="login" placeholder="이메일" required
+                   class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all"
+                   value="{{ form.login.value|default:'' }}">
+            <input type="password" name="password" placeholder="비밀번호" required
+                   class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
+            {% if form.errors %}
+            <p class="text-[13px] text-error-red flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                이메일 또는 비밀번호를 확인해주세요.
+            </p>
+            {% endif %}
+            <button type="submit"
+                    class="w-full h-12 bg-ocean-blue text-on-primary text-[16px] font-semibold rounded-lg shadow-sm hover:opacity-90 transition-all active:scale-[0.98]">
+                이메일로 로그인
+            </button>
+        </form>
+
+        <div class="flex items-center gap-4 text-[14px] text-outline mb-8">
+            <a href="{% url 'account_signup' %}" class="hover:text-ocean-blue transition-colors">회원가입</a>
+            <span class="text-outline-variant">|</span>
+            <a href="{% url 'account_reset_password' %}" class="hover:text-ocean-blue transition-colors">비밀번호 찾기</a>
+        </div>
+
+        <a href="{% url 'core:home' %}" class="text-[14px] text-outline hover:text-ocean-blue transition-colors mb-8">
+            로그인 없이 둘러보기
+        </a>
+
+        <p class="text-[12px] text-outline-variant text-center leading-relaxed">
+            계속 진행하면 로이브의
+            <a href="#" class="text-ocean-blue hover:underline">서비스 이용약관</a>
+            및
+            <a href="#" class="text-ocean-blue hover:underline">개인정보 처리방침</a>에 동의하게 됩니다.
+        </p>
+    </div>
+</div>
+{% endblock %}

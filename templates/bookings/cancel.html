@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}예약 취소{% endblock %}
+
+{% block extra_head %}
+<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% endblock %}
+
+{% block content %}
+<!-- Sub Page Header -->
+<div class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm h-16 flex items-center px-5">
+    <a href="{% url 'bookings:detail' booking.pk %}" class="text-on-surface hover:text-ocean-blue active:scale-95 transition w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-surface-container-high">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </a>
+    <h1 class="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold text-on-surface">예약 취소</h1>
+</div>
+
+<div class="px-5 pt-4 pb-8 max-w-lg mx-auto flex flex-col gap-6">
+
+    <!-- Warning Banner -->
+    <div class="bg-error-red/5 border border-error-red/20 rounded-xl p-4 flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-error-red shrink-0 mt-0.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+        </svg>
+        <div>
+            <p class="text-[14px] font-semibold text-error-red mb-1">예약을 취소하시겠습니까?</p>
+            <p class="text-[12px] text-on-surface-variant">취소 후에는 복구가 어렵습니다. 신중하게 결정해주세요.</p>
+        </div>
+    </div>
+
+    <!-- Booking Summary -->
+    <section class="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm overflow-hidden">
+        {% if booking.slot.activity.thumbnail_url %}
+        <div class="h-[140px] w-full relative overflow-hidden">
+            <img class="w-full h-full object-cover" alt="{{ booking.slot.activity.title }}" src="{{ booking.slot.activity.thumbnail_url }}">
+        </div>
+        {% endif %}
+        <div class="p-5 flex flex-col gap-2">
+            <h2 class="text-[18px] font-semibold text-on-surface">{{ booking.slot.activity.title }}</h2>
+            <div class="flex items-center gap-2 text-[13px] text-on-surface-variant">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+                <span>{{ booking.slot.date|date:'Y년 n월 j일' }} {{ booking.slot.start_time|time:'H:i' }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-[13px] text-on-surface-variant">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                </svg>
+                <span>{{ booking.headcount }}명</span>
+            </div>
+            <div class="flex items-center gap-2 text-[13px] text-on-surface-variant">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                </svg>
+                <span>결제 금액: {{ booking.total_amount|currency }}</span>
+            </div>
+            <div class="mt-1 text-[12px] text-ocean-blue font-semibold">{{ booking.reservation_code }}</div>
+        </div>
+    </section>
+
+    <!-- Cancellation Policy -->
+    <section class="bg-surface-container-low rounded-xl p-5">
+        <h3 class="text-[16px] font-bold text-on-surface mb-3">취소/환불 규정</h3>
+        <ul class="flex flex-col gap-2.5">
+            <li class="flex items-start gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant mt-1.5 shrink-0"></span>
+                <p class="text-[13px] text-on-surface-variant leading-relaxed">이용일 기준 <span class="font-semibold text-on-surface">7일 전</span> 취소 시 전액 환불</p>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant mt-1.5 shrink-0"></span>
+                <p class="text-[13px] text-on-surface-variant leading-relaxed">이용일 기준 <span class="font-semibold text-on-surface">3~6일 전</span> 취소 시 50% 환불</p>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant mt-1.5 shrink-0"></span>
+                <p class="text-[13px] text-on-surface-variant leading-relaxed">이용일 기준 <span class="font-semibold text-on-surface">2일 이내</span> 취소 시 환불 불가</p>
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant mt-1.5 shrink-0"></span>
+                <p class="text-[13px] text-on-surface-variant leading-relaxed">천재지변 등 불가항력 사유 시 전액 환불</p>
+            </li>
+        </ul>
+    </section>
+
+    <!-- Cancel Form -->
+    {% if booking.status == 'confirmed' %}
+    <form method="post" class="flex flex-col gap-4">
+        {% csrf_token %}
+
+        <div>
+            <label for="reason" class="block text-[13px] font-semibold text-on-surface mb-2">취소 사유 선택</label>
+            <select name="reason" id="reason"
+                    class="w-full px-4 py-3 rounded-xl border border-outline-variant/30 bg-surface text-[14px] text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                <option value="">취소 사유를 선택해주세요</option>
+                <option value="schedule">일정 변경</option>
+                <option value="weather">날씨/기상 문제</option>
+                <option value="health">건강 문제</option>
+                <option value="price">가격 부담</option>
+                <option value="duplicate">중복 예약</option>
+                <option value="other">기타</option>
+            </select>
+        </div>
+
+        <div class="flex flex-col gap-3 mt-2">
+            <button type="submit"
+                    onclick="return confirm('정말로 예약을 취소하시겠습니까?\n취소 후에는 복구가 어렵습니다.')"
+                    class="w-full py-3.5 bg-error-red text-white text-[14px] font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all shadow-sm">
+                예약 취소하기
+            </button>
+            <a href="{% url 'bookings:detail' booking.pk %}"
+               class="w-full py-3.5 bg-surface-container-high text-on-surface text-[14px] font-semibold rounded-xl text-center hover:bg-surface-container-highest transition-all active:scale-[0.98]">
+                돌아가기
+            </a>
+        </div>
+    </form>
+    {% else %}
+    <div class="text-center py-8 text-on-surface-variant">
+        <p class="text-[14px]">이 예약은 취소할 수 없는 상태입니다.</p>
+        <a href="{% url 'bookings:detail' booking.pk %}" class="text-ocean-blue text-[14px] font-semibold mt-2 inline-block">예약 상세로 돌아가기</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

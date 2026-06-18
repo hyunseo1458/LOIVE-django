@@ -1,0 +1,161 @@
+{% extends "partner/base.html" %}
+{% load core_tags %}
+
+{% block title %}{% if editing %}액티비티 수정{% else %}새 액티비티 등록{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="mb-6">
+    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
+        <a href="{% url 'partner:activity_list' %}" class="hover:text-ocean-blue transition-colors">액티비티 관리</a>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+        <span class="text-on-surface font-medium">{% if editing %}수정{% else %}새 등록{% endif %}</span>
+    </div>
+    <h1 class="text-2xl font-bold text-on-surface">{% if editing %}{{ activity.title }} 수정{% else %}새 액티비티 등록{% endif %}</h1>
+</div>
+
+<form method="post" class="max-w-2xl">
+    {% csrf_token %}
+
+    <div class="bg-surface rounded-xl border border-outline-variant/20 shadow-sm p-6 mb-6">
+        <h2 class="text-lg font-bold text-on-surface mb-5">기본 정보</h2>
+
+        <div class="flex flex-col gap-5">
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-semibold text-on-surface mb-1.5">액티비티 제목 <span class="text-error-red">*</span></label>
+                <input type="text" id="title" name="title" required
+                       value="{% if editing %}{{ activity.title }}{% endif %}"
+                       class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface placeholder-outline focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all"
+                       placeholder="예: 제주 카약 체험">
+            </div>
+
+            <!-- Category & Region -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="category" class="block text-sm font-semibold text-on-surface mb-1.5">카테고리 <span class="text-error-red">*</span></label>
+                    <select id="category" name="category" required
+                            class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                        <option value="">선택하세요</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.pk }}" {% if editing and activity.category_id == cat.pk %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="region" class="block text-sm font-semibold text-on-surface mb-1.5">지역 <span class="text-error-red">*</span></label>
+                    <select id="region" name="region" required
+                            class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                        <option value="">선택하세요</option>
+                        {% for reg in regions %}
+                        <option value="{{ reg.pk }}" {% if editing and activity.region_id == reg.pk %}selected{% endif %}>{{ reg.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-semibold text-on-surface mb-1.5">상세 설명 <span class="text-error-red">*</span></label>
+                <textarea id="description" name="description" rows="6" required
+                          class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface placeholder-outline focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all resize-y"
+                          placeholder="액티비티에 대한 상세한 설명을 입력해주세요.">{% if editing %}{{ activity.description }}{% endif %}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-surface rounded-xl border border-outline-variant/20 shadow-sm p-6 mb-6">
+        <h2 class="text-lg font-bold text-on-surface mb-5">가격 및 운영 정보</h2>
+
+        <div class="flex flex-col gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Price -->
+                <div>
+                    <label for="price" class="block text-sm font-semibold text-on-surface mb-1.5">가격 (원) <span class="text-error-red">*</span></label>
+                    <input type="number" id="price" name="price" required min="0"
+                           value="{% if editing %}{{ activity.price }}{% else %}0{% endif %}"
+                           class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                </div>
+                <!-- Capacity -->
+                <div>
+                    <label for="capacity" class="block text-sm font-semibold text-on-surface mb-1.5">최대 정원 <span class="text-error-red">*</span></label>
+                    <input type="number" id="capacity" name="capacity" required min="1"
+                           value="{% if editing %}{{ activity.capacity }}{% else %}1{% endif %}"
+                           class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                </div>
+                <!-- Duration -->
+                <div>
+                    <label for="duration_minutes" class="block text-sm font-semibold text-on-surface mb-1.5">소요 시간 (분)</label>
+                    <input type="number" id="duration_minutes" name="duration_minutes" min="10"
+                           value="{% if editing %}{{ activity.duration_minutes }}{% else %}60{% endif %}"
+                           class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div>
+                <label for="address" class="block text-sm font-semibold text-on-surface mb-1.5">상세 주소</label>
+                <input type="text" id="address" name="address"
+                       value="{% if editing %}{{ activity.address }}{% endif %}"
+                       class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface placeholder-outline focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all"
+                       placeholder="예: 제주시 한림읍 협재리 1234">
+            </div>
+
+            <!-- Thumbnail URL -->
+            <div>
+                <label for="thumbnail_url" class="block text-sm font-semibold text-on-surface mb-1.5">썸네일 이미지 URL</label>
+                <input type="url" id="thumbnail_url" name="thumbnail_url"
+                       value="{% if editing %}{{ activity.thumbnail_url }}{% endif %}"
+                       class="w-full px-4 py-3 rounded-lg border border-outline-variant/30 bg-surface text-sm text-on-surface placeholder-outline focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all"
+                       placeholder="https://example.com/image.jpg">
+                <p class="mt-1 text-xs text-outline">외부 이미지 URL을 입력하세요. 추후 파일 업로드 기능이 추가될 예정입니다.</p>
+            </div>
+
+            <!-- Preview -->
+            <div id="thumbnail-preview" class="hidden">
+                <p class="text-sm font-semibold text-on-surface mb-1.5">미리보기</p>
+                <div class="w-48 h-32 rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant/20">
+                    <img id="preview-img" src="" alt="미리보기" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-3">
+        <button type="submit"
+                class="flex-1 px-6 py-3 bg-ocean-blue text-white text-sm font-bold rounded-lg hover:bg-ocean-blue/90 transition-colors shadow-sm">
+            {% if editing %}수정 완료{% else %}액티비티 등록{% endif %}
+        </button>
+        <a href="{% url 'partner:activity_list' %}"
+           class="flex-1 px-6 py-3 bg-surface-container-high text-on-surface text-sm font-semibold rounded-lg text-center hover:bg-surface-container-highest transition-colors">
+            취소
+        </a>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var input = document.getElementById('thumbnail_url');
+    var preview = document.getElementById('thumbnail-preview');
+    var img = document.getElementById('preview-img');
+
+    function update() {
+        var val = input.value.trim();
+        if (val && (val.startsWith('http://') || val.startsWith('https://'))) {
+            img.src = val;
+            preview.classList.remove('hidden');
+        } else {
+            preview.classList.add('hidden');
+        }
+    }
+
+    input.addEventListener('input', update);
+    update();
+})();
+</script>
+{% endblock %}

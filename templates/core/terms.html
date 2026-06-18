@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}이용약관{% endblock %}
+
+{% block extra_head %}
+<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% endblock %}
+
+{% block content %}
+<!-- Sub-page header -->
+<div class="px-4 mt-2 mb-6 flex items-center gap-3">
+    <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+    </a>
+    <h1 class="text-[18px] font-bold text-on-surface">이용약관</h1>
+</div>
+
+<div class="px-4 max-w-2xl mx-auto pb-8">
+    <div class="bg-surface rounded-2xl border border-outline-variant/20 p-6 shadow-sm">
+        <p class="text-[12px] text-outline mb-6">시행일: 2026년 1월 1일</p>
+
+        <div class="space-y-8 text-[14px] text-on-surface-variant leading-relaxed">
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 1 조 (목적)</h2>
+                <p>이 약관은 LOIVE (이하 "회사")가 제공하는 로컬 체험 예약 서비스(이하 "서비스")의 이용 조건과 절차, 회사와 회원 간의 권리·의무 및 책임 사항을 규정함을 목적으로 합니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 2 조 (정의)</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>"서비스"란 회사가 운영하는 웹사이트 및 모바일 앱을 통해 제공하는 로컬 체험 검색, 예약, 결제 등 제반 서비스를 말합니다.</li>
+                    <li>"회원"이란 이 약관에 동의하고 회사와 이용 계약을 체결한 자를 말합니다.</li>
+                    <li>"파트너"란 회사와 별도 계약을 통해 액티비티를 등록·판매하는 사업자를 말합니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 3 조 (약관의 효력 및 변경)</h2>
+                <p>이 약관은 서비스 화면에 게시하거나 기타의 방법으로 회원에게 공지함으로써 효력이 발생합니다. 회사는 관련 법규를 위배하지 않는 범위 내에서 약관을 변경할 수 있으며, 변경 시 적용 일자 및 변경 사유를 명시하여 최소 7일 전 공지합니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 4 조 (서비스의 제공)</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>로컬 체험 액티비티 검색 및 상세 정보 제공</li>
+                    <li>액티비티 예약 및 결제 대행</li>
+                    <li>예약 관리 (확인, 변경, 취소)</li>
+                    <li>리뷰 작성 및 조회</li>
+                    <li>기타 회사가 정하는 서비스</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 5 조 (예약 및 결제)</h2>
+                <p>회원은 서비스를 통해 액티비티를 예약하고 결제할 수 있으며, 결제가 완료되면 예약이 확정됩니다. 예약 확정 시 예약번호가 부여되며, 해당 번호로 예약 내역을 조회할 수 있습니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 6 조 (취소 및 환불)</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>이용일 기준 7일 전 취소: 전액 환불</li>
+                    <li>이용일 기준 3~6일 전 취소: 50% 환불</li>
+                    <li>이용일 기준 2일 이내 취소: 환불 불가</li>
+                    <li>천재지변 등 불가항력 사유: 전액 환불</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 7 조 (면책 조항)</h2>
+                <p>회사는 파트너가 제공하는 액티비티의 품질, 안전성 등에 대해 보증하지 않으며, 파트너와 회원 간의 분쟁에 대해 직접적인 책임을 지지 않습니다. 단, 회사는 분쟁 해결을 위해 성실히 중재합니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 8 조 (준거법 및 분쟁 해결)</h2>
+                <p>이 약관의 해석 및 회사와 회원 간의 분쟁에 대해서는 대한민국 법률을 적용하며, 분쟁 발생 시 서울중앙지방법원을 관할 법원으로 합니다.</p>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

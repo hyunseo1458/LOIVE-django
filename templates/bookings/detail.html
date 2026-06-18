@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}예약 상세{% endblock %}
+
+{% block extra_head %}
+<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% endblock %}
+
+{% block content %}
+<!-- Sub Page Header -->
+<div class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm h-16 flex items-center px-5">
+    <a href="{% url 'bookings:history' %}" class="text-on-surface hover:text-ocean-blue active:scale-95 transition w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-surface-container-high">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </a>
+    <h1 class="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold text-on-surface">예약 상세</h1>
+</div>
+
+<div class="px-5 pt-4 pb-8 max-w-lg mx-auto flex flex-col gap-6">
+    <!-- Status Badge -->
+    <div class="flex items-center gap-3">
+        {% if booking.status == 'confirmed' %}
+        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-primary text-on-primary">예약 확정</span>
+        {% elif booking.status == 'completed' %}
+        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-success-green text-on-primary">이용 완료</span>
+        {% elif booking.status == 'cancelled' %}
+        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-error-red text-on-primary">취소</span>
+        {% elif booking.status == 'refunded' %}
+        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-outline text-on-primary">환불 완료</span>
+        {% else %}
+        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-sun-yellow text-on-surface">결제 대기</span>
+        {% endif %}
+        <span class="text-[12px] text-outline">{{ booking.created_at|date:'Y.m.d H:i' }} 예약</span>
+    </div>
+
+    <!-- Activity Card -->
+    <section class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,122,255,0.08)] overflow-hidden border border-outline-variant/20">
+        {% if booking.slot.activity.thumbnail_url %}
+        <div class="h-[180px] w-full relative overflow-hidden">
+            <img class="w-full h-full object-cover" alt="{{ booking.slot.activity.title }}" src="{{ booking.slot.activity.thumbnail_url }}">
+        </div>
+        {% endif %}
+        <div class="p-6 flex flex-col gap-3">
+            <a href="{% url 'activities:detail' booking.slot.activity.pk %}" class="text-[20px] font-semibold text-on-surface hover:text-ocean-blue transition-colors">
+                {{ booking.slot.activity.title }}
+            </a>
+            <div class="flex flex-col gap-2 mt-1">
+                <div class="flex items-center gap-3 text-on-surface-variant text-[14px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[18px] h-[18px] shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                    <span>{{ booking.slot.date|date:'Y년 n월 j일' }} {{ booking.slot.start_time|time:'H:i' }}</span>
+                </div>
+                <div class="flex items-center gap-3 text-on-surface-variant text-[14px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[18px] h-[18px] shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                    </svg>
+                    <span>{{ booking.slot.activity.address|default:"장소 미정" }}</span>
+                </div>
+                <div class="flex items-center gap-3 text-on-surface-variant text-[14px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[18px] h-[18px] shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                    </svg>
+                    <span>{{ booking.headcount }}명</span>
+                </div>
+                <div class="flex items-center gap-3 text-on-surface-variant text-[14px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[18px] h-[18px] shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span>{{ booking.slot.activity.duration_minutes }}분 소요</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Details -->
+    <section class="bg-surface-container-low rounded-xl p-6 flex flex-col gap-4">
+        <h3 class="text-[20px] font-semibold text-on-surface border-b border-outline-variant/20 pb-3">결제 정보</h3>
+        <div class="flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <span class="text-[14px] text-on-surface-variant">결제 금액</span>
+                <span class="text-[22px] font-extrabold text-primary">{{ booking.total_amount|currency }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[14px] text-on-surface-variant">단가</span>
+                <span class="text-[14px] text-on-surface font-semibold">{{ booking.slot.activity.price|currency }} x {{ booking.headcount }}명</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[14px] text-on-surface-variant">결제 상태</span>
+                <span class="text-[14px] text-on-surface font-semibold">{{ booking.get_status_display }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[14px] text-on-surface-variant">예약 번호</span>
+                <span class="text-[14px] text-ocean-blue font-semibold">{{ booking.reservation_code }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[14px] text-on-surface-variant">예약 일시</span>
+                <span class="text-[14px] text-on-surface font-semibold">{{ booking.created_at|date:'Y.m.d H:i' }}</span>
+            </div>
+        </div>
+    </section>
+
+    {% if booking.special_request %}
+    <!-- Special Request -->
+    <section class="bg-surface-container-low rounded-xl p-6">
+        <h3 class="text-[20px] font-semibold text-on-surface mb-3">특별 요청사항</h3>
+        <p class="text-[14px] text-on-surface-variant whitespace-pre-line">{{ booking.special_request }}</p>
+    </section>
+    {% endif %}
+
+    <!-- Voucher -->
+    {% if booking.status == 'confirmed' %}
+    <section class="border-2 border-ocean-blue/20 border-dashed rounded-xl p-6 flex items-center justify-between bg-surface-bright/50 relative overflow-hidden">
+        <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-background rounded-full border-r-2 border-ocean-blue/20"></div>
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-background rounded-full border-l-2 border-ocean-blue/20"></div>
+        <div class="flex flex-col gap-1 pl-2">
+            <span class="text-[20px] font-semibold text-on-surface">모바일 바우처</span>
+            <span class="text-[14px] text-on-surface-variant">현장에서 QR코드를 제시해주세요</span>
+        </div>
+        <div class="w-12 h-12 rounded-full bg-ocean-blue/10 text-ocean-blue flex items-center justify-center mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
+            </svg>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Actions -->
+    <section class="flex flex-col gap-3">
+        {% if booking.status == 'confirmed' %}
+        <a href="{% url 'bookings:cancel' booking.pk %}"
+           class="w-full py-3.5 rounded-lg border border-error-red text-error-red text-[12px] font-semibold tracking-wider hover:bg-error-red/5 transition-all active:scale-95 text-center block">
+            예약 취소
+        </a>
+        {% elif booking.status == 'completed' %}
+        <a href="{% url 'activities:write_review' booking.slot.activity.pk %}"
+           class="w-full py-3.5 bg-ocean-blue text-on-primary text-[12px] font-semibold tracking-wider rounded-lg text-center shadow-md hover:opacity-90 active:scale-95 transition-all">
+            후기 작성
+        </a>
+        {% endif %}
+        <a href="{% url 'activities:detail' booking.slot.activity.pk %}"
+           class="w-full py-3.5 bg-ocean-blue/10 text-ocean-blue text-[12px] font-semibold tracking-wider rounded-lg text-center active:scale-95 transition-all">
+            액티비티 다시 보기
+        </a>
+    </section>
+</div>
+{% endblock %}

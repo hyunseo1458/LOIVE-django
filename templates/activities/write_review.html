@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}리뷰 작성{% endblock %}
+
+{% block extra_head %}
+<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-lg mx-auto min-h-screen bg-surface">
+
+    <!-- Header -->
+    <div class="sticky top-0 z-50 bg-surface border-b border-outline-variant/20 h-14 flex items-center px-4">
+        <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+        </a>
+        <h1 class="flex-1 text-center text-[16px] font-bold text-on-surface -ml-10">리뷰 작성</h1>
+        <div class="w-10"></div>
+    </div>
+
+    <div class="px-5 pt-5 pb-28">
+
+        <!-- Activity card -->
+        <div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-2xl border border-outline-variant/15 mb-8">
+            <div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container-high shrink-0">
+                {% if activity.thumbnail_url %}
+                <img src="{{ activity.thumbnail_url }}" alt="" class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+            <div class="min-w-0">
+                <p class="text-[15px] font-bold text-on-surface line-clamp-2 leading-snug">{{ activity.title }}</p>
+                <p class="text-[12px] text-outline mt-1 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                    방문일: {{ "now"|date:"Y.m.d" }}
+                </p>
+            </div>
+        </div>
+
+        <form method="post" id="review-form">
+            {% csrf_token %}
+
+            <!-- Star rating -->
+            <div class="text-center mb-8">
+                <h3 class="text-[17px] font-bold text-on-surface mb-4">경험이 어떠셨나요?</h3>
+                <div class="flex justify-center gap-3" id="star-selector">
+                    {% for i in "12345" %}
+                    <button type="button" data-value="{{ forloop.counter }}"
+                            class="star-btn transition-transform duration-150 hover:scale-110 active:scale-90">
+                        <svg class="w-10 h-10 text-outline-variant/30 fill-current" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="rating" id="rating-input" value="0">
+            </div>
+
+            <!-- Photo upload placeholder -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-[17px] font-bold text-on-surface">사진 추가</h3>
+                    <span class="text-[12px] text-outline">최대 5장</span>
+                </div>
+                <div class="flex gap-2">
+                    <div class="w-20 h-20 rounded-xl border-2 border-dashed border-outline-variant/40 flex flex-col items-center justify-center text-outline cursor-pointer hover:border-ocean-blue hover:text-ocean-blue transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <span class="text-[10px] mt-0.5">업로드</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review text -->
+            <div class="mb-6">
+                <h3 class="text-[17px] font-bold text-on-surface mb-3">상세 리뷰</h3>
+                <div class="relative">
+                    <textarea name="content" id="review-text" rows="5"
+                              placeholder="생생한 경험을 공유해 주세요! (장소의 분위기, 서비스, 팁 등)"
+                              class="w-full bg-surface border border-outline-variant/30 rounded-xl p-4 text-[14px] text-on-surface focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all resize-none placeholder-outline/50"
+                              maxlength="1000"></textarea>
+                    <span class="absolute bottom-3 right-4 text-[11px] text-outline"><span id="char-count">0</span>/1000</span>
+                </div>
+            </div>
+
+            <p id="form-error" class="text-[13px] text-error-red mb-3 hidden"></p>
+        </form>
+    </div>
+
+    <!-- Sticky submit -->
+    <div class="fixed bottom-0 left-0 right-0 z-50 bg-surface border-t border-outline-variant/20 px-5 py-3">
+        <button type="button" id="submit-btn"
+                class="w-full max-w-lg mx-auto block py-3.5 bg-ocean-blue text-white text-[15px] font-bold rounded-xl shadow-sm hover:bg-ocean-blue/90 active:scale-[0.98] transition-all">
+            리뷰 등록하기
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var selectedRating = 0;
+    var stars = document.querySelectorAll('.star-btn');
+    var ratingInput = document.getElementById('rating-input');
+    var textarea = document.getElementById('review-text');
+    var charCount = document.getElementById('char-count');
+    var submitBtn = document.getElementById('submit-btn');
+    var formError = document.getElementById('form-error');
+
+    function updateStars(r) {
+        stars.forEach(function(btn, i) {
+            var svg = btn.querySelector('svg');
+            svg.classList.toggle('text-sun-yellow', i < r);
+            svg.classList.toggle('text-outline-variant/30', i >= r);
+        });
+    }
+
+    stars.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            selectedRating = parseInt(btn.dataset.value);
+            ratingInput.value = selectedRating;
+            updateStars(selectedRating);
+        });
+        btn.addEventListener('mouseenter', function() { updateStars(parseInt(btn.dataset.value)); });
+    });
+    document.getElementById('star-selector').addEventListener('mouseleave', function() { updateStars(selectedRating); });
+
+    textarea.addEventListener('input', function() { charCount.textContent = textarea.value.length; });
+
+    submitBtn.addEventListener('click', function() {
+        if (selectedRating === 0) { formError.textContent = '평점을 선택해 주세요.'; formError.classList.remove('hidden'); return; }
+        if (textarea.value.trim().length < 10) { formError.textContent = '리뷰를 10자 이상 작성해 주세요.'; formError.classList.remove('hidden'); return; }
+        formError.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '등록 중...';
+        document.getElementById('review-form').submit();
+    });
+})();
+</script>
+{% endblock %}

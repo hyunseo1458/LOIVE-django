@@ -1,0 +1,104 @@
+{% extends "partner/base.html" %}
+{% load core_tags %}
+
+{% block title %}예약 관리{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-on-surface">예약 관리</h1>
+    <p class="text-on-surface-variant mt-1">고객 예약 현황을 확인하고 관리하세요.</p>
+</div>
+
+<!-- Status Filter Tabs -->
+<div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
+    <a href="{% url 'partner:booking_list' %}"
+       class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors {% if not current_status %}bg-ocean-blue text-white{% else %}bg-surface border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low{% endif %}">
+        전체 <span class="ml-1 {% if not current_status %}text-white/80{% else %}text-outline{% endif %}">{{ total_count }}</span>
+    </a>
+    {% for value, label in status_choices %}
+    <a href="{% url 'partner:booking_list' %}?status={{ value }}"
+       class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors {% if current_status == value %}bg-ocean-blue text-white{% else %}bg-surface border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low{% endif %}">
+        {{ label }}
+        {% for k, v in status_counts.items %}{% if k == value %}<span class="ml-1 {% if current_status == value %}text-white/80{% else %}text-outline{% endif %}">{{ v }}</span>{% endif %}{% endfor %}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Booking Table -->
+{% if bookings %}
+<div class="bg-surface rounded-xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-outline-variant/15 bg-surface-container-lowest">
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium">예약번호</th>
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium">고객</th>
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium hidden md:table-cell">액티비티</th>
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium hidden sm:table-cell">일정</th>
+                    <th class="text-center px-6 py-3 text-on-surface-variant font-medium hidden sm:table-cell">인원</th>
+                    <th class="text-right px-6 py-3 text-on-surface-variant font-medium">금액</th>
+                    <th class="text-center px-6 py-3 text-on-surface-variant font-medium">상태</th>
+                    <th class="text-center px-6 py-3 text-on-surface-variant font-medium">관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest transition-colors">
+                    <td class="px-6 py-3">
+                        <span class="font-mono text-sm text-ocean-blue font-medium">{{ booking.reservation_code }}</span>
+                        <p class="text-xs text-outline mt-0.5 md:hidden">{{ booking.slot.activity.title|truncatechars:20 }}</p>
+                    </td>
+                    <td class="px-6 py-3">
+                        <p class="text-on-surface font-medium">{{ booking.user.get_full_name|default:booking.user.username }}</p>
+                        <p class="text-xs text-on-surface-variant">{{ booking.created_at|date:"m/d H:i" }}</p>
+                    </td>
+                    <td class="px-6 py-3 hidden md:table-cell">
+                        <p class="text-on-surface max-w-[200px] truncate">{{ booking.slot.activity.title }}</p>
+                    </td>
+                    <td class="px-6 py-3 hidden sm:table-cell whitespace-nowrap text-on-surface-variant">
+                        {{ booking.slot.date|date:"n/j" }} {{ booking.slot.start_time|time:"H:i" }}
+                    </td>
+                    <td class="px-6 py-3 text-center hidden sm:table-cell text-on-surface">{{ booking.headcount }}명</td>
+                    <td class="px-6 py-3 text-right font-medium text-on-surface">{{ booking.total_amount|currency }}</td>
+                    <td class="px-6 py-3 text-center">
+                        {% if booking.status == 'confirmed' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-ocean-blue/10 text-ocean-blue">확정</span>
+                        {% elif booking.status == 'completed' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-success-green/10 text-success-green">완료</span>
+                        {% elif booking.status == 'cancelled' or booking.status == 'refunded' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-error-red/10 text-error-red">취소</span>
+                        {% elif booking.status == 'pending' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-sun-yellow/10 text-yellow-700">대기</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 text-center">
+                        {% if booking.status == 'confirmed' %}
+                        <form method="post" action="{% url 'partner:booking_complete' booking.pk %}" class="inline" onsubmit="return confirm('이 예약을 이용 완료 처리하시겠습니까?')">
+                            {% csrf_token %}
+                            <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-success-green text-white hover:bg-success-green/90 transition-colors">
+                                이용 완료
+                            </button>
+                        </form>
+                        {% elif booking.status == 'completed' %}
+                        <span class="text-xs text-outline">처리 완료</span>
+                        {% else %}
+                        <span class="text-xs text-outline">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="bg-surface rounded-xl border border-outline-variant/20 shadow-sm py-20 text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-16 h-16 mx-auto mb-4 text-outline-variant">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+    </svg>
+    <p class="text-lg font-semibold text-on-surface mb-2">예약 내역이 없습니다</p>
+    <p class="text-on-surface-variant">액티비티를 등록하고 슬롯을 추가하면 예약이 들어옵니다.</p>
+</div>
+{% endif %}
+{% endblock %}

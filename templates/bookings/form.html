@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}예약 및 결제 — {{ activity.title }}{% endblock %}
+
+{% block extra_head %}
+<style>
+header.fixed { display: none !important; }
+main { padding-top: 0 !important; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ═══════ Header ═══════ -->
+<div class="fixed top-0 left-0 right-0 z-[999] bg-surface border-b border-outline-variant/20">
+    <div class="flex items-center px-4 h-14 max-w-3xl mx-auto">
+        <a href="{% url 'activities:detail' activity.pk %}"
+           class="w-10 h-10 flex items-center justify-center text-on-surface -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+        </a>
+        <h1 class="flex-1 text-center text-[17px] font-bold text-on-surface -ml-10">예약 및 결제</h1>
+        <div class="w-10"></div>
+    </div>
+</div>
+<div class="h-14"></div>
+
+<form method="post" id="booking-form" class="min-h-screen pb-[160px]">
+    {% csrf_token %}
+    <input type="hidden" name="slot_id" id="slot-id" value="">
+    <input type="hidden" name="adults" id="adults-input" value="1">
+    <input type="hidden" name="children" id="children-input" value="0">
+
+    <!-- ═══════ Body ═══════ -->
+    <div class="px-5 max-w-3xl mx-auto flex flex-col gap-8 pt-6">
+
+        <!-- ═══════ ProductSummaryCard ═══════ -->
+        <section class="bg-surface rounded-2xl p-4 border border-outline-variant/20 shadow-sm">
+            <div class="flex gap-4 items-start">
+                <div class="w-20 h-20 relative rounded-xl overflow-hidden shrink-0 bg-surface-container">
+                    {% if activity.thumbnail_url %}
+                    <img class="w-full h-full object-cover" alt="{{ activity.title }}" src="{{ activity.thumbnail_url }}">
+                    {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <span class="inline-block px-2 py-0.5 bg-ocean-blue/10 text-ocean-blue text-[11px] font-semibold rounded mb-1.5">
+                        {{ activity.category.name }}
+                    </span>
+                    <h2 class="text-[15px] font-bold text-on-surface leading-snug mb-1.5">{{ activity.title }}</h2>
+                    <p class="text-[12px] text-outline flex items-center gap-1 mb-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 shrink-0 text-outline">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                        <span>{{ activity.duration_minutes }}분 소요</span>
+                    </p>
+                    <p class="text-[12px] text-outline flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 shrink-0 text-outline">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                        </svg>
+                        <span>{{ activity.address|default:activity.region.name }}</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ DateSelectionCalendar ═══════ -->
+        <section>
+            <h3 class="text-[17px] font-bold text-on-surface mb-4">날짜 선택</h3>
+
+            <!-- Month nav -->
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-[15px] font-semibold text-on-surface" id="month-label">{{ cal_year }}년 {{ cal_month }}월</span>
+                <div class="flex gap-2">
+                    <button type="button" id="prev-month" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                    </button>
+                    <button type="button" id="next-month" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar grid -->
+            <div class="grid grid-cols-7 text-center mb-1">
+                {% for wd in weekdays %}
+                <div class="text-[12px] font-medium text-outline py-2 {% if forloop.first %}text-error-red{% endif %}{% if forloop.last %}text-ocean-blue{% endif %}">{{ wd }}</div>
+                {% endfor %}
+            </div>
+            <div id="cal-grid">
+                {% for week in cal_data %}
+                <div class="grid grid-cols-7 text-center">
+                    {% for cell in week %}
+                    {% if cell.day == 0 %}
+                    <div class="py-2"></div>
+                    {% elif cell.available %}
+                    <button type="button" data-date="{{ cell.iso }}"
+                            class="cal-day py-2 mx-auto w-10 h-10 rounded-full text-[14px] font-medium text-on-surface hover:bg-ocean-blue/10 transition-colors">
+                        {{ cell.day }}
+                    </button>
+                    {% else %}
+                    <div class="py-2 mx-auto w-10 h-10 flex items-center justify-center text-[14px] text-outline/40">
+                        {{ cell.day }}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Time slots (hidden until date picked) -->
+            <div id="time-section" style="display:none;" class="mt-4 pt-4 border-t border-outline-variant/20">
+                <p class="text-[14px] font-semibold text-on-surface mb-3">시간 선택</p>
+                {% regroup slots by date as date_groups %}
+                {% for group in date_groups %}
+                <div class="time-group hidden grid grid-cols-3 gap-2" data-date="{{ group.grouper|date:'Y-m-d' }}">
+                    {% for slot in group.list %}
+                    <button type="button"
+                            data-slot-id="{{ slot.pk }}"
+                            data-remaining="{{ slot.remaining }}"
+                            class="time-btn py-2.5 rounded-xl text-center border transition-colors
+                                   {% if slot.remaining == 0 %}text-outline/40 border-outline-variant/20 cursor-not-allowed line-through{% else %}text-on-surface border-outline-variant/30 hover:border-ocean-blue hover:bg-ocean-blue/5{% endif %}"
+                            {% if slot.remaining == 0 %}disabled{% endif %}>
+                        <div class="font-semibold text-[14px]">{{ slot.start_time|time:'H:i' }}</div>
+                        {% if slot.remaining == 0 %}
+                        <div class="text-[11px]">마감</div>
+                        {% else %}
+                        <div class="text-[11px] text-ocean-blue">잔여 {{ slot.remaining }}석</div>
+                        {% endif %}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ═══════ HeadcountSelector ═══════ -->
+        <section>
+            <h3 class="text-[17px] font-bold text-on-surface mb-5">인원 선택</h3>
+            <div class="flex flex-col gap-5">
+                <!-- 성인 -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[15px] font-semibold text-on-surface">성인</p>
+                        <p class="text-[13px] text-outline">13세 이상</p>
+                        <p class="text-[13px] font-semibold text-ocean-blue mt-0.5">{{ activity.price|currency }}/인</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button type="button" id="adult-minus"
+                                class="w-9 h-9 rounded-full border border-outline-variant/50 flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors disabled:opacity-30"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
+                        </button>
+                        <span id="adult-display" class="text-[18px] font-bold w-5 text-center text-on-surface">1</span>
+                        <button type="button" id="adult-plus"
+                                class="w-9 h-9 rounded-full border border-ocean-blue bg-ocean-blue text-white flex items-center justify-center hover:bg-ocean-blue/90 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border-t border-outline-variant/15"></div>
+
+                <!-- 소인 -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[15px] font-semibold text-on-surface">소인</p>
+                        <p class="text-[13px] text-outline">2세~12세</p>
+                        <p class="text-[13px] font-semibold text-ocean-blue mt-0.5">₩0/인</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button type="button" id="child-minus"
+                                class="w-9 h-9 rounded-full border border-outline-variant/50 flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors disabled:opacity-30"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
+                        </button>
+                        <span id="child-display" class="text-[18px] font-bold w-5 text-center text-on-surface">0</span>
+                        <button type="button" id="child-plus"
+                                class="w-9 h-9 rounded-full border border-ocean-blue bg-ocean-blue text-white flex items-center justify-center hover:bg-ocean-blue/90 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════ SpecialRequestsField ═══════ -->
+        <section>
+            <h3 class="text-[17px] font-bold text-on-surface mb-2">요청사항</h3>
+            <p class="text-[13px] text-outline mb-3">렌탈 장비 사이즈나 알레르기 등 요청사항을 적어주세요.</p>
+            <textarea name="special_request" rows="3"
+                      placeholder="예: 슈트 M 사이즈 필요, 채식 메뉴 희망 등..."
+                      class="w-full border border-outline-variant/30 rounded-xl p-4 text-[14px] text-on-surface bg-surface resize-none focus:outline-none focus:border-ocean-blue transition-colors placeholder:text-outline/40"></textarea>
+        </section>
+
+        <!-- ═══════ PaymentMethodSelector ═══════ -->
+        <section>
+            <h3 class="text-[17px] font-bold text-on-surface mb-5">결제 수단</h3>
+            <div class="flex flex-col gap-3">
+                <!-- 신용/체크카드 -->
+                <label class="block cursor-pointer group">
+                    <input type="radio" name="pay_method" value="card" class="sr-only peer" checked>
+                    <div class="pay-option border rounded-xl px-4 py-3.5 flex items-center gap-3 transition-colors
+                                peer-checked:border-ocean-blue peer-checked:bg-ocean-blue/5 border-outline-variant/30">
+                        <div class="pay-radio w-5 h-5 rounded-full border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
+                        <div class="w-8 h-8 bg-surface-container-low rounded-lg flex items-center justify-center shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-on-surface-variant">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                            </svg>
+                        </div>
+                        <span class="text-[15px] text-on-surface font-medium">신용/체크카드</span>
+                    </div>
+                </label>
+                <!-- 카카오페이 -->
+                <label class="block cursor-pointer group">
+                    <input type="radio" name="pay_method" value="kakaopay" class="sr-only peer">
+                    <div class="pay-option border rounded-xl px-4 py-3.5 flex items-center gap-3 transition-colors
+                                peer-checked:border-ocean-blue peer-checked:bg-ocean-blue/5 border-outline-variant/30">
+                        <div class="pay-radio w-5 h-5 rounded-full border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
+                        <div class="w-8 h-8 bg-[#FEE500] rounded-lg flex items-center justify-center shrink-0">
+                            <span class="font-extrabold text-[#3C1E1E] text-[13px]">K</span>
+                        </div>
+                        <span class="text-[15px] text-on-surface font-medium">카카오페이</span>
+                    </div>
+                </label>
+                <!-- 토스페이 -->
+                <label class="block cursor-pointer group">
+                    <input type="radio" name="pay_method" value="toss" class="sr-only peer">
+                    <div class="pay-option border rounded-xl px-4 py-3.5 flex items-center gap-3 transition-colors
+                                peer-checked:border-ocean-blue peer-checked:bg-ocean-blue/5 border-outline-variant/30">
+                        <div class="pay-radio w-5 h-5 rounded-full border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
+                        <div class="w-8 h-8 bg-[#0050FF] rounded-lg flex items-center justify-center shrink-0">
+                            <span class="font-extrabold text-white text-[13px]">T</span>
+                        </div>
+                        <span class="text-[15px] text-on-surface font-medium">토스페이</span>
+                    </div>
+                </label>
+            </div>
+        </section>
+
+    </div><!-- /body -->
+
+    <!-- ═══════ StickyPaymentBar ═══════ -->
+    <div class="fixed bottom-0 w-full z-50 bg-surface border-t border-outline-variant/20 shadow-[0px_-4px_16px_rgba(0,0,0,0.06)] px-5">
+        <div class="max-w-3xl mx-auto">
+            <!-- Terms -->
+            <label class="flex items-center gap-2 py-3 cursor-pointer border-b border-outline-variant/15">
+                <input type="checkbox" id="terms-check"
+                       class="w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
+                <span class="text-[12px] text-outline">
+                    <a class="text-ocean-blue" href="{% url 'core:terms' %}" target="_blank">서비스 이용약관</a> 및
+                    <a class="text-ocean-blue" href="{% url 'core:privacy' %}" target="_blank">개인정보 처리방침</a>에 동의합니다
+                </span>
+            </label>
+            <!-- Price + Button -->
+            <div class="flex items-center justify-between gap-4 py-3">
+                <div>
+                    <p class="text-[11px] text-outline">최종 결제 금액</p>
+                    <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="total-display">{{ activity.price|currency }}</p>
+                    <p class="text-[11px] text-outline" id="guest-summary">성인 1, 소인 0</p>
+                </div>
+                <button type="submit" id="submit-btn" disabled
+                        class="bg-ocean-blue text-white text-[15px] font-bold py-3 px-8 rounded-xl hover:bg-ocean-blue/90 active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    결제하기
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const PRICE = {{ activity.price }};
+    const CAP = {{ activity.capacity }};
+    let adults = 1, children = 0, slotId = null, selDate = null, maxR = CAP;
+
+    const $ = id => document.getElementById(id);
+    const fmt = n => '₩' + n.toLocaleString();
+
+    /* ── radio visual ── */
+    function syncRadios() {
+        document.querySelectorAll('input[name="pay_method"]').forEach(inp => {
+            const opt = inp.closest('label').querySelector('.pay-option');
+            const dot = inp.closest('label').querySelector('.pay-radio');
+            if (inp.checked) {
+                opt.classList.add('border-ocean-blue', 'bg-ocean-blue/5');
+                opt.classList.remove('border-outline-variant/30');
+                dot.classList.add('border-ocean-blue', 'bg-ocean-blue');
+                dot.classList.remove('border-outline-variant/50');
+                dot.innerHTML = '<span class="w-2 h-2 rounded-full bg-white"></span>';
+            } else {
+                opt.classList.remove('border-ocean-blue', 'bg-ocean-blue/5');
+                opt.classList.add('border-outline-variant/30');
+                dot.classList.remove('border-ocean-blue', 'bg-ocean-blue');
+                dot.classList.add('border-outline-variant/50');
+                dot.innerHTML = '';
+            }
+        });
+    }
+    document.querySelectorAll('input[name="pay_method"]').forEach(r =>
+        r.addEventListener('change', () => { syncRadios(); sync(); })
+    );
+
+    /* ── sync state ── */
+    function sync() {
+        const total = PRICE * adults;
+        $('total-display').textContent = fmt(total);
+        $('adults-input').value = adults;
+        $('children-input').value = children;
+        $('adult-display').textContent = adults;
+        $('child-display').textContent = children;
+        $('adult-minus').disabled = adults <= 1;
+        $('adult-plus').disabled = (adults + children) >= maxR;
+        $('child-minus').disabled = children <= 0;
+        $('child-plus').disabled = (adults + children) >= maxR;
+        $('guest-summary').textContent = '성인 ' + adults + ', 소인 ' + children;
+
+        const hasSlot = slotId !== null;
+        const hasMethod = !!document.querySelector('input[name="pay_method"]:checked');
+        const hasTerms = $('terms-check').checked;
+        $('submit-btn').disabled = !(hasSlot && hasMethod && hasTerms);
+    }
+
+    $('terms-check').addEventListener('change', sync);
+
+    /* ── calendar date buttons ── */
+    document.querySelectorAll('.cal-day').forEach(b => b.addEventListener('click', () => {
+        selDate = b.dataset.date;
+        slotId = null;
+        $('slot-id').value = '';
+
+        document.querySelectorAll('.cal-day').forEach(x => {
+            const on = x === b;
+            x.classList.toggle('bg-ocean-blue', on);
+            x.classList.toggle('text-white', on);
+            x.classList.toggle('font-bold', on);
+        });
+
+        $('time-section').style.display = '';
+        document.querySelectorAll('.time-group').forEach(g => {
+            g.classList.toggle('hidden', g.dataset.date !== selDate);
+            g.classList.toggle('grid', g.dataset.date === selDate);
+        });
+        document.querySelectorAll('.time-btn').forEach(t => {
+            t.classList.remove('border-ocean-blue', 'bg-ocean-blue/10', 'text-ocean-blue');
+        });
+        sync();
+    }));
+
+    /* ── time buttons ── */
+    document.querySelectorAll('.time-btn').forEach(b => b.addEventListener('click', () => {
+        if (b.disabled) return;
+        slotId = b.dataset.slotId;
+        $('slot-id').value = slotId;
+        maxR = Math.min(+b.dataset.remaining, CAP);
+        if ((adults + children) > maxR) {
+            children = 0;
+            adults = Math.min(adults, maxR);
+        }
+        document.querySelectorAll('.time-btn:not([disabled])').forEach(t => {
+            const on = t === b;
+            t.classList.toggle('border-ocean-blue', on);
+            t.classList.toggle('bg-ocean-blue/10', on);
+            t.classList.toggle('text-ocean-blue', on);
+        });
+        sync();
+    }));
+
+    /* ── headcount ── */
+    $('adult-minus').addEventListener('click', () => { if (adults > 1) { adults--; sync(); } });
+    $('adult-plus').addEventListener('click', () => { if ((adults + children) < maxR) { adults++; sync(); } });
+    $('child-minus').addEventListener('click', () => { if (children > 0) { children--; sync(); } });
+    $('child-plus').addEventListener('click', () => { if ((adults + children) < maxR) { children++; sync(); } });
+
+    sync();
+    syncRadios();
+})();
+</script>
+{% endblock %}

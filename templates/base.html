@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}LOIVE{% endblock %} | 로컬 체험의 발견</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0284C7',
+                        'primary-container': '#38BDF8',
+                        'on-primary': '#ffffff',
+                        'on-primary-container': '#f0f9ff',
+                        'primary-fixed': '#E0F2FE',
+                        'primary-fixed-dim': '#7DD3FC',
+                        secondary: '#F97316',
+                        'secondary-container': '#FB923C',
+                        'on-secondary': '#ffffff',
+                        'on-secondary-container': '#7C2D12',
+                        tertiary: '#0D9488',
+                        'tertiary-container': '#14B8A6',
+                        surface: '#ffffff',
+                        'surface-dim': '#E0F2FE',
+                        'surface-bright': '#F8FDFF',
+                        'surface-container-lowest': '#ffffff',
+                        'surface-container-low': '#F0F9FF',
+                        'surface-container': '#E8F4FD',
+                        'surface-container-high': '#E0EFF8',
+                        'surface-container-highest': '#D6EAF5',
+                        'on-surface': '#0C1821',
+                        'on-surface-variant': '#3D5A6E',
+                        'inverse-surface': '#1B3A4B',
+                        'inverse-on-surface': '#E0F2FE',
+                        outline: '#6B8FA3',
+                        'outline-variant': '#B8D4E3',
+                        'on-error': '#ffffff',
+                        error: '#DC2626',
+                        'error-container': '#FEE2E2',
+                        'ocean-blue': '#0EA5E9',
+                        'deep-teal': '#14B8A6',
+                        'sun-yellow': '#FBBF24',
+                        coral: '#FF6B6B',
+                        'error-red': '#EF4444',
+                        'success-green': '#10B981',
+                        background: '#F0F9FF',
+                        'on-background': '#0C1821',
+                        'surface-variant': '#E0F2FE',
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard Variable', 'Pretendard', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+        .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        html { padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-full flex flex-col font-sans">
+    {% include "components/navbar.html" %}
+
+    <main class="pt-[72px] pb-32 max-w-7xl mx-auto w-full" style="padding-top: calc(56px + env(safe-area-inset-top))">
+        {% if messages %}
+        <div class="px-4 mt-4 space-y-2">
+            {% for message in messages %}
+            <div class="p-3 rounded-lg text-sm
+                {% if message.tags == 'error' %}bg-red-50 text-error-red border border-error-red/20
+                {% elif message.tags == 'success' %}bg-green-50 text-success-green border border-success-green/20
+                {% else %}bg-blue-50 text-primary border border-primary/20{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

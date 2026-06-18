@@ -1,0 +1,150 @@
+{% extends "partner/base.html" %}
+{% load core_tags %}
+
+{% block title %}대시보드{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-on-surface">대시보드</h1>
+    <p class="text-on-surface-variant mt-1">{{ partner.business_name }}의 운영 현황을 확인하세요.</p>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- 총 예약 건수 -->
+    <div class="bg-surface rounded-xl border border-outline-variant/20 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg bg-ocean-blue/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-ocean-blue">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+            </div>
+            <span class="text-sm text-on-surface-variant">총 예약 건수</span>
+        </div>
+        <p class="text-3xl font-bold text-on-surface">{{ total_bookings }}<span class="text-base font-medium text-on-surface-variant ml-1">건</span></p>
+    </div>
+
+    <!-- 이번 달 매출 -->
+    <div class="bg-surface rounded-xl border border-outline-variant/20 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg bg-success-green/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-success-green">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </div>
+            <span class="text-sm text-on-surface-variant">이번 달 매출</span>
+        </div>
+        <p class="text-3xl font-bold text-on-surface">{{ monthly_sales|currency }}</p>
+    </div>
+
+    <!-- 등록 액티비티 수 -->
+    <div class="bg-surface rounded-xl border border-outline-variant/20 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg bg-deep-teal/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-deep-teal">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+                </svg>
+            </div>
+            <span class="text-sm text-on-surface-variant">등록 액티비티</span>
+        </div>
+        <p class="text-3xl font-bold text-on-surface">{{ activity_count }}<span class="text-base font-medium text-on-surface-variant ml-1">개</span></p>
+    </div>
+
+    <!-- 평균 평점 -->
+    <div class="bg-surface rounded-xl border border-outline-variant/20 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-lg bg-sun-yellow/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-sun-yellow">
+                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <span class="text-sm text-on-surface-variant">평균 평점</span>
+        </div>
+        <p class="text-3xl font-bold text-on-surface">{{ avg_rating }}<span class="text-base font-medium text-on-surface-variant ml-1">/ 5.0</span></p>
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+    <a href="{% url 'partner:activity_create' %}" class="flex items-center gap-2 px-4 py-3 bg-ocean-blue text-white rounded-lg hover:bg-ocean-blue/90 transition-colors text-sm font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        새 액티비티
+    </a>
+    <a href="{% url 'partner:activity_list' %}" class="flex items-center gap-2 px-4 py-3 bg-surface border border-outline-variant/30 text-on-surface rounded-lg hover:bg-surface-container-low transition-colors text-sm font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+        </svg>
+        액티비티 목록
+    </a>
+    <a href="{% url 'partner:booking_list' %}" class="flex items-center gap-2 px-4 py-3 bg-surface border border-outline-variant/30 text-on-surface rounded-lg hover:bg-surface-container-low transition-colors text-sm font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        </svg>
+        예약 관리
+    </a>
+    <a href="{% url 'partner:settlement_list' %}" class="flex items-center gap-2 px-4 py-3 bg-surface border border-outline-variant/30 text-on-surface rounded-lg hover:bg-surface-container-low transition-colors text-sm font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+        </svg>
+        정산 내역
+    </a>
+</div>
+
+<!-- Recent Bookings -->
+<div class="bg-surface rounded-xl border border-outline-variant/20 shadow-sm">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/15">
+        <h2 class="text-lg font-bold text-on-surface">최근 예약</h2>
+        <a href="{% url 'partner:booking_list' %}" class="text-ocean-blue text-sm font-medium hover:text-ocean-blue/80 transition-colors">전체보기</a>
+    </div>
+
+    {% if recent_bookings %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-outline-variant/15">
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium">예약번호</th>
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium">고객</th>
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium">액티비티</th>
+                    <th class="text-left px-6 py-3 text-on-surface-variant font-medium">날짜</th>
+                    <th class="text-right px-6 py-3 text-on-surface-variant font-medium">금액</th>
+                    <th class="text-center px-6 py-3 text-on-surface-variant font-medium">상태</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in recent_bookings %}
+                <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest transition-colors {% if forloop.counter|divisibleby:2 %}bg-surface-container-lowest/50{% endif %}">
+                    <td class="px-6 py-3 font-mono text-sm text-on-surface">{{ booking.reservation_code }}</td>
+                    <td class="px-6 py-3 text-on-surface">{{ booking.user.get_full_name|default:booking.user.username }}</td>
+                    <td class="px-6 py-3 text-on-surface max-w-[200px] truncate">{{ booking.slot.activity.title }}</td>
+                    <td class="px-6 py-3 text-on-surface-variant whitespace-nowrap">{{ booking.slot.date }} {{ booking.slot.start_time|time:"H:i" }}</td>
+                    <td class="px-6 py-3 text-right text-on-surface font-medium">{{ booking.total_amount|currency }}</td>
+                    <td class="px-6 py-3 text-center">
+                        {% if booking.status == 'confirmed' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-ocean-blue/10 text-ocean-blue">확정</span>
+                        {% elif booking.status == 'completed' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-success-green/10 text-success-green">완료</span>
+                        {% elif booking.status == 'cancelled' or booking.status == 'refunded' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-error-red/10 text-error-red">취소</span>
+                        {% elif booking.status == 'pending' %}
+                        <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full bg-sun-yellow/10 text-yellow-700">대기</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="py-16 text-center text-on-surface-variant">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-12 h-12 mx-auto mb-3 text-outline-variant">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        </svg>
+        <p class="text-base font-medium">아직 예약이 없습니다</p>
+        <p class="text-sm mt-1">액티비티를 등록하고 슬롯을 추가하면 예약이 들어옵니다.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}예약 내역{% endblock %}
+
+{% block extra_head %}
+<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-lg mx-auto min-h-screen bg-surface pb-24">
+
+    <!-- Header -->
+    <div class="sticky top-0 z-50 bg-surface border-b border-outline-variant/15 h-14 flex items-center px-4">
+        <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+        </a>
+        <h1 class="flex-1 text-center text-[17px] font-bold text-on-surface -ml-10">예약 내역</h1>
+        <div class="w-10"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-outline-variant/15 px-5 mb-5" id="booking-tabs">
+        <button type="button" data-tab="upcoming"
+                class="booking-tab flex-1 text-[14px] font-semibold py-3.5 text-center transition-all border-b-2 text-ocean-blue border-ocean-blue">
+            예약 확정
+        </button>
+        <button type="button" data-tab="completed"
+                class="booking-tab flex-1 text-[14px] font-semibold py-3.5 text-center transition-all border-b-2 text-on-surface-variant border-transparent">
+            이용 완료
+        </button>
+        <button type="button" data-tab="cancelled"
+                class="booking-tab flex-1 text-[14px] font-semibold py-3.5 text-center transition-all border-b-2 text-on-surface-variant border-transparent">
+            취소 내역
+        </button>
+    </div>
+
+    <div class="px-5">
+
+        <!-- Upcoming -->
+        <div class="tab-content" id="tab-upcoming">
+            {% if upcoming %}
+            <div class="flex flex-col gap-5">
+                {% for booking in upcoming %}
+                <div class="bg-surface rounded-2xl border border-outline-variant/12 shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+                    {% if booking.slot.activity.thumbnail_url %}
+                    <div class="h-[180px] w-full relative overflow-hidden">
+                        <img class="w-full h-full object-cover" alt="" src="{{ booking.slot.activity.thumbnail_url }}" loading="lazy">
+                        <div class="absolute top-3 left-3 px-3 py-1.5 text-[11px] font-bold rounded-lg bg-ocean-blue text-white shadow-sm">예약 확정</div>
+                    </div>
+                    {% endif %}
+                    <div class="p-4 pt-3.5">
+                        <h3 class="text-[17px] font-bold text-on-surface mb-3">{{ booking.slot.activity.title }}</h3>
+
+                        <div class="flex items-center gap-2 text-[13px] text-on-surface-variant mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0 text-outline">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                            </svg>
+                            {{ booking.slot.date|date:"Y년 n월 j일" }} {{ booking.slot.start_time|time:"A" }} {{ booking.slot.start_time|time:"h:i" }}
+                        </div>
+
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center gap-2 text-[13px] text-on-surface-variant">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0 text-outline">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                                인원 {{ booking.headcount }}인
+                            </div>
+                            <span class="text-[20px] font-extrabold text-ocean-blue">₩{{ booking.total_amount|floatformat:0 }}</span>
+                        </div>
+
+                        <a href="{% url 'bookings:cancel' booking.pk %}"
+                           class="block w-full mt-4 py-3 text-center text-[14px] font-semibold text-ocean-blue border border-ocean-blue/30 rounded-xl bg-ocean-blue/5 hover:bg-ocean-blue/10 active:scale-[0.98] transition-all">
+                            예약 취소하기
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-24">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-16 h-16 mx-auto mb-4 text-outline-variant/40">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+                <p class="text-[16px] font-bold text-on-surface mb-1">예약 내역이 없습니다</p>
+                <p class="text-[13px] text-outline mb-6">새로운 액티비티를 탐색해보세요!</p>
+                <a href="{% url 'activities:explore' %}" class="inline-block px-8 py-3 bg-ocean-blue text-white text-[14px] font-semibold rounded-xl shadow-sm">탐색하기</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Completed -->
+        <div class="tab-content hidden" id="tab-completed">
+            {% if completed %}
+            <div class="flex flex-col gap-5">
+                {% for booking in completed %}
+                <a href="{% url 'bookings:detail' booking.pk %}" class="block bg-surface rounded-2xl border border-outline-variant/12 shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+                    {% if booking.slot.activity.thumbnail_url %}
+                    <div class="h-[180px] w-full relative overflow-hidden">
+                        <img class="w-full h-full object-cover" alt="" src="{{ booking.slot.activity.thumbnail_url }}" loading="lazy">
+                        <div class="absolute top-3 left-3 px-3 py-1.5 text-[11px] font-bold rounded-lg bg-success-green text-white shadow-sm">이용 완료</div>
+                    </div>
+                    {% endif %}
+                    <div class="p-4 pt-3.5">
+                        <h3 class="text-[17px] font-bold text-on-surface mb-3">{{ booking.slot.activity.title }}</h3>
+                        <div class="flex items-center gap-2 text-[13px] text-on-surface-variant mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0 text-outline">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                            </svg>
+                            {{ booking.slot.date|date:"Y년 n월 j일" }}
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-[20px] font-extrabold text-on-surface">₩{{ booking.total_amount|floatformat:0 }}</span>
+                            <span class="text-[12px] text-ocean-blue font-bold">후기 작성 가능</span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-24">
+                <p class="text-[16px] font-bold text-on-surface mb-1">이용 완료된 내역이 없습니다</p>
+                <p class="text-[13px] text-outline">액티비티를 이용한 후 여기에 표시됩니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Cancelled -->
+        <div class="tab-content hidden" id="tab-cancelled">
+            {% if cancelled %}
+            <div class="flex flex-col gap-4">
+                {% for booking in cancelled %}
+                <div class="bg-surface rounded-2xl border border-outline-variant/12 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden opacity-70">
+                    <div class="p-4 flex items-center gap-3.5">
+                        <div class="w-16 h-16 rounded-xl bg-surface-container-high overflow-hidden shrink-0">
+                            {% if booking.slot.activity.thumbnail_url %}
+                            <img class="w-full h-full object-cover" alt="" src="{{ booking.slot.activity.thumbnail_url }}">
+                            {% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="mb-1">
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-error-red/10 text-error-red">취소</span>
+                            </div>
+                            <p class="text-[14px] font-semibold text-on-surface line-clamp-1">{{ booking.slot.activity.title }}</p>
+                            <p class="text-[12px] text-outline mt-0.5">{{ booking.slot.date|date:"Y.m.d" }} · ₩{{ booking.total_amount|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-24">
+                <p class="text-[16px] font-bold text-on-surface mb-1">취소 내역이 없습니다</p>
+                <p class="text-[13px] text-outline">취소된 예약이 없습니다.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var tabs = document.querySelectorAll('.booking-tab');
+    var contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var target = tab.dataset.tab;
+            tabs.forEach(function(t) {
+                var on = t === tab;
+                t.classList.toggle('text-ocean-blue', on);
+                t.classList.toggle('border-ocean-blue', on);
+                t.classList.toggle('text-on-surface-variant', !on);
+                t.classList.toggle('border-transparent', !on);
+            });
+            contents.forEach(function(c) {
+                c.classList.toggle('hidden', c.id !== 'tab-' + target);
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}

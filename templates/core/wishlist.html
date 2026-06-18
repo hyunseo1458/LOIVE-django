@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}위시리스트{% endblock %}
+
+{% block extra_head %}
+<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% endblock %}
+
+{% block content %}
+<!-- Sub-page header -->
+<div class="px-4 mt-2 mb-4 flex items-center gap-3">
+    <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+    </a>
+    <h1 class="text-[18px] font-bold text-on-surface">위시리스트</h1>
+    <span id="wishlist-count" class="text-[13px] text-outline ml-auto"></span>
+</div>
+
+<!-- Empty state -->
+<div id="empty-state" class="hidden flex-col items-center justify-center text-center py-16 px-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-outline-variant mb-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+    </svg>
+    <h2 class="text-[16px] font-bold text-on-surface mb-1">아직 찜한 액티비티가 없어요</h2>
+    <p class="text-[14px] text-on-surface-variant mb-6">마음에 드는 액티비티의 하트를 눌러 저장해보세요.</p>
+    <a href="{% url 'activities:explore' %}"
+       class="bg-primary text-on-primary text-[14px] font-semibold px-8 py-3 rounded-lg hover:opacity-90 transition-all active:scale-95">
+        액티비티 탐색하기
+    </a>
+</div>
+
+<!-- Loading skeleton -->
+<div id="loading-state" class="px-4 hidden">
+    <div class="grid grid-cols-2 gap-3">
+        {% for i in "1234" %}
+        <div class="bg-surface rounded-xl overflow-hidden border border-outline-variant/20 animate-pulse">
+            <div class="h-[140px] bg-surface-container-high"></div>
+            <div class="p-3 space-y-2">
+                <div class="h-3 bg-surface-container-high rounded w-3/4"></div>
+                <div class="h-3 bg-surface-container-high rounded w-1/2"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Activity grid (populated via JS) -->
+<div id="wishlist-grid" class="px-4 hidden">
+    <div id="wishlist-items" class="grid grid-cols-2 gap-3"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var emptyState = document.getElementById('empty-state');
+    var loadingState = document.getElementById('loading-state');
+    var gridState = document.getElementById('wishlist-grid');
+    var itemsContainer = document.getElementById('wishlist-items');
+    var countEl = document.getElementById('wishlist-count');
+
+    function getWishlist() {
+        try { return JSON.parse(localStorage.getItem('loive_wishlist') || '[]'); }
+        catch (e) { return []; }
+    }
+    function saveWishlist(ids) {
+        localStorage.setItem('loive_wishlist', JSON.stringify(ids));
+    }
+
+    function removeItem(id) {
+        var ids = getWishlist().filter(function(x) { return x !== id; });
+        saveWishlist(ids);
+        render();
+    }
+
+    function formatPrice(n) {
+        return '₩' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function createCard(item) {
+        var card = document.createElement('div');
+        card.className = 'bg-surface rounded-xl overflow-hidden border border-outline-variant/20 shadow-sm relative group';
+        card.innerHTML = '<a href="/activities/' + item.id + '/" class="block">' +
+            '<div class="relative h-[140px] bg-surface-variant overflow-hidden">' +
+                (item.thumbnail_url
+                    ? '<img src="' + item.thumbnail_url + '" alt="' + item.title + '" class="w-full h-full object-cover" loading="lazy">'
+                    : '<div class="w-full h-full flex items-center justify-center text-outline"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M2.25 18V6a2.25 2.25 0 0 1 2.25-2.25h15A2.25 2.25 0 0 1 21.75 6v12A2.25 2.25 0 0 1 19.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18Z" /></svg></div>') +
+                '<div class="absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-2.5 h-2.5 text-sun-yellow"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>' +
+                    (item.rating_avg > 0 ? item.rating_avg.toFixed(1) : '0.0') +
+                '</div>' +
+            '</div>' +
+            '<div class="p-3">' +
+                '<div class="flex gap-1 mb-1">' +
+                    '<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-ocean-blue/10 text-ocean-blue">' + (item.category || '') + '</span>' +
+                    '<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-surface-container-high text-on-surface-variant">' + (item.region || '') + '</span>' +
+                '</div>' +
+                '<h3 class="text-[13px] font-semibold text-on-surface line-clamp-2 leading-snug mb-1.5">' + item.title + '</h3>' +
+                '<p class="text-[14px] font-extrabold text-on-surface">' + formatPrice(item.price) + '</p>' +
+            '</div>' +
+        '</a>';
+
+        var removeBtn = document.createElement('button');
+        removeBtn.className = 'absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:bg-white transition-colors active:scale-90';
+        removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-error-red"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" /></svg>';
+        removeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            removeItem(item.id);
+        });
+        card.appendChild(removeBtn);
+
+        return card;
+    }
+
+    function render() {
+        var ids = getWishlist();
+        if (ids.length === 0) {
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+            loadingState.classList.add('hidden');
+            gridState.classList.add('hidden');
+            countEl.textContent = '';
+            return;
+        }
+
+        emptyState.classList.add('hidden');
+        emptyState.classList.remove('flex');
+        loadingState.classList.remove('hidden');
+        gridState.classList.add('hidden');
+        countEl.textContent = ids.length + '개';
+
+        fetch('/api/wishlist/?ids=' + ids.join(','))
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                loadingState.classList.add('hidden');
+                itemsContainer.innerHTML = '';
+
+                if (!data.length) {
+                    saveWishlist([]);
+                    emptyState.classList.remove('hidden');
+                    emptyState.classList.add('flex');
+                    countEl.textContent = '';
+                    return;
+                }
+
+                data.forEach(function(item) {
+                    itemsContainer.appendChild(createCard(item));
+                });
+                gridState.classList.remove('hidden');
+                countEl.textContent = data.length + '개';
+            })
+            .catch(function() {
+                loadingState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            });
+    }
+
+    render();
+})();
+</script>
+{% endblock %}
