@@ -8,7 +8,9 @@ env = environ.Env(
     DEBUG=(bool, True),
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
 )
-environ.Env.read_env(BASE_DIR / ".env", overwrite=True)
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    environ.Env.read_env(env_file, overwrite=True)
 
 SECRET_KEY = env("SECRET_KEY", default="django-insecure-dev-only-change-in-production")
 DEBUG = env("DEBUG")
