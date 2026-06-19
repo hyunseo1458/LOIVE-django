@@ -134,15 +134,22 @@ def activity_create(request):
 
     if request.method == "POST":
         partner = _partner(request)
+        try:
+            price = max(0, int(request.POST.get("price", 0)))
+            capacity = max(1, int(request.POST.get("capacity", 1)))
+            duration = max(1, int(request.POST.get("duration_minutes", 60)))
+        except (ValueError, TypeError):
+            messages.error(request, "가격, 정원, 소요시간은 숫자로 입력해주세요.")
+            return redirect("partner:activity_create")
         activity = Activity.objects.create(
             partner=partner,
             title=request.POST.get("title", ""),
             category_id=request.POST.get("category"),
             region_id=request.POST.get("region"),
             description=request.POST.get("description", ""),
-            price=int(request.POST.get("price", 0)),
-            capacity=int(request.POST.get("capacity", 1)),
-            duration_minutes=int(request.POST.get("duration_minutes", 60)),
+            price=price,
+            capacity=capacity,
+            duration_minutes=duration,
             address=request.POST.get("address", ""),
             thumbnail_url=request.POST.get("thumbnail_url", ""),
             status=Activity.Status.DRAFT,
@@ -169,9 +176,13 @@ def activity_edit(request, pk):
         activity.category_id = request.POST.get("category", activity.category_id)
         activity.region_id = request.POST.get("region", activity.region_id)
         activity.description = request.POST.get("description", activity.description)
-        activity.price = int(request.POST.get("price", activity.price))
-        activity.capacity = int(request.POST.get("capacity", activity.capacity))
-        activity.duration_minutes = int(request.POST.get("duration_minutes", activity.duration_minutes))
+        try:
+            activity.price = max(0, int(request.POST.get("price", activity.price)))
+            activity.capacity = max(1, int(request.POST.get("capacity", activity.capacity)))
+            activity.duration_minutes = max(1, int(request.POST.get("duration_minutes", activity.duration_minutes)))
+        except (ValueError, TypeError):
+            messages.error(request, "가격, 정원, 소요시간은 숫자로 입력해주세요.")
+            return redirect("partner:activity_edit", pk=pk)
         activity.address = request.POST.get("address", activity.address)
         activity.thumbnail_url = request.POST.get("thumbnail_url", activity.thumbnail_url)
         activity.save()
@@ -201,8 +212,11 @@ def slot_manage(request, pk):
         if action == "add":
             slot_date = request.POST.get("date")
             start_time = request.POST.get("start_time")
-            capacity = int(request.POST.get("capacity", activity.capacity))
-            if slot_date and start_time:
+            try:
+                capacity = int(request.POST.get("capacity", activity.capacity))
+            except (ValueError, TypeError):
+                capacity = activity.capacity
+            if slot_date and start_time and slot_date >= date.today().isoformat():
                 slot, created = ActivitySlot.objects.get_or_create(
                     activity=activity,
                     date=slot_date,
@@ -213,6 +227,8 @@ def slot_manage(request, pk):
                     messages.success(request, f"{slot_date} {start_time} 슬롯이 추가되었습니다.")
                 else:
                     messages.warning(request, "이미 동일한 슬롯이 존재합니다.")
+            elif slot_date and slot_date < date.today().isoformat():
+                messages.error(request, "과거 날짜에는 슬롯을 추가할 수 없습니다.")
             else:
                 messages.error(request, "날짜와 시간을 모두 입력해주세요.")
 

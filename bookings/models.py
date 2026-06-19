@@ -26,6 +26,10 @@ class Booking(models.Model):
     class Meta:
         db_table = "bookings"
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "status"], name="idx_booking_user_status"),
+            models.Index(fields=["status"], name="idx_booking_status"),
+        ]
 
     def __str__(self):
         return f"[{self.reservation_code}] {self.user} - {self.slot.activity.title}"

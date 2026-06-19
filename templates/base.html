@@ -84,6 +84,7 @@
 </head>
 <body class="min-h-screen bg-gray-100 font-sans flex">
     {% csrf_token %}
+
     <!-- Phone wrapper -->
     <div class="phone-wrapper relative flex-shrink-0 md:ml-8 md:my-8" style="width: 390px; height: 844px;">
         <div class="phone-body w-full h-full md:rounded-[44px] md:border-[3px] md:border-gray-800 bg-surface overflow-hidden md:shadow-2xl flex flex-col relative">
@@ -93,7 +94,7 @@
             {% block navbar %}{% include "components/navbar.html" %}{% endblock %}
 
             <div class="flex-1 overflow-y-auto no-scrollbar relative">
-                <main class="pb-4 w-full">
+                <main class="pb-20 w-full">
                     {% if messages %}
                     <div class="px-4 mt-4 space-y-2">
                         {% for message in messages %}
@@ -111,7 +112,9 @@
                 </main>
             </div>
 
-            {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
+            <div class="absolute bottom-0 left-0 right-0 z-50">
+                {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
+            </div>
 
             <!-- Home Indicator (desktop only) -->
             <div class="phone-frame-decoration absolute bottom-2 left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-gray-800 rounded-full z-[999]"></div>

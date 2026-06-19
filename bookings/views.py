@@ -9,11 +9,8 @@ from activities.models import Activity, ActivitySlot
 from .models import Booking
 
 
+@login_required
 def booking_history(request):
-    if not request.user.is_authenticated:
-        return render(request, "bookings/history.html", {
-            "upcoming": [], "completed": [], "cancelled": [],
-        })
 
     bookings = Booking.objects.filter(
         user=request.user
@@ -30,11 +27,12 @@ def booking_history(request):
     })
 
 
+@login_required
 def booking_form(request, activity_id):
     activity = get_object_or_404(Activity, pk=activity_id, status=Activity.Status.APPROVED)
     slots = activity.slots.filter(remaining__gt=0).order_by("date", "start_time")
 
-    slot_dates = sorted(set(slots.values_list("date", flat=True)))
+    slot_dates = sorted(slots.values_list("date", flat=True).distinct())
 
     if slot_dates:
         first_date = slot_dates[0]
@@ -65,16 +63,22 @@ def booking_form(request, activity_id):
                 })
         cal_data.append(row)
 
-    if request.method == "POST" and request.user.is_authenticated:
+    if request.method == "POST":
         slot_id = request.POST.get("slot_id")
-        adults = int(request.POST.get("adults", 1))
-        children = int(request.POST.get("children", 0))
+        try:
+            adults = max(1, int(request.POST.get("adults", 1)))
+            children = max(0, int(request.POST.get("children", 0)))
+        except (ValueError, TypeError):
+            adults, children = 1, 0
         headcount = adults + children
         special_request = request.POST.get("special_request", "")
 
         with transaction.atomic():
-            slot = ActivitySlot.objects.select_for_update().get(pk=slot_id)
-            if slot.remaining >= headcount:
+            slot = ActivitySlot.objects.select_for_update().get(pk=slot_id, activity=activity)
+            already_booked = Booking.objects.filter(
+                user=request.user, slot=slot, status=Booking.Status.CONFIRMED,
+            ).exists()
+            if not already_booked and headcount <= slot.remaining and headcount <= activity.capacity:
                 slot.remaining = F("remaining") - headcount
                 slot.save(update_fields=["remaining"])
 
@@ -135,8 +139,12 @@ def booking_cancel(request, pk):
 
     if request.method == "POST" and booking.status == Booking.Status.CONFIRMED:
         reason = request.POST.get("reason", "")
-        booking.status = Booking.Status.CANCELLED
-        booking.save(update_fields=["status", "updated_at"])
+        with transaction.atomic():
+            booking.status = Booking.Status.CANCELLED
+            booking.save(update_fields=["status", "updated_at"])
+            slot = ActivitySlot.objects.select_for_update().get(pk=booking.slot_id)
+            slot.remaining = F("remaining") + booking.headcount
+            slot.save(update_fields=["remaining"])
 
         from django.contrib import messages
         messages.success(request, "예약이 성공적으로 취소되었습니다.")

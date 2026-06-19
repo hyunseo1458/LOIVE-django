@@ -25,8 +25,8 @@
     <div class="px-5 pt-5 pb-28">
 
         <!-- Activity card -->
-        <div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-2xl border border-outline-variant/15 mb-8">
-            <div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container-high shrink-0">
+        <div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-md border border-outline-variant/15 mb-8">
+            <div class="w-16 h-16 rounded-md overflow-hidden bg-surface-container-high shrink-0">
                 {% if activity.thumbnail_url %}
                 <img src="{{ activity.thumbnail_url }}" alt="" class="w-full h-full object-cover">
                 {% endif %}
@@ -68,7 +68,7 @@
                     <span class="text-[12px] text-outline">최대 5장</span>
                 </div>
                 <div class="flex gap-2">
-                    <div class="w-20 h-20 rounded-xl border-2 border-dashed border-outline-variant/40 flex flex-col items-center justify-center text-outline cursor-pointer hover:border-ocean-blue hover:text-ocean-blue transition-colors">
+                    <div class="w-20 h-20 rounded-md border-2 border-dashed border-outline-variant/40 flex flex-col items-center justify-center text-outline cursor-pointer hover:border-on-surface hover:text-on-surface transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                         </svg>
@@ -83,7 +83,7 @@
                 <div class="relative">
                     <textarea name="content" id="review-text" rows="5"
                               placeholder="생생한 경험을 공유해 주세요! (장소의 분위기, 서비스, 팁 등)"
-                              class="w-full bg-surface border border-outline-variant/30 rounded-xl p-4 text-[14px] text-on-surface focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all resize-none placeholder-outline/50"
+                              class="w-full bg-surface border border-outline-variant/30 rounded-md p-4 text-[14px] text-on-surface focus:outline-none focus:ring-2 focus:ring-on-surface/10 focus:border-on-surface/40 transition-all resize-none placeholder-outline/50"
                               maxlength="1000"></textarea>
                     <span class="absolute bottom-3 right-4 text-[11px] text-outline"><span id="char-count">0</span>/1000</span>
                 </div>
@@ -96,7 +96,7 @@
     <!-- Sticky submit -->
     <div class="fixed bottom-0 left-0 right-0 z-50 bg-surface border-t border-outline-variant/20 px-5 py-3">
         <button type="button" id="submit-btn"
-                class="w-full max-w-lg mx-auto block py-3.5 bg-ocean-blue text-white text-[15px] font-bold rounded-xl shadow-sm hover:bg-ocean-blue/90 active:scale-[0.98] transition-all">
+                class="w-full max-w-lg mx-auto block py-3.5 bg-ocean-blue text-white text-[15px] font-bold rounded-sm hover:opacity-90 active:scale-[0.98] transition-all">
             리뷰 등록하기
         </button>
     </div>

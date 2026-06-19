@@ -57,6 +57,10 @@ class Activity(models.Model):
         db_table = "activities"
         verbose_name_plural = "activities"
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "created_at"], name="idx_activity_status"),
+            models.Index(fields=["partner"], name="idx_activity_partner"),
+        ]
 
     def __str__(self):
         return self.title

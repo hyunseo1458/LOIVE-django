@@ -45,7 +45,9 @@ def home(request):
     all_categories = ["전체"] + list(categories.values_list("name", flat=True))
     activities = Activity.objects.filter(
         status=Activity.Status.APPROVED
-    ).select_related("category", "region")
+    ).select_related("category", "region").annotate(
+        avg_rating=Avg("reviews__rating"),
+    )
 
     cookie_region = unquote(request.COOKIES.get("region", ""))
     if cookie_region and Region.objects.filter(name=cookie_region).exists():
@@ -91,7 +93,9 @@ def search(request):
 def wishlist(request):
     items = Wishlist.objects.filter(
         user=request.user
-    ).select_related("activity__category", "activity__region").order_by("-created_at")
+    ).select_related("activity__category", "activity__region").annotate(
+        activity_avg_rating=Avg("activity__reviews__rating"),
+    ).order_by("-created_at")
     return render(request, "core/wishlist.html", {"items": items})
 
 

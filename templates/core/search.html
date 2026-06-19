@@ -13,7 +13,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-outline absolute left-3 top-1/2 -translate-y-1/2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
             <input type="text" name="q" autofocus value="{{ query }}"
                    placeholder="지역, 액티비티 이름으로 검색"
-                   class="w-full h-11 pl-10 pr-9 rounded-full bg-surface-container-low text-[14px] text-on-surface focus:outline-none focus:ring-2 focus:ring-ocean-blue/30" />
+                   class="w-full h-11 pl-10 pr-9 rounded-md bg-surface-container-low text-[14px] text-on-surface focus:outline-none focus:ring-2 focus:ring-on-surface/10" />
             {% if query %}
             <a href="{% url 'core:search' %}" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
@@ -32,7 +32,7 @@
         <div class="flex flex-wrap gap-2">
             {% for keyword in popular_keywords %}
             <a href="{% url 'core:search' %}?q={{ keyword }}"
-               class="px-4 py-1.5 rounded-full bg-surface-container-low text-[13px] text-on-surface border border-outline-variant/30 hover:bg-ocean-blue/10 hover:text-ocean-blue hover:border-ocean-blue/30 transition-colors">
+               class="px-4 py-1.5 rounded-sm bg-surface-container-low text-[13px] text-on-surface border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface hover:border-on-surface/30 transition-colors">
                 {{ keyword }}
             </a>
             {% endfor %}
@@ -42,7 +42,7 @@
     <p class="text-[13px] font-semibold text-outline mb-3">검색 결과 {{ results|length }}건</p>
     <div class="flex flex-col gap-3">
         {% for activity in results %}
-        <a href="{% url 'activities:detail' activity.pk %}" class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-row h-32">
+        <a href="{% url 'activities:detail' activity.pk %}" class="bg-surface-container-lowest rounded-md border border-outline-variant/15 overflow-hidden flex flex-row h-32">
             <div class="relative w-32 shrink-0 bg-surface-container-high overflow-hidden">
                 {% if activity.thumbnail_url %}
                 <img class="w-full h-full object-cover" alt="{{ activity.title }}" src="{{ activity.thumbnail_url }}" loading="lazy">
@@ -58,7 +58,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-[16px] font-extrabold text-on-surface tracking-tight">{{ activity.price|currency }}</span>
-                    <span class="bg-ocean-blue text-on-primary text-[11px] font-semibold px-3 py-1.5 rounded-full">예약</span>
+                    <span class="bg-ocean-blue text-white text-[11px] font-semibold px-3 py-1.5 rounded-sm">예약</span>
                 </div>
             </div>
         </a>
@@ -71,7 +71,7 @@
         <div class="flex flex-wrap gap-2 mt-2 justify-center">
             {% for keyword in popular_keywords %}
             <a href="{% url 'core:search' %}?q={{ keyword }}"
-               class="px-4 py-1.5 rounded-full bg-surface-container-low text-[13px] text-on-surface border border-outline-variant/30 hover:bg-ocean-blue/10 hover:text-ocean-blue hover:border-ocean-blue/30 transition-colors">
+               class="px-4 py-1.5 rounded-sm bg-surface-container-low text-[13px] text-on-surface border border-outline-variant/30 hover:bg-on-surface/5 hover:text-on-surface hover:border-on-surface/30 transition-colors">
                 {{ keyword }}
             </a>
             {% endfor %}

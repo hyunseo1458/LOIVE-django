@@ -12,7 +12,7 @@
             </a>
             <h1 class="text-[17px] font-bold text-on-surface">위시리스트</h1>
             {% if items %}
-            <span class="px-2 py-0.5 rounded-full bg-ocean-blue/10 text-ocean-blue text-[12px] font-bold">{{ items|length }}</span>
+            <span class="px-2 py-0.5 rounded-sm bg-on-surface/10 text-on-surface text-[12px] font-bold">{{ items|length }}</span>
             {% endif %}
         </div>
         <a href="{% url 'core:home' %}" class="flex-shrink-0">
@@ -28,17 +28,17 @@
     <div class="grid grid-cols-2 gap-3">
         {% for wish in items %}
         {% with activity=wish.activity %}
-        <div class="bg-surface rounded-xl overflow-hidden border border-outline-variant/20 shadow-sm relative" id="wish-card-{{ activity.pk }}">
+        <div class="bg-surface rounded-md overflow-hidden border border-outline-variant/20 relative" id="wish-card-{{ activity.pk }}">
             <a href="{% url 'activities:detail' activity.pk %}" class="block">
                 <div class="relative h-[140px] bg-surface-variant overflow-hidden">
                     {% if activity.thumbnail_url %}
                     <img src="{{ activity.thumbnail_url }}" alt="{{ activity.title }}" class="w-full h-full object-cover" loading="lazy">
                     {% endif %}
-                    <div class="absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold">
+                    <div class="absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-2.5 h-2.5 text-sun-yellow">
                             <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                         </svg>
-                        {{ activity.rating_avg|floatformat:1 }}
+                        {{ wish.activity_avg_rating|floatformat:1 }}
                     </div>
                 </div>
                 <div class="p-3">
@@ -69,7 +69,7 @@
     <h2 class="text-[16px] font-bold text-on-surface mb-1">아직 찜한 액티비티가 없어요</h2>
     <p class="text-[14px] text-on-surface-variant mb-6">마음에 드는 액티비티의 하트를 눌러 저장해보세요.</p>
     <a href="{% url 'activities:explore' %}"
-       class="bg-primary text-on-primary text-[14px] font-semibold px-8 py-3 rounded-lg hover:opacity-90 transition-all active:scale-95">
+       class="bg-ocean-blue text-white text-[14px] font-semibold px-8 py-3 rounded-sm hover:opacity-90 transition-all active:scale-95">
         액티비티 탐색하기
     </a>
 </div>

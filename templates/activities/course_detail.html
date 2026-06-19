@@ -27,7 +27,7 @@
         </div>
 
         <div class="absolute bottom-0 left-0 w-full p-5 z-20">
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider bg-ocean-blue text-white mb-2">
+            <span class="inline-block px-2.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-[0.2em] uppercase bg-ocean-blue text-white mb-2">
                 {{ activities|length }}개 체험 코스
             </span>
             <h1 class="text-[22px] font-bold text-white leading-tight mb-1">{{ course.title }}</h1>
@@ -36,7 +36,7 @@
     </section>
 
     {# Content #}
-    <section class="bg-surface rounded-t-2xl -mt-4 relative z-30 px-5 pt-6 pb-8">
+    <section class="bg-surface rounded-t-lg -mt-4 relative z-30 px-5 pt-6 pb-8">
 
         {# Description #}
         <div class="mb-8">
@@ -54,12 +54,12 @@
             <div class="flex flex-col gap-4">
                 {% for activity in activities %}
                 <a href="{% url 'activities:detail' activity.pk %}" class="block">
-                    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm overflow-hidden flex flex-row hover:shadow-md transition-shadow">
+                    <div class="bg-surface-container-lowest rounded-md border border-outline-variant/20 overflow-hidden flex flex-row hover:border-outline-variant/40 transition-colors">
                         <div class="w-[120px] h-[120px] shrink-0 relative overflow-hidden bg-surface-variant">
                             {% if activity.thumbnail_url %}
                             <img class="w-full h-full object-cover" alt="{{ activity.title }}" src="{{ activity.thumbnail_url }}" loading="lazy">
                             {% endif %}
-                            <div class="absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold">
+                            <div class="absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-2.5 h-2.5 text-sun-yellow">
                                     <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                                 </svg>
@@ -69,8 +69,8 @@
                         <div class="flex-1 p-3 flex flex-col justify-between min-w-0">
                             <div>
                                 <div class="flex gap-1.5 mb-1.5">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-ocean-blue/10 text-ocean-blue">{{ activity.category.name }}</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-surface-container-high text-on-surface-variant">{{ activity.region.name }}</span>
+                                    <span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold tracking-[0.15em] uppercase bg-ocean-blue/10 text-ocean-blue">{{ activity.category.name }}</span>
+                                    <span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold tracking-[0.15em] uppercase bg-surface-container-high text-on-surface-variant">{{ activity.region.name }}</span>
                                 </div>
                                 <h3 class="text-[14px] font-semibold text-on-surface line-clamp-2 leading-snug">{{ activity.title }}</h3>
                             </div>
@@ -95,11 +95,11 @@
         </div>
 
         {# Course Price Summary #}
-        <div class="bg-surface-container-low rounded-2xl p-5 border border-outline-variant/20 mb-6">
+        <div class="bg-surface-container-low rounded-md p-5 border border-outline-variant/20 mb-6">
             <h3 class="text-[16px] font-bold text-on-surface mb-3">코스 가격 안내</h3>
             <div class="flex justify-between items-center mb-2">
                 <span class="text-[14px] text-on-surface-variant">코스 패키지 가격</span>
-                <span class="text-[20px] font-extrabold text-primary">{{ course.price|currency }}</span>
+                <span class="text-[20px] font-extrabold text-on-surface">{{ course.price|currency }}</span>
             </div>
             <p class="text-[12px] text-outline">* 코스 내 모든 액티비티가 포함된 패키지 가격입니다.</p>
         </div>

@@ -12,7 +12,7 @@
         </svg>
         <input type="text" name="q" value="{{ current_query }}"
                placeholder="지역, 체험, 키워드 검색"
-               class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-low border border-outline-variant/20 text-[14px] text-on-surface placeholder-outline focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
+               class="w-full h-12 pl-12 pr-4 rounded-md bg-surface-container-low border border-outline-variant/20 text-[14px] text-on-surface placeholder-outline focus:outline-none focus:ring-2 focus:ring-on-surface/10 focus:border-on-surface/40 transition-all">
         {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
     </form>
 </div>
@@ -21,12 +21,12 @@
 <div class="px-4 mb-3 overflow-x-auto no-scrollbar">
     <div class="flex gap-2">
         <a href="{% url 'activities:explore' %}{% if current_query %}?q={{ current_query }}{% endif %}"
-           class="px-3 py-1.5 rounded-full text-[12px] whitespace-nowrap transition-all border {% if not current_category %}bg-on-surface text-on-primary border-on-surface shadow-sm{% else %}bg-surface text-outline border-outline-variant/30 hover:bg-surface-container-low{% endif %}">
+           class="px-3 py-1.5 rounded-sm text-[12px] whitespace-nowrap transition-all border {% if not current_category %}bg-ocean-blue text-white border-ocean-blue{% else %}bg-surface text-outline border-outline-variant/30 hover:bg-surface-container-low{% endif %}">
             전체
         </a>
         {% for cat in categories %}
         <a href="{% url 'activities:explore' %}?category={{ cat.slug }}{% if current_query %}&q={{ current_query }}{% endif %}"
-           class="px-3 py-1.5 rounded-full text-[12px] whitespace-nowrap transition-all border {% if current_category == cat.slug %}bg-on-surface text-on-primary border-on-surface shadow-sm{% else %}bg-surface text-outline border-outline-variant/30 hover:bg-surface-container-low{% endif %}">
+           class="px-3 py-1.5 rounded-sm text-[12px] whitespace-nowrap transition-all border {% if current_category == cat.slug %}bg-ocean-blue text-white border-ocean-blue{% else %}bg-surface text-outline border-outline-variant/30 hover:bg-surface-container-low{% endif %}">
             {{ cat.name }}
         </a>
         {% endfor %}
@@ -39,7 +39,7 @@
     <div class="flex gap-1">
         {% for opt in sort_options %}
         <a href="{% url 'activities:explore' %}?sort={{ opt }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_query %}&q={{ current_query }}{% endif %}"
-           class="px-2.5 py-1 rounded-full text-[11px] transition-all {% if current_sort == opt %}bg-ocean-blue text-on-primary{% else %}text-outline hover:bg-surface-container-low{% endif %}">
+           class="px-2.5 py-1 rounded-sm text-[11px] transition-all {% if current_sort == opt %}bg-ocean-blue text-white{% else %}text-outline hover:bg-surface-container-low{% endif %}">
             {{ opt }}
         </a>
         {% endfor %}
@@ -49,7 +49,7 @@
 <!-- Activity list -->
 <section class="px-4 flex flex-col gap-3 mb-8">
     {% for activity in activities %}
-    <article class="relative bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-row h-32">
+    <article class="relative bg-surface-container-lowest rounded-md border border-outline-variant/15 overflow-hidden flex flex-row h-32">
         <a href="{% url 'activities:detail' activity.pk %}" class="absolute inset-0 z-0"></a>
         <div class="relative w-32 shrink-0 bg-surface-container-high overflow-hidden">
             {% if activity.thumbnail_url %}
@@ -83,7 +83,7 @@
             <div class="flex items-center justify-between">
                 <span class="text-[16px] font-extrabold text-on-surface tracking-tight">{{ activity.price|currency }}</span>
                 <a href="{% url 'bookings:form' activity.pk %}"
-                   class="relative z-10 bg-ocean-blue text-on-primary text-[11px] font-semibold px-3 py-1.5 rounded-full hover:opacity-90 active:scale-95 transition-all">
+                   class="relative z-10 bg-ocean-blue text-white text-[11px] font-semibold px-3 py-1.5 rounded-sm hover:opacity-90 active:scale-95 transition-all">
                     예약
                 </a>
             </div>

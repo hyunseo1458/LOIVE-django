@@ -24,21 +24,21 @@
     <!-- Status Badge -->
     <div class="flex items-center gap-3">
         {% if booking.status == 'confirmed' %}
-        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-primary text-on-primary">예약 확정</span>
+        <span class="px-4 py-1.5 rounded-sm text-[10px] font-bold tracking-[0.2em] uppercase bg-ocean-blue text-white">예약 확정</span>
         {% elif booking.status == 'completed' %}
-        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-success-green text-on-primary">이용 완료</span>
+        <span class="px-4 py-1.5 rounded-sm text-[10px] font-bold tracking-[0.2em] uppercase bg-success-green text-white">이용 완료</span>
         {% elif booking.status == 'cancelled' %}
-        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-error-red text-on-primary">취소</span>
+        <span class="px-4 py-1.5 rounded-sm text-[10px] font-bold tracking-[0.2em] uppercase bg-error-red text-white">취소</span>
         {% elif booking.status == 'refunded' %}
-        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-outline text-on-primary">환불 완료</span>
+        <span class="px-4 py-1.5 rounded-sm text-[10px] font-bold tracking-[0.2em] uppercase bg-outline text-white">환불 완료</span>
         {% else %}
-        <span class="px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wider bg-sun-yellow text-on-surface">결제 대기</span>
+        <span class="px-4 py-1.5 rounded-sm text-[10px] font-bold tracking-[0.2em] uppercase bg-sun-yellow text-on-surface">결제 대기</span>
         {% endif %}
         <span class="text-[12px] text-outline">{{ booking.created_at|date:'Y.m.d H:i' }} 예약</span>
     </div>
 
     <!-- Activity Card -->
-    <section class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,122,255,0.08)] overflow-hidden border border-outline-variant/20">
+    <section class="bg-surface-container-lowest rounded-md overflow-hidden border border-outline-variant/20">
         {% if booking.slot.activity.thumbnail_url %}
         <div class="h-[180px] w-full relative overflow-hidden">
             <img class="w-full h-full object-cover" alt="{{ booking.slot.activity.title }}" src="{{ booking.slot.activity.thumbnail_url }}">
@@ -79,12 +79,12 @@
     </section>
 
     <!-- Payment Details -->
-    <section class="bg-surface-container-low rounded-xl p-6 flex flex-col gap-4">
+    <section class="bg-surface-container-low rounded-md p-6 flex flex-col gap-4">
         <h3 class="text-[20px] font-semibold text-on-surface border-b border-outline-variant/20 pb-3">결제 정보</h3>
         <div class="flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <span class="text-[14px] text-on-surface-variant">결제 금액</span>
-                <span class="text-[22px] font-extrabold text-primary">{{ booking.total_amount|currency }}</span>
+                <span class="text-[22px] font-extrabold text-on-surface">{{ booking.total_amount|currency }}</span>
             </div>
             <div class="flex justify-between items-center">
                 <span class="text-[14px] text-on-surface-variant">단가</span>
@@ -107,22 +107,22 @@
 
     {% if booking.special_request %}
     <!-- Special Request -->
-    <section class="bg-surface-container-low rounded-xl p-6">
-        <h3 class="text-[20px] font-semibold text-on-surface mb-3">특별 요청사항</h3>
+    <section class="bg-surface-container-low rounded-md p-6">
+        <h3 class="text-[20px] font-semibold text-on-surface mb-3 tracking-tight">특별 요청사항</h3>
         <p class="text-[14px] text-on-surface-variant whitespace-pre-line">{{ booking.special_request }}</p>
     </section>
     {% endif %}
 
     <!-- Voucher -->
     {% if booking.status == 'confirmed' %}
-    <section class="border-2 border-ocean-blue/20 border-dashed rounded-xl p-6 flex items-center justify-between bg-surface-bright/50 relative overflow-hidden">
-        <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-background rounded-full border-r-2 border-ocean-blue/20"></div>
-        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-background rounded-full border-l-2 border-ocean-blue/20"></div>
+    <section class="border-2 border-outline-variant/30 border-dashed rounded-md p-6 flex items-center justify-between bg-surface-bright/50 relative overflow-hidden">
+        <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-background rounded-full border-r-2 border-outline-variant/30"></div>
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-background rounded-full border-l-2 border-outline-variant/30"></div>
         <div class="flex flex-col gap-1 pl-2">
             <span class="text-[20px] font-semibold text-on-surface">모바일 바우처</span>
             <span class="text-[14px] text-on-surface-variant">현장에서 QR코드를 제시해주세요</span>
         </div>
-        <div class="w-12 h-12 rounded-full bg-ocean-blue/10 text-ocean-blue flex items-center justify-center mr-2">
+        <div class="w-12 h-12 rounded-sm bg-on-surface/10 text-on-surface flex items-center justify-center mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
@@ -135,17 +135,17 @@
     <section class="flex flex-col gap-3">
         {% if booking.status == 'confirmed' %}
         <a href="{% url 'bookings:cancel' booking.pk %}"
-           class="w-full py-3.5 rounded-lg border border-error-red text-error-red text-[12px] font-semibold tracking-wider hover:bg-error-red/5 transition-all active:scale-95 text-center block">
+           class="w-full py-3.5 rounded-sm border border-error-red text-error-red text-[12px] font-semibold tracking-wider hover:bg-error-red/5 transition-all active:scale-95 text-center block">
             예약 취소
         </a>
         {% elif booking.status == 'completed' %}
         <a href="{% url 'activities:write_review' booking.slot.activity.pk %}"
-           class="w-full py-3.5 bg-ocean-blue text-on-primary text-[12px] font-semibold tracking-wider rounded-lg text-center shadow-md hover:opacity-90 active:scale-95 transition-all">
+           class="w-full py-3.5 bg-ocean-blue text-white text-[12px] font-semibold tracking-wider rounded-sm text-center hover:opacity-90 active:scale-95 transition-all">
             후기 작성
         </a>
         {% endif %}
         <a href="{% url 'activities:detail' booking.slot.activity.pk %}"
-           class="w-full py-3.5 bg-ocean-blue/10 text-ocean-blue text-[12px] font-semibold tracking-wider rounded-lg text-center active:scale-95 transition-all">
+           class="w-full py-3.5 bg-surface-container-low text-on-surface text-[12px] font-semibold tracking-wider rounded-sm text-center border border-outline-variant/20 active:scale-95 transition-all">
             액티비티 다시 보기
         </a>
     </section>

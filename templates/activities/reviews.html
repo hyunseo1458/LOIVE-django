@@ -26,7 +26,7 @@
 
         <!-- Activity mini card -->
         <div class="flex items-center gap-3 mb-6">
-            <div class="w-12 h-12 rounded-xl overflow-hidden bg-surface-container-high shrink-0">
+            <div class="w-12 h-12 rounded-md overflow-hidden bg-surface-container-high shrink-0">
                 {% if activity.thumbnail_url %}
                 <img src="{{ activity.thumbnail_url }}" alt="" class="w-full h-full object-cover">
                 {% endif %}
@@ -38,10 +38,10 @@
         </div>
 
         <!-- Rating Summary -->
-        <div class="bg-ocean-blue/5 rounded-2xl p-5 mb-6 border border-ocean-blue/10">
+        <div class="bg-surface-container-low rounded-md p-5 mb-6 border border-outline-variant/20">
             <div class="flex items-center gap-6">
                 <div class="text-center shrink-0">
-                    <p class="text-[42px] font-extrabold text-ocean-blue leading-none">{{ review_avg|floatformat:1 }}</p>
+                    <p class="text-[42px] font-extrabold text-on-surface leading-none tracking-tight">{{ review_avg|floatformat:1 }}</p>
                     <div class="flex gap-0.5 my-1.5 justify-center">
                         {% for i in "12345" %}
                         <svg class="w-4 h-4 {% if forloop.counter <= review_avg %}text-sun-yellow{% else %}text-outline-variant/30{% endif %} fill-current" viewBox="0 0 20 20">
@@ -56,7 +56,7 @@
                     <div class="flex items-center gap-2">
                         <span class="text-[11px] font-semibold text-on-surface-variant w-3 text-right">{{ star }}</span>
                         <div class="flex-1 h-2 bg-outline-variant/20 rounded-full overflow-hidden">
-                            <div class="h-full bg-ocean-blue rounded-full" style="width:{% for k,v in star_dist.items %}{% if k|stringformat:"d" == star %}{{ v.pct }}{% endif %}{% endfor %}%"></div>
+                            <div class="h-full bg-on-surface rounded-full" style="width:{% for k,v in star_dist.items %}{% if k|stringformat:"d" == star %}{{ v.pct }}{% endif %}{% endfor %}%"></div>
                         </div>
                     </div>
                     {% endfor %}
@@ -68,7 +68,7 @@
         <div class="flex gap-2 mb-5 overflow-x-auto no-scrollbar">
             {% for label in "전체,사진 리뷰,높은 평점,낮은 평점"|split:"," %}
             <button type="button" data-filter="{{ label }}"
-                    class="review-filter px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors
+                    class="review-filter px-4 py-2 rounded-sm text-[12px] font-semibold whitespace-nowrap transition-colors
                     {% if forloop.first %}bg-ocean-blue text-white{% else %}bg-surface-container-low text-on-surface-variant border border-outline-variant/20{% endif %}">
                 {{ label }}
             </button>
@@ -78,7 +78,7 @@
         <!-- Review list -->
         <div class="flex flex-col gap-4" id="review-list">
             {% for review in reviews %}
-            <div class="review-card bg-surface rounded-2xl p-4 border border-outline-variant/15 shadow-sm" data-rating="{{ review.rating }}">
+            <div class="review-card bg-surface rounded-md p-4 border border-outline-variant/15" data-rating="{{ review.rating }}">
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2.5">
@@ -127,7 +127,7 @@
             var f = btn.dataset.filter;
             filters.forEach(function(b) {
                 var on = b === btn;
-                b.className = 'review-filter px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors ' +
+                b.className = 'review-filter px-4 py-2 rounded-sm text-[12px] font-semibold whitespace-nowrap transition-colors ' +
                     (on ? 'bg-ocean-blue text-white' : 'bg-surface-container-low text-on-surface-variant border border-outline-variant/20');
             });
             cards.forEach(function(card) {

@@ -12,7 +12,7 @@
             </a>
             <h1 class="text-[17px] font-bold text-on-surface">내가 쓴 리뷰</h1>
             {% if reviews %}
-            <span class="px-2 py-0.5 rounded-full bg-ocean-blue/10 text-ocean-blue text-[12px] font-bold">{{ reviews|length }}</span>
+            <span class="px-2 py-0.5 rounded-sm bg-on-surface/10 text-on-surface text-[12px] font-bold">{{ reviews|length }}</span>
             {% endif %}
         </div>
         <a href="{% url 'core:home' %}" class="flex-shrink-0">
@@ -27,10 +27,10 @@
     {% if reviews %}
     <div class="flex flex-col gap-4">
         {% for review in reviews %}
-        <a href="{% url 'activities:detail' review.activity.pk %}" class="block bg-surface rounded-2xl border border-outline-variant/12 shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+        <a href="{% url 'activities:detail' review.activity.pk %}" class="block bg-surface rounded-md border border-outline-variant/12 overflow-hidden">
             <div class="flex gap-3 p-4">
                 {% if review.activity.thumbnail_url %}
-                <div class="w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                <div class="w-20 h-20 rounded-md overflow-hidden shrink-0">
                     <img src="{{ review.activity.thumbnail_url }}" alt="" class="w-full h-full object-cover" loading="lazy">
                 </div>
                 {% endif %}
@@ -65,7 +65,7 @@
         </svg>
         <p class="text-[16px] font-bold text-on-surface mb-1">작성한 리뷰가 없습니다</p>
         <p class="text-[13px] text-outline mb-6">액티비티를 이용한 후 리뷰를 남겨보세요!</p>
-        <a href="{% url 'activities:explore' %}" class="inline-block px-8 py-3 bg-ocean-blue text-white text-[14px] font-semibold rounded-xl shadow-sm">탐색하기</a>
+        <a href="{% url 'activities:explore' %}" class="inline-block px-8 py-3 bg-ocean-blue text-white text-[14px] font-semibold rounded-sm">탐색하기</a>
     </div>
     {% endif %}
 </div>

@@ -1,6 +1,7 @@
 from urllib.parse import unquote
 
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db import transaction
 from django.db.models import Avg, Count, Q
 from .models import Activity, Category, Course, Region, Review
 
@@ -115,13 +116,18 @@ def write_review(request, pk):
         return redirect("activities:reviews", pk=pk)
 
     if request.method == "POST":
-        rating = int(request.POST.get("rating", 5))
+        try:
+            rating = int(request.POST.get("rating", 5))
+        except (ValueError, TypeError):
+            rating = 5
+        rating = max(1, min(5, rating))
         content = request.POST.get("content", "")
         if content.strip():
-            Review.objects.update_or_create(
-                activity=activity, user=request.user,
-                defaults={"rating": rating, "content": content},
-            )
+            with transaction.atomic():
+                Review.objects.update_or_create(
+                    activity=activity, user=request.user,
+                    defaults={"rating": rating, "content": content},
+                )
             return redirect("activities:reviews", pk=pk)
 
     return render(request, "activities/write_review.html", {

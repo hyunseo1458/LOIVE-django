@@ -31,15 +31,15 @@
     <div class="px-5 max-w-3xl mx-auto flex flex-col gap-8 pt-6">
 
         <!-- ═══════ ProductSummaryCard ═══════ -->
-        <section class="bg-surface rounded-2xl p-4 border border-outline-variant/20 shadow-sm">
+        <section class="bg-surface rounded-md p-4 border border-outline-variant/20">
             <div class="flex gap-4 items-start">
-                <div class="w-20 h-20 relative rounded-xl overflow-hidden shrink-0 bg-surface-container">
+                <div class="w-20 h-20 relative rounded-md overflow-hidden shrink-0 bg-surface-container">
                     {% if activity.thumbnail_url %}
                     <img class="w-full h-full object-cover" alt="{{ activity.title }}" src="{{ activity.thumbnail_url }}">
                     {% endif %}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <span class="inline-block px-2 py-0.5 bg-ocean-blue/10 text-ocean-blue text-[11px] font-semibold rounded mb-1.5">
+                    <span class="inline-block px-2 py-0.5 bg-ocean-blue/10 text-ocean-blue text-[10px] font-semibold tracking-[0.2em] uppercase rounded-sm mb-1.5">
                         {{ activity.category.name }}
                     </span>
                     <h2 class="text-[15px] font-bold text-on-surface leading-snug mb-1.5">{{ activity.title }}</h2>
@@ -91,7 +91,7 @@
                     <div class="py-2"></div>
                     {% elif cell.available %}
                     <button type="button" data-date="{{ cell.iso }}"
-                            class="cal-day py-2 mx-auto w-10 h-10 rounded-full text-[14px] font-medium text-on-surface hover:bg-ocean-blue/10 transition-colors">
+                            class="cal-day py-2 mx-auto w-10 h-10 rounded-full text-[14px] font-medium text-on-surface hover:bg-on-surface/10 transition-colors">
                         {{ cell.day }}
                     </button>
                     {% else %}
@@ -114,8 +114,8 @@
                     <button type="button"
                             data-slot-id="{{ slot.pk }}"
                             data-remaining="{{ slot.remaining }}"
-                            class="time-btn py-2.5 rounded-xl text-center border transition-colors
-                                   {% if slot.remaining == 0 %}text-outline/40 border-outline-variant/20 cursor-not-allowed line-through{% else %}text-on-surface border-outline-variant/30 hover:border-ocean-blue hover:bg-ocean-blue/5{% endif %}"
+                            class="time-btn py-2.5 rounded-md text-center border transition-colors
+                                   {% if slot.remaining == 0 %}text-outline/40 border-outline-variant/20 cursor-not-allowed line-through{% else %}text-on-surface border-outline-variant/30 hover:border-on-surface/40 hover:bg-on-surface/5{% endif %}"
                             {% if slot.remaining == 0 %}disabled{% endif %}>
                         <div class="font-semibold text-[14px]">{{ slot.start_time|time:'H:i' }}</div>
                         {% if slot.remaining == 0 %}
@@ -143,13 +143,13 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <button type="button" id="adult-minus"
-                                class="w-9 h-9 rounded-full border border-outline-variant/50 flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors disabled:opacity-30"
+                                class="w-9 h-9 rounded-sm border border-outline-variant/50 flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors disabled:opacity-30"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
                         </button>
                         <span id="adult-display" class="text-[18px] font-bold w-5 text-center text-on-surface">1</span>
                         <button type="button" id="adult-plus"
-                                class="w-9 h-9 rounded-full border border-ocean-blue bg-ocean-blue text-white flex items-center justify-center hover:bg-ocean-blue/90 transition-colors">
+                                class="w-9 h-9 rounded-sm border border-ocean-blue bg-ocean-blue text-white flex items-center justify-center hover:bg-ocean-blue/90 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         </button>
                     </div>
@@ -166,13 +166,13 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <button type="button" id="child-minus"
-                                class="w-9 h-9 rounded-full border border-outline-variant/50 flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors disabled:opacity-30"
+                                class="w-9 h-9 rounded-sm border border-outline-variant/50 flex items-center justify-center text-outline hover:bg-surface-container-low transition-colors disabled:opacity-30"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
                         </button>
                         <span id="child-display" class="text-[18px] font-bold w-5 text-center text-on-surface">0</span>
                         <button type="button" id="child-plus"
-                                class="w-9 h-9 rounded-full border border-ocean-blue bg-ocean-blue text-white flex items-center justify-center hover:bg-ocean-blue/90 transition-colors">
+                                class="w-9 h-9 rounded-sm border border-ocean-blue bg-ocean-blue text-white flex items-center justify-center hover:bg-ocean-blue/90 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         </button>
                     </div>
@@ -186,7 +186,7 @@
             <p class="text-[13px] text-outline mb-3">렌탈 장비 사이즈나 알레르기 등 요청사항을 적어주세요.</p>
             <textarea name="special_request" rows="3"
                       placeholder="예: 슈트 M 사이즈 필요, 채식 메뉴 희망 등..."
-                      class="w-full border border-outline-variant/30 rounded-xl p-4 text-[14px] text-on-surface bg-surface resize-none focus:outline-none focus:border-ocean-blue transition-colors placeholder:text-outline/40"></textarea>
+                      class="w-full border border-outline-variant/30 rounded-md p-4 text-[14px] text-on-surface bg-surface resize-none focus:outline-none focus:border-on-surface/40 transition-colors placeholder:text-outline/40"></textarea>
         </section>
 
         <!-- ═══════ PaymentMethodSelector ═══════ -->
@@ -196,10 +196,10 @@
                 <!-- 신용/체크카드 -->
                 <label class="block cursor-pointer group">
                     <input type="radio" name="pay_method" value="card" class="sr-only peer" checked>
-                    <div class="pay-option border rounded-xl px-4 py-3.5 flex items-center gap-3 transition-colors
+                    <div class="pay-option border rounded-md px-4 py-3.5 flex items-center gap-3 transition-colors
                                 peer-checked:border-ocean-blue peer-checked:bg-ocean-blue/5 border-outline-variant/30">
-                        <div class="pay-radio w-5 h-5 rounded-full border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
-                        <div class="w-8 h-8 bg-surface-container-low rounded-lg flex items-center justify-center shrink-0">
+                        <div class="pay-radio w-5 h-5 rounded-sm border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
+                        <div class="w-8 h-8 bg-surface-container-low rounded-sm flex items-center justify-center shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-on-surface-variant">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
                             </svg>
@@ -210,10 +210,10 @@
                 <!-- 카카오페이 -->
                 <label class="block cursor-pointer group">
                     <input type="radio" name="pay_method" value="kakaopay" class="sr-only peer">
-                    <div class="pay-option border rounded-xl px-4 py-3.5 flex items-center gap-3 transition-colors
+                    <div class="pay-option border rounded-md px-4 py-3.5 flex items-center gap-3 transition-colors
                                 peer-checked:border-ocean-blue peer-checked:bg-ocean-blue/5 border-outline-variant/30">
-                        <div class="pay-radio w-5 h-5 rounded-full border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
-                        <div class="w-8 h-8 bg-[#FEE500] rounded-lg flex items-center justify-center shrink-0">
+                        <div class="pay-radio w-5 h-5 rounded-sm border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
+                        <div class="w-8 h-8 bg-[#FEE500] rounded-sm flex items-center justify-center shrink-0">
                             <span class="font-extrabold text-[#3C1E1E] text-[13px]">K</span>
                         </div>
                         <span class="text-[15px] text-on-surface font-medium">카카오페이</span>
@@ -222,10 +222,10 @@
                 <!-- 토스페이 -->
                 <label class="block cursor-pointer group">
                     <input type="radio" name="pay_method" value="toss" class="sr-only peer">
-                    <div class="pay-option border rounded-xl px-4 py-3.5 flex items-center gap-3 transition-colors
+                    <div class="pay-option border rounded-md px-4 py-3.5 flex items-center gap-3 transition-colors
                                 peer-checked:border-ocean-blue peer-checked:bg-ocean-blue/5 border-outline-variant/30">
-                        <div class="pay-radio w-5 h-5 rounded-full border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
-                        <div class="w-8 h-8 bg-[#0050FF] rounded-lg flex items-center justify-center shrink-0">
+                        <div class="pay-radio w-5 h-5 rounded-sm border-2 border-outline-variant/50 flex items-center justify-center shrink-0 transition-colors"></div>
+                        <div class="w-8 h-8 bg-[#0050FF] rounded-sm flex items-center justify-center shrink-0">
                             <span class="font-extrabold text-white text-[13px]">T</span>
                         </div>
                         <span class="text-[15px] text-on-surface font-medium">토스페이</span>
@@ -258,7 +258,7 @@
             <p class="text-[11px] text-outline" id="guest-summary">성인 1, 소인 0</p>
         </div>
         <button type="submit" form="booking-form" id="submit-btn" disabled
-                class="bg-ocean-blue text-white text-[15px] font-bold py-3 px-8 rounded-xl hover:bg-ocean-blue/90 active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                class="bg-ocean-blue text-white text-[15px] font-bold py-3 px-8 rounded-sm hover:bg-ocean-blue/90 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed">
             결제하기
         </button>
     </div>
@@ -285,7 +285,7 @@
                 opt.classList.remove('border-outline-variant/30');
                 dot.classList.add('border-ocean-blue', 'bg-ocean-blue');
                 dot.classList.remove('border-outline-variant/50');
-                dot.innerHTML = '<span class="w-2 h-2 rounded-full bg-white"></span>';
+                dot.innerHTML = '<span class="w-2 h-2 rounded-sm bg-white"></span>';
             } else {
                 opt.classList.remove('border-ocean-blue', 'bg-ocean-blue/5');
                 opt.classList.add('border-outline-variant/30');

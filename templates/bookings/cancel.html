@@ -23,7 +23,7 @@
 <div class="px-5 pt-4 pb-8 max-w-lg mx-auto flex flex-col gap-6">
 
     <!-- Warning Banner -->
-    <div class="bg-error-red/5 border border-error-red/20 rounded-xl p-4 flex items-start gap-3">
+    <div class="bg-error-red/5 border border-error-red/20 rounded-md p-4 flex items-start gap-3">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-error-red shrink-0 mt-0.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
         </svg>
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Booking Summary -->
-    <section class="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <section class="bg-surface-container-lowest rounded-md border border-outline-variant/20 overflow-hidden">
         {% if booking.slot.activity.thumbnail_url %}
         <div class="h-[140px] w-full relative overflow-hidden">
             <img class="w-full h-full object-cover" alt="{{ booking.slot.activity.title }}" src="{{ booking.slot.activity.thumbnail_url }}">
@@ -65,7 +65,7 @@
     </section>
 
     <!-- Cancellation Policy -->
-    <section class="bg-surface-container-low rounded-xl p-5">
+    <section class="bg-surface-container-low rounded-md p-5">
         <h3 class="text-[16px] font-bold text-on-surface mb-3">취소/환불 규정</h3>
         <ul class="flex flex-col gap-2.5">
             <li class="flex items-start gap-2">
@@ -95,7 +95,7 @@
         <div>
             <label for="reason" class="block text-[13px] font-semibold text-on-surface mb-2">취소 사유 선택</label>
             <select name="reason" id="reason"
-                    class="w-full px-4 py-3 rounded-xl border border-outline-variant/30 bg-surface text-[14px] text-on-surface focus:border-ocean-blue focus:ring-1 focus:ring-ocean-blue/20 outline-none transition-all">
+                    class="w-full px-4 py-3 rounded-md border border-outline-variant/30 bg-surface text-[14px] text-on-surface focus:border-on-surface/40 focus:ring-1 focus:ring-on-surface/10 outline-none transition-all">
                 <option value="">취소 사유를 선택해주세요</option>
                 <option value="schedule">일정 변경</option>
                 <option value="weather">날씨/기상 문제</option>
@@ -109,11 +109,11 @@
         <div class="flex flex-col gap-3 mt-2">
             <button type="submit"
                     onclick="return confirm('정말로 예약을 취소하시겠습니까?\n취소 후에는 복구가 어렵습니다.')"
-                    class="w-full py-3.5 bg-error-red text-white text-[14px] font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all shadow-sm">
+                    class="w-full py-3.5 bg-error-red text-white text-[14px] font-bold rounded-sm hover:opacity-90 active:scale-[0.98] transition-all">
                 예약 취소하기
             </button>
             <a href="{% url 'bookings:detail' booking.pk %}"
-               class="w-full py-3.5 bg-surface-container-high text-on-surface text-[14px] font-semibold rounded-xl text-center hover:bg-surface-container-highest transition-all active:scale-[0.98]">
+               class="w-full py-3.5 bg-surface-container-high text-on-surface text-[14px] font-semibold rounded-sm text-center hover:bg-surface-container-highest transition-all active:scale-[0.98]">
                 돌아가기
             </a>
         </div>
