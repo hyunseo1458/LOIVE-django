@@ -3,16 +3,12 @@
 
 {% block title %}로그인{% endblock %}
 
-{% block extra_head %}
-<style>
-header { display: none !important; }
-</style>
-{% endblock %}
+{% block navbar %}{% endblock %}
 
 {% block bottom_nav %}{% endblock %}
 
 {% block content %}
-<div class="min-h-[80vh] flex flex-col items-center justify-center px-5" style="padding-top: env(safe-area-inset-top, 0px);">
+<div class="min-h-[80vh] flex flex-col items-center justify-center px-5 pt-[60px]" style="padding-top: max(60px, calc(env(safe-area-inset-top, 0px) + 48px));">
     <div class="w-full max-w-sm flex flex-col items-center">
         <span class="text-ocean-blue text-[40px] font-extrabold tracking-tight mb-2">로이브</span>
         <p class="text-[16px] text-on-surface-variant text-center mb-8">

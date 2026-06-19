@@ -3,21 +3,23 @@
 
 {% block title %}예약 상세{% endblock %}
 
-{% block extra_head %}
-<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% block navbar %}
+<header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <div class="flex items-center justify-between px-5 h-12">
+        <div class="flex items-center gap-2">
+            <a href="{% url 'bookings:history' %}" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+            </a>
+            <h1 class="text-[17px] font-bold text-on-surface">예약 상세</h1>
+        </div>
+        <a href="{% url 'core:home' %}" class="flex-shrink-0">
+            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
+        </a>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
-<!-- Sub Page Header -->
-<div class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm h-16 flex items-center px-5">
-    <a href="{% url 'bookings:history' %}" class="text-on-surface hover:text-ocean-blue active:scale-95 transition w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-surface-container-high">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-    </a>
-    <h1 class="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold text-on-surface">예약 상세</h1>
-</div>
-
 <div class="px-5 pt-4 pb-8 max-w-lg mx-auto flex flex-col gap-6">
     <!-- Status Badge -->
     <div class="flex items-center gap-3">

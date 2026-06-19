@@ -2,8 +2,20 @@
 
 {% block title %}로그아웃{% endblock %}
 
-{% block extra_head %}
-<style>header.fixed{display:none!important}main{padding-top:0!important}</style>
+{% block navbar %}
+<header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <div class="flex items-center justify-between px-5 h-12">
+        <div class="flex items-center gap-2">
+            <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+            </a>
+            <h1 class="text-[17px] font-bold text-on-surface">로그아웃</h1>
+        </div>
+        <a href="{% url 'core:home' %}" class="flex-shrink-0">
+            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
+        </a>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}

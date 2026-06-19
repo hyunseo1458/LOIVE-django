@@ -1,11 +1,15 @@
 from urllib.parse import unquote
 
+import json
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db.models import Q, Avg, Count
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 from activities.models import Activity, Category, Course, Region, Review
+from core.models import Wishlist
 
 BANNER_TAGS = ["인기", "추천", "특가", "HOT", "NEW"]
 
@@ -83,8 +87,12 @@ def search(request):
     })
 
 
+@login_required
 def wishlist(request):
-    return render(request, "core/wishlist.html")
+    items = Wishlist.objects.filter(
+        user=request.user
+    ).select_related("activity__category", "activity__region").order_by("-created_at")
+    return render(request, "core/wishlist.html", {"items": items})
 
 
 def profile(request):
@@ -94,39 +102,43 @@ def profile(request):
     from bookings.models import Booking
     booking_count = Booking.objects.filter(user=request.user).count()
     review_count = Review.objects.filter(user=request.user).count()
+    wishlist_count = Wishlist.objects.filter(user=request.user).count()
 
     return render(request, "core/profile.html", {
         "booking_count": booking_count,
         "review_count": review_count,
+        "wishlist_count": wishlist_count,
     })
 
 
-def wishlist_api(request):
-    ids_param = request.GET.get("ids", "")
-    if not ids_param.strip():
-        return JsonResponse([], safe=False)
-
+@login_required
+@require_POST
+def wishlist_toggle(request):
     try:
-        ids = [int(x.strip()) for x in ids_param.split(",") if x.strip()]
-    except (ValueError, TypeError):
-        return JsonResponse([], safe=False)
+        data = json.loads(request.body)
+        activity_id = int(data.get("activity_id", 0))
+    except (json.JSONDecodeError, ValueError, TypeError):
+        return JsonResponse({"error": "invalid"}, status=400)
 
-    activities = Activity.objects.filter(
-        pk__in=ids, status=Activity.Status.APPROVED
-    ).select_related("category", "region")
+    activity = Activity.objects.filter(pk=activity_id).first()
+    if not activity:
+        return JsonResponse({"error": "not found"}, status=404)
 
-    data = []
-    for a in activities:
-        data.append({
-            "id": a.pk,
-            "title": a.title,
-            "price": a.price,
-            "thumbnail_url": a.thumbnail_url or "",
-            "region": a.region.name if a.region else "",
-            "category": a.category.name if a.category else "",
-            "rating_avg": float(a.rating_avg),
-        })
-    return JsonResponse(data, safe=False)
+    obj, created = Wishlist.objects.get_or_create(
+        user=request.user, activity=activity
+    )
+    if not created:
+        obj.delete()
+
+    return JsonResponse({"wished": created, "activity_id": activity_id})
+
+
+@login_required
+def wishlist_ids(request):
+    ids = list(
+        Wishlist.objects.filter(user=request.user).values_list("activity_id", flat=True)
+    )
+    return JsonResponse({"ids": ids})
 
 
 @login_required
@@ -151,6 +163,17 @@ def profile_edit(request):
         return redirect("core:profile")
 
     return render(request, "core/profile_edit.html")
+
+
+@login_required
+def my_reviews(request):
+    reviews = Review.objects.filter(
+        user=request.user
+    ).select_related("activity__category", "activity__region").order_by("-created_at")
+
+    return render(request, "core/my_reviews.html", {
+        "reviews": reviews,
+    })
 
 
 def notifications(request):

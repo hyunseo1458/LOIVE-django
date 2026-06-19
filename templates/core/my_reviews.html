@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}내가 쓴 리뷰{% endblock %}
+
+{% block navbar %}
+<header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <div class="flex items-center justify-between px-5 h-12">
+        <div class="flex items-center gap-2">
+            <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+            </a>
+            <h1 class="text-[17px] font-bold text-on-surface">내가 쓴 리뷰</h1>
+            {% if reviews %}
+            <span class="px-2 py-0.5 rounded-full bg-ocean-blue/10 text-ocean-blue text-[12px] font-bold">{{ reviews|length }}</span>
+            {% endif %}
+        </div>
+        <a href="{% url 'core:home' %}" class="flex-shrink-0">
+            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
+        </a>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="px-5 pt-4 pb-24">
+    {% if reviews %}
+    <div class="flex flex-col gap-4">
+        {% for review in reviews %}
+        <a href="{% url 'activities:detail' review.activity.pk %}" class="block bg-surface rounded-2xl border border-outline-variant/12 shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div class="flex gap-3 p-4">
+                {% if review.activity.thumbnail_url %}
+                <div class="w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                    <img src="{{ review.activity.thumbnail_url }}" alt="" class="w-full h-full object-cover" loading="lazy">
+                </div>
+                {% endif %}
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-ocean-blue/10 text-ocean-blue">{{ review.activity.category.name }}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-surface-container-high text-on-surface-variant">{{ review.activity.region.name }}</span>
+                    </div>
+                    <p class="text-[15px] font-bold text-on-surface line-clamp-1 mb-1">{{ review.activity.title }}</p>
+                    <div class="flex items-center gap-0.5">
+                        {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                        <svg class="w-3.5 h-3.5 text-sun-yellow fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        {% else %}
+                        <svg class="w-3.5 h-3.5 text-outline-variant/40 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        {% endif %}
+                        {% endfor %}
+                        <span class="text-[11px] text-outline ml-1">{{ review.created_at|date:"Y.m.d" }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="px-4 pb-4">
+                <p class="text-[14px] text-on-surface-variant leading-relaxed line-clamp-2">{{ review.content }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-24">
+        <svg class="w-16 h-16 mx-auto mb-4 text-outline-variant/40 fill-current" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        </svg>
+        <p class="text-[16px] font-bold text-on-surface mb-1">작성한 리뷰가 없습니다</p>
+        <p class="text-[13px] text-outline mb-6">액티비티를 이용한 후 리뷰를 남겨보세요!</p>
+        <a href="{% url 'activities:explore' %}" class="inline-block px-8 py-3 bg-ocean-blue text-white text-[14px] font-semibold rounded-xl shadow-sm">탐색하기</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

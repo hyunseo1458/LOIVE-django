@@ -64,7 +64,7 @@
         .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
         .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 
-        /* Mobile: safe-area padding on html */
+        /* Mobile: real device — use safe-area for notch */
         @media (max-width: 767px) {
             html { padding: 0; }
             .phone-frame-decoration { display: none !important; }
@@ -72,23 +72,27 @@
             .phone-wrapper { width: 100% !important; height: 100% !important; margin: 0 !important; flex-shrink: unset !important; }
             .desktop-empty { display: none !important; }
             body { background: white !important; }
+            .app-header { padding-top: calc(env(safe-area-inset-top, 0px) + 12px) !important; }
         }
+        /* Desktop: phone frame — push below fake notch */
         @media (min-width: 768px) {
             html { padding: 0; }
+            .app-header { padding-top: 44px !important; }
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-screen bg-gray-100 font-sans flex">
+    {% csrf_token %}
     <!-- Phone wrapper -->
     <div class="phone-wrapper relative flex-shrink-0 md:ml-8 md:my-8" style="width: 390px; height: 844px;">
         <div class="phone-body w-full h-full md:rounded-[44px] md:border-[3px] md:border-gray-800 bg-surface overflow-hidden md:shadow-2xl flex flex-col relative">
             <!-- Notch (desktop only) -->
             <div class="phone-frame-decoration absolute top-0 left-1/2 -translate-x-1/2 z-[999] w-[126px] h-[34px] bg-gray-800 rounded-b-2xl"></div>
 
-            <div class="flex-1 overflow-y-auto no-scrollbar relative">
-                {% include "components/navbar.html" %}
+            {% block navbar %}{% include "components/navbar.html" %}{% endblock %}
 
+            <div class="flex-1 overflow-y-auto no-scrollbar relative">
                 <main class="pb-4 w-full">
                     {% if messages %}
                     <div class="px-4 mt-4 space-y-2">
@@ -105,9 +109,9 @@
 
                     {% block content %}{% endblock %}
                 </main>
-
-                {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
             </div>
+
+            {% block bottom_nav %}{% include "components/bottom_nav.html" %}{% endblock %}
 
             <!-- Home Indicator (desktop only) -->
             <div class="phone-frame-decoration absolute bottom-2 left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-gray-800 rounded-full z-[999]"></div>
@@ -117,6 +121,73 @@
     <!-- Right area (desktop only) -->
     <div class="desktop-empty flex-1"></div>
 
+    <script>
+    window.LOIVE = window.LOIVE || {};
+    LOIVE.csrfToken = (function() {
+        var c = document.cookie.match('(^|;)\\s*csrftoken=([^;]*)');
+        if (c) return decodeURIComponent(c[2]);
+        var el = document.querySelector('[name=csrfmiddlewaretoken]');
+        return el ? el.value : '';
+    })();
+    LOIVE.isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    LOIVE.wishedIds = new Set();
+
+    LOIVE.initWishButtons = function() {
+        if (!LOIVE.isAuthenticated) return;
+        fetch('/api/wishlist/ids/').then(r => r.json()).then(data => {
+            LOIVE.wishedIds = new Set(data.ids || []);
+            LOIVE.paintAllWishButtons();
+        });
+    };
+    LOIVE.paintAllWishButtons = function() {
+        document.querySelectorAll('.wish-btn').forEach(btn => {
+            var id = parseInt(btn.dataset.wishId);
+            var svg = btn.querySelector('svg');
+            var defaultColor = btn.dataset.wishDefault || 'text-white';
+            if (LOIVE.wishedIds.has(id)) {
+                svg.setAttribute('fill', 'currentColor');
+                btn.classList.add('text-error-red');
+                btn.classList.remove(defaultColor);
+            } else {
+                svg.setAttribute('fill', 'none');
+                btn.classList.remove('text-error-red');
+                btn.classList.add(defaultColor);
+            }
+        });
+    };
+    LOIVE.toggleWish = function(id, callback) {
+        if (!LOIVE.isAuthenticated) { window.location.href = '/accounts/login/'; return; }
+        fetch('/api/wishlist/toggle/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': LOIVE.csrfToken},
+            body: JSON.stringify({activity_id: id})
+        }).then(r => r.json()).then(data => {
+            if (data.wished) { LOIVE.wishedIds.add(id); } else { LOIVE.wishedIds.delete(id); }
+            LOIVE.paintAllWishButtons();
+            if (callback) callback(data.wished);
+        });
+    };
+    LOIVE.showToast = function(msg) {
+        var t = document.createElement('div');
+        t.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] bg-inverse-surface text-inverse-on-surface px-5 py-3 rounded-xl text-[14px] font-medium shadow-lg';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; }, 1700);
+        setTimeout(function() { t.remove(); }, 2000);
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+        LOIVE.initWishButtons();
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.wish-btn');
+            if (!btn) return;
+            e.preventDefault(); e.stopPropagation();
+            var id = parseInt(btn.dataset.wishId);
+            LOIVE.toggleWish(id, function(wished) {
+                LOIVE.showToast(wished ? '찜 저장되었습니다' : '찜 목록에서 제거되었습니다');
+            });
+        });
+    });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

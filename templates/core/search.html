@@ -3,16 +3,11 @@
 
 {% block title %}검색{% endblock %}
 
-{% block extra_head %}
-<style>main { padding-top: 0 !important; }</style>
-{% endblock %}
-
-{% block content %}
-<!-- Search Header -->
-<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm">
-    <form method="get" action="{% url 'core:search' %}" class="flex items-center gap-2 px-4 h-16 max-w-screen-lg mx-auto">
+{% block navbar %}
+<header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <form method="get" action="{% url 'core:search' %}" class="flex items-center gap-2 px-4 h-12">
         <a href="{% url 'core:home' %}" class="text-on-surface flex items-center justify-center w-10 h-10 -ml-2 shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
         </a>
         <div class="relative flex-1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-outline absolute left-3 top-1/2 -translate-y-1/2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
@@ -27,8 +22,10 @@
         </div>
     </form>
 </header>
+{% endblock %}
 
-<div class="pt-20 px-4 max-w-screen-lg mx-auto">
+{% block content %}
+<div class="px-4 max-w-screen-lg mx-auto">
     {% if not query %}
     <div class="py-6 flex flex-col gap-3">
         <p class="text-[13px] font-semibold text-outline">인기 검색어</p>

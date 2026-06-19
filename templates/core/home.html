@@ -109,25 +109,29 @@
 
 <!-- Themed Courses -->
 {% if courses %}
-<section class="px-5 mb-8">
-    <h3 class="text-[18px] font-bold text-on-surface mb-3">테마별 코스</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<section class="mb-8">
+    <div class="mx-5 border-t border-outline-variant/20 mb-6"></div>
+    <div class="px-5 mb-4">
+        <h3 class="text-[18px] font-bold text-on-surface">테마별 코스</h3>
+    </div>
+    <div class="flex flex-col gap-4 px-5">
         {% for course in courses %}
-        <a class="block hover:opacity-95 transition-opacity" href="{% url 'activities:course_detail' course.pk %}">
-            <div class="bg-surface rounded-xl border border-[#E0E7FF] shadow-[0px_2px_8px_rgba(0,122,255,0.05)] overflow-hidden flex flex-row hover:shadow-[0px_4px_12px_rgba(0,122,255,0.12)] transition-shadow duration-300">
-                <div class="w-2/5 min-h-[140px] relative overflow-hidden bg-surface-container-high">
+        <a class="block" href="{% url 'activities:course_detail' course.pk %}">
+            <div class="bg-surface rounded-2xl border border-outline-variant/15 shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+                <div class="w-full h-[160px] relative overflow-hidden bg-surface-container-high">
                     {% with first_activity=course.activities.first %}
                     {% if first_activity and first_activity.thumbnail_url %}
-                    <img class="w-full h-full object-cover absolute inset-0" alt="{{ course.title }}" src="{{ first_activity.thumbnail_url }}" loading="lazy">
+                    <img class="w-full h-full object-cover" alt="{{ course.title }}" src="{{ first_activity.thumbnail_url }}" loading="lazy">
                     {% endif %}
                     {% endwith %}
-                </div>
-                <div class="p-4 flex-grow flex flex-col justify-center bg-surface">
-                    <span class="text-[12px] font-semibold tracking-wider mb-1 uppercase w-max px-2 py-0.5 rounded-sm text-ocean-blue bg-ocean-blue/10">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    <span class="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-ocean-blue text-white shadow-sm">
                         {{ course.activities.count }}개 체험 코스
                     </span>
-                    <h4 class="text-[20px] font-semibold text-on-surface mb-1 line-clamp-1">{{ course.title }}</h4>
-                    <p class="text-[14px] text-outline line-clamp-2 mb-2">{{ course.description }}</p>
+                </div>
+                <div class="p-4">
+                    <h4 class="text-[17px] font-bold text-on-surface mb-1">{{ course.title }}</h4>
+                    <p class="text-[13px] text-outline line-clamp-2 leading-relaxed">{{ course.description }}</p>
                 </div>
             </div>
         </a>
@@ -189,36 +193,5 @@
     });
 })();
 
-// Wishlist toggle + toast
-(function() {
-    var KEY = 'loive_wishlist';
-    function getList() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e) { return []; } }
-    function setList(l) { localStorage.setItem(KEY, JSON.stringify(l)); }
-    function showToast(msg) {
-        var t = document.createElement('div');
-        t.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] bg-inverse-surface text-inverse-on-surface px-5 py-3 rounded-xl text-[14px] font-medium shadow-lg';
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; }, 1700);
-        setTimeout(function() { t.remove(); }, 2000);
-    }
-    function paintBtn(btn, wished) {
-        var svg = btn.querySelector('svg');
-        if (wished) { svg.setAttribute('fill', 'currentColor'); btn.classList.add('text-error-red'); btn.classList.remove('text-white'); }
-        else { svg.setAttribute('fill', 'none'); btn.classList.remove('text-error-red'); btn.classList.add('text-white'); }
-    }
-    document.querySelectorAll('.wish-btn').forEach(function(btn) {
-        var id = parseInt(btn.dataset.wishId);
-        paintBtn(btn, getList().includes(id));
-        btn.addEventListener('click', function(e) {
-            e.preventDefault(); e.stopPropagation();
-            var list = getList();
-            if (list.includes(id)) { list = list.filter(function(x){return x!==id;}); showToast('찜 목록에서 제거되었습니다'); }
-            else { list.push(id); showToast('찜 저장되었습니다'); }
-            setList(list);
-            paintBtn(btn, list.includes(id));
-        });
-    });
-})();
 </script>
 {% endblock %}

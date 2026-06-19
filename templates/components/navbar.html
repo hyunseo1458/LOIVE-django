@@ -1,8 +1,8 @@
 {% load static %}
 
-<header class="sticky top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm" style="padding-top: env(safe-area-inset-top, 0px);">
-    <div class="flex items-center justify-between px-5 h-14 w-full max-w-7xl mx-auto">
-        <!-- Region dropdown -->
+<header class="app-header global-nav w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <div class="flex items-center justify-between px-5 h-12 w-full max-w-7xl mx-auto">
+        <!-- Region dropdown (left) -->
         <div class="relative" id="region-dropdown">
             <button type="button" id="region-btn"
                     class="flex items-center gap-1 group -ml-2 px-2 py-1 rounded-full hover:bg-surface-container-high transition-colors">
@@ -13,10 +13,10 @@
             </button>
 
             <!-- Dropdown panel -->
-            <div id="region-panel" class="hidden absolute top-full left-0 mt-2 bg-surface rounded-xl shadow-xl border border-outline-variant/20 z-[60] w-[min(460px,94vw)] overflow-hidden">
-                <div class="flex">
-                    <div class="w-[130px] shrink-0 border-r border-outline-variant/15 max-h-[400px] overflow-y-auto py-2 px-1.5" id="region-list"></div>
-                    <div class="flex-1 flex flex-col min-h-[320px]">
+            <div id="region-panel" class="hidden absolute top-full left-0 mt-2 bg-surface rounded-xl shadow-xl border border-outline-variant/20 z-[60] overflow-hidden" style="width:min(370px, 92vw); height:min(620px, calc(100vh - 140px));">
+                <div class="flex h-full">
+                    <div class="w-[72px] shrink-0 border-r border-outline-variant/15 overflow-y-auto py-1.5 px-1" id="region-list"></div>
+                    <div class="flex-1 flex flex-col overflow-hidden">
                         <div class="flex items-center justify-between px-3 pt-2 pb-0.5">
                             <span class="text-[11px] text-on-surface-variant" id="map-status">지역을 선택하세요</span>
                             <button type="button" id="map-reset" class="hidden text-[11px] text-ocean-blue hover:text-ocean-blue/80 font-medium flex items-center gap-0.5">
@@ -24,22 +24,18 @@
                                 전체 보기
                             </button>
                         </div>
-                        <div class="flex-1 px-3 pb-3 flex items-center justify-center">
-                            <div id="map-container" class="w-full max-w-[280px]" style="aspect-ratio:509/716;min-height:200px"></div>
+                        <div class="flex-1 px-2 pb-2 flex items-center justify-center overflow-hidden">
+                            <div id="map-container" class="w-full h-full"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Logo (center) -->
-        <div class="absolute left-1/2 -translate-x-1/2">
-            <a href="{% url 'core:home' %}">
-                <span class="text-ocean-blue text-[24px] font-extrabold tracking-tight">로이브</span>
-            </a>
-        </div>
-
-        <div class="w-10"></div>
+        <!-- Logo (right) -->
+        <a href="{% url 'core:home' %}" class="flex-shrink-0">
+            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
+        </a>
     </div>
 </header>
 
@@ -70,7 +66,7 @@
     REGIONS.forEach(r => {
         const b = document.createElement('button');
         b.type = 'button'; b.textContent = r; b.dataset.region = r;
-        b.className = 'region-item w-full px-3 py-2 text-left text-[13px] rounded-lg transition-colors text-on-surface-variant hover:bg-surface-container-low';
+        b.className = 'region-item w-full px-2 py-1.5 text-left text-[13px] text-center rounded-lg transition-colors text-on-surface-variant hover:bg-surface-container-low';
         b.addEventListener('click', () => selectRegion(r));
         b.addEventListener('mouseenter', () => { hovered = r; paint(); });
         b.addEventListener('mouseleave', () => { hovered = null; paint(); });
@@ -104,7 +100,7 @@
         list.querySelectorAll('.region-item').forEach(b => {
             const active = b.dataset.region === selected;
             b.className = 'region-item w-full px-3 py-2 text-left text-[13px] rounded-lg transition-colors ' +
-                (active ? 'bg-ocean-blue/10 text-ocean-blue font-bold' : 'text-on-surface-variant hover:bg-surface-container-low');
+                (active ? 'bg-ocean-blue/10 text-ocean-blue font-bold' : 'text-on-surface-variant hover:bg-surface-container-low') + ' text-center';
         });
     }
     function paint() {

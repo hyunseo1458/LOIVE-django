@@ -3,32 +3,25 @@
 
 {% block title %}예약 및 결제 — {{ activity.title }}{% endblock %}
 
-{% block extra_head %}
-<style>
-header.fixed { display: none !important; }
-main { padding-top: 0 !important; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
+{% block navbar %}
+<header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <div class="flex items-center justify-between px-5 h-12">
+        <div class="flex items-center gap-2">
+            <a href="{% url 'activities:detail' activity.pk %}" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+            </a>
+            <h1 class="text-[17px] font-bold text-on-surface">예약 및 결제</h1>
+        </div>
+        <a href="{% url 'core:home' %}" class="flex-shrink-0">
+            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
+        </a>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
-<!-- ═══════ Header ═══════ -->
-<div class="fixed top-0 left-0 right-0 z-[999] bg-surface border-b border-outline-variant/20">
-    <div class="flex items-center px-4 h-14 max-w-3xl mx-auto">
-        <a href="{% url 'activities:detail' activity.pk %}"
-           class="w-10 h-10 flex items-center justify-center text-on-surface -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-        </a>
-        <h1 class="flex-1 text-center text-[17px] font-bold text-on-surface -ml-10">예약 및 결제</h1>
-        <div class="w-10"></div>
-    </div>
-</div>
-<div class="h-14"></div>
 
-<form method="post" id="booking-form" class="min-h-screen pb-[160px]">
+<form method="post" id="booking-form" class="pb-4">
     {% csrf_token %}
     <input type="hidden" name="slot_id" id="slot-id" value="">
     <input type="hidden" name="adults" id="adults-input" value="1">
@@ -242,37 +235,35 @@ main { padding-top: 0 !important; }
         </section>
 
     </div><!-- /body -->
-
-    <!-- ═══════ StickyPaymentBar ═══════ -->
-    <div class="fixed bottom-0 w-full z-50 bg-surface border-t border-outline-variant/20 shadow-[0px_-4px_16px_rgba(0,0,0,0.06)] px-5">
-        <div class="max-w-3xl mx-auto">
-            <!-- Terms -->
-            <label class="flex items-center gap-2 py-3 cursor-pointer border-b border-outline-variant/15">
-                <input type="checkbox" id="terms-check"
-                       class="w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
-                <span class="text-[12px] text-outline">
-                    <a class="text-ocean-blue" href="{% url 'core:terms' %}" target="_blank">서비스 이용약관</a> 및
-                    <a class="text-ocean-blue" href="{% url 'core:privacy' %}" target="_blank">개인정보 처리방침</a>에 동의합니다
-                </span>
-            </label>
-            <!-- Price + Button -->
-            <div class="flex items-center justify-between gap-4 py-3">
-                <div>
-                    <p class="text-[11px] text-outline">최종 결제 금액</p>
-                    <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="total-display">{{ activity.price|currency }}</p>
-                    <p class="text-[11px] text-outline" id="guest-summary">성인 1, 소인 0</p>
-                </div>
-                <button type="submit" id="submit-btn" disabled
-                        class="bg-ocean-blue text-white text-[15px] font-bold py-3 px-8 rounded-xl hover:bg-ocean-blue/90 active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
-                    결제하기
-                </button>
-            </div>
-        </div>
-    </div>
 </form>
 {% endblock %}
 
-{% block bottom_nav %}{% endblock %}
+{% block bottom_nav %}
+<!-- ═══════ StickyPaymentBar ═══════ -->
+<div class="w-full z-50 flex-shrink-0 bg-surface border-t border-outline-variant/20 shadow-[0px_-4px_16px_rgba(0,0,0,0.06)] px-5">
+    <!-- Terms -->
+    <label class="flex items-center gap-2 py-3 cursor-pointer border-b border-outline-variant/15">
+        <input type="checkbox" id="terms-check"
+               class="w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
+        <span class="text-[12px] text-outline">
+            <a class="text-ocean-blue" href="{% url 'core:terms' %}" target="_blank">서비스 이용약관</a> 및
+            <a class="text-ocean-blue" href="{% url 'core:privacy' %}" target="_blank">개인정보 처리방침</a>에 동의합니다
+        </span>
+    </label>
+    <!-- Price + Button -->
+    <div class="flex items-center justify-between gap-4 py-3" style="padding-bottom: max(12px, env(safe-area-inset-bottom));">
+        <div>
+            <p class="text-[11px] text-outline">최종 결제 금액</p>
+            <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="total-display">{{ activity.price|currency }}</p>
+            <p class="text-[11px] text-outline" id="guest-summary">성인 1, 소인 0</p>
+        </div>
+        <button type="submit" form="booking-form" id="submit-btn" disabled
+                class="bg-ocean-blue text-white text-[15px] font-bold py-3 px-8 rounded-xl hover:bg-ocean-blue/90 active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+            결제하기
+        </button>
+    </div>
+</div>
+{% endblock %}
 
 {% block extra_js %}
 <script>
