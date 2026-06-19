@@ -67,9 +67,9 @@
                             <span class="text-[20px] font-extrabold text-on-surface">₩{{ booking.total_amount|floatformat:0 }}</span>
                         </div>
 
-                        <a href="{% url 'bookings:cancel' booking.pk %}"
-                           class="block w-full mt-4 py-3 text-center text-[14px] font-semibold text-on-surface border border-outline-variant/30 rounded-sm hover:bg-surface-container-low active:scale-[0.98] transition-all">
-                            예약 취소하기
+                        <a href="{% url 'bookings:detail' booking.pk %}"
+                           class="block w-full mt-4 py-3 text-center text-[14px] font-semibold text-white bg-ocean-blue rounded-sm hover:opacity-90 active:scale-[0.98] transition-all">
+                            예약 상세
                         </a>
                     </div>
                 </div>
