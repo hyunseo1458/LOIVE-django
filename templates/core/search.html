@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}검색{% endblock %}
+{% block title %}{% t "Search" "검색" %}{% endblock %}
 
 {% block navbar %}
 <header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
     <form method="get" action="{% url 'core:search' %}" class="flex items-center gap-2 px-4 h-12">
-        <a href="{% url 'core:home' %}" class="text-on-surface flex items-center justify-center w-10 h-10 -ml-2 shrink-0">
+        <a href="{% url 'core:home' %}" class="text-on-surface flex items-center justify-center w-8 h-10 -ml-2 shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
         </a>
         <div class="relative flex-1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-outline absolute left-3 top-1/2 -translate-y-1/2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
             <input type="text" name="q" autofocus value="{{ query }}"
-                   placeholder="지역, 액티비티 이름으로 검색"
+                   placeholder="{% t 'Search activities, locations...' '액티비티, 장소 검색...' %}"
                    class="w-full h-11 pl-10 pr-9 rounded-md bg-surface-container-low text-[14px] text-on-surface focus:outline-none focus:ring-2 focus:ring-on-surface/10" />
             {% if query %}
             <a href="{% url 'core:search' %}" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
@@ -20,6 +20,7 @@
             </a>
             {% endif %}
         </div>
+        <div class="shrink-0">{% include "components/lang_toggle.html" %}</div>
     </form>
 </header>
 {% endblock %}
@@ -28,7 +29,7 @@
 <div class="px-4 max-w-screen-lg mx-auto">
     {% if not query %}
     <div class="py-6 flex flex-col gap-3">
-        <p class="text-[13px] font-semibold text-outline">인기 검색어</p>
+        <p class="text-[13px] font-semibold text-outline">{% t "Popular Searches" "인기 검색어" %}</p>
         <div class="flex flex-wrap gap-2">
             {% for keyword in popular_keywords %}
             <a href="{% url 'core:search' %}?q={{ keyword }}"
@@ -39,26 +40,29 @@
         </div>
     </div>
     {% elif results %}
-    <p class="text-[13px] font-semibold text-outline mb-3">검색 결과 {{ results|length }}건</p>
+    {% if GA_MEASUREMENT_ID %}
+    <script>if(typeof gtag==='function')gtag('event','search',{search_term:'{{ query|escapejs }}',results_count:{{ results|length }}});</script>
+    {% endif %}
+    <p class="text-[13px] font-semibold text-outline mb-3">{{ results|length }} {% t "results" "건" %}</p>
     <div class="flex flex-col gap-3">
         {% for activity in results %}
         <a href="{% url 'activities:detail' activity.pk %}" class="bg-surface-container-lowest rounded-md border border-outline-variant/15 overflow-hidden flex flex-row h-32">
             <div class="relative w-32 shrink-0 bg-surface-container-high overflow-hidden">
                 {% if activity.thumbnail_url %}
-                <img class="w-full h-full object-cover" alt="{{ activity.title }}" src="{{ activity.thumbnail_url }}" loading="lazy">
+                <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url }}" loading="lazy">
                 {% endif %}
             </div>
             <div class="flex-1 p-3 flex flex-col justify-between min-w-0">
                 <div>
-                    <h2 class="text-[14px] font-semibold text-on-surface leading-snug line-clamp-1">{{ activity.title }}</h2>
+                    <h2 class="text-[14px] font-semibold text-on-surface leading-snug line-clamp-1">{{ activity|loc:LANG }}</h2>
                     <p class="text-[12px] text-outline flex items-center gap-0.5 mt-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
-                        {{ activity.address }}
+                        {{ activity|loc_addr:LANG }}
                     </p>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-[16px] font-extrabold text-on-surface tracking-tight">{{ activity.price|currency }}</span>
-                    <span class="bg-ocean-blue text-white text-[11px] font-semibold px-3 py-1.5 rounded-sm">예약</span>
+                    <span class="bg-ocean-blue text-white text-[11px] font-semibold px-3 py-1.5 rounded-sm">{% t "Details" "상세" %}</span>
                 </div>
             </div>
         </a>
@@ -66,8 +70,8 @@
     </div>
     {% else %}
     <div class="py-12 flex flex-col items-center gap-3 text-center">
-        <p class="text-[14px] text-outline">"{{ query }}"에 대한 검색 결과가 없습니다.</p>
-        <p class="text-[13px] text-outline-variant">다른 키워드로 시도해보세요</p>
+        <p class="text-[14px] text-outline">{% t "No results for" "검색 결과 없음:" %} "{{ query }}"</p>
+        <p class="text-[13px] text-outline-variant">{% t "Try a different keyword" "다른 키워드로 시도해보세요" %}</p>
         <div class="flex flex-wrap gap-2 mt-2 justify-center">
             {% for keyword in popular_keywords %}
             <a href="{% url 'core:search' %}?q={{ keyword }}"

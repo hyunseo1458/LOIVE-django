@@ -36,20 +36,30 @@ class Activity(models.Model):
         REJECTED = "rejected", "반려"
 
     partner = models.ForeignKey(
-        "accounts.Partner", on_delete=models.CASCADE, related_name="activities"
+        "accounts.Partner", on_delete=models.CASCADE, related_name="activities",
+        null=True, blank=True,
     )
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="activities")
     region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="activities")
-    title = models.CharField("제목", max_length=200)
-    description = models.TextField("상세 설명")
-    price = models.PositiveIntegerField("가격 (원)")
-    capacity = models.PositiveSmallIntegerField("최대 정원")
-    duration_minutes = models.PositiveSmallIntegerField("소요 시간 (분)", default=60)
-    address = models.CharField("상세 주소", max_length=300, blank=True)
+    title = models.CharField("제목(EN)", max_length=200)
+    title_ko = models.CharField("제목(KO)", max_length=200, blank=True)
+    description = models.TextField("설명(EN)", blank=True)
+    description_ko = models.TextField("설명(KO)", blank=True)
+    price = models.PositiveIntegerField("가격 (원)", default=0)
+    capacity = models.PositiveSmallIntegerField("최대 정원", default=0)
+    duration_minutes = models.PositiveSmallIntegerField("소요 시간 (분)", default=0)
+    address = models.CharField("주소(EN)", max_length=300, blank=True)
+    address_ko = models.CharField("주소(KO)", max_length=300, blank=True)
+    phone = models.CharField("전화번호", max_length=30, blank=True)
+    website = models.URLField("웹사이트", max_length=500, blank=True)
+    google_place_id = models.CharField("Google Place ID", max_length=300, blank=True, unique=True, null=True)
+    google_rating = models.DecimalField("Google 평점", max_digits=2, decimal_places=1, null=True, blank=True)
+    google_reviews_count = models.PositiveIntegerField("Google 리뷰 수", default=0)
     latitude = models.DecimalField("위도", max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField("경도", max_digits=9, decimal_places=6, null=True, blank=True)
-    thumbnail_url = models.URLField("썸네일 URL", max_length=500, blank=True, help_text="외부 이미지 URL (개발용)")
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.DRAFT)
+    thumbnail_url = models.URLField("썸네일 URL", max_length=500, blank=True)
+    photo_urls = models.JSONField("사진 URLs", default=list, blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.APPROVED)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -106,7 +116,9 @@ class ActivitySlot(models.Model):
 
 class Course(models.Model):
     title = models.CharField("코스명", max_length=200)
+    title_ko = models.CharField("코스명(한국어)", max_length=200, blank=True)
     description = models.TextField("코스 설명")
+    description_ko = models.TextField("코스 설명(한국어)", blank=True)
     price = models.PositiveIntegerField("코스 가격 (원)")
     activities = models.ManyToManyField(Activity, related_name="courses")
     image = models.ImageField("대표 이미지", upload_to="courses/%Y/%m/", blank=True)

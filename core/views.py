@@ -1,5 +1,3 @@
-from urllib.parse import unquote
-
 import json
 
 from django.shortcuts import render, redirect
@@ -8,33 +6,36 @@ from django.db.models import Q, Avg, Count
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
-from activities.models import Activity, Category, Course, Region, Review
+from activities.models import Activity, Category, Course, Review
 from core.models import Wishlist
 
-BANNER_TAGS = ["인기", "추천", "특가", "HOT", "NEW"]
+JEJU_REGION = "제주"
+
+BANNER_TAGS_EN = ["Popular", "Featured", "Best", "HOT", "NEW"]
+BANNER_TAGS_KO = ["인기", "추천", "특가", "HOT", "NEW"]
 
 
-def _build_banners(region_name=""):
+def _build_banners(lang="en"):
     qs = Activity.objects.filter(
         status=Activity.Status.APPROVED,
+        region__name=JEJU_REGION,
         thumbnail_url__gt="",
     ).select_related("category", "region")
 
-    if region_name:
-        qs = qs.filter(region__name=region_name)
-
     qs = qs.annotate(avg_rating=Avg("reviews__rating")).order_by("-avg_rating", "-created_at")[:5]
 
+    tags = BANNER_TAGS_KO if lang == "ko" else BANNER_TAGS_EN
     banners = []
     for i, a in enumerate(qs):
-        desc = a.description
-        if len(desc) > 40:
-            desc = desc[:40] + "…"
+        title = (a.title_ko or a.title) if lang == "ko" else a.title
+        desc = (a.description_ko or a.description) if lang == "ko" else a.description
+        if len(desc) > 60:
+            desc = desc[:60] + "…"
         banners.append({
             "thumbnail_url": a.thumbnail_url,
-            "tag": BANNER_TAGS[i % len(BANNER_TAGS)],
-            "title": a.title,
-            "description": f"{desc} 1인 ₩{a.price:,}~",
+            "tag": tags[i % len(tags)],
+            "title": title,
+            "description": desc,
             "activity_id": a.pk,
         })
     return banners
@@ -42,22 +43,17 @@ def _build_banners(region_name=""):
 
 def home(request):
     categories = Category.objects.all()
-    all_categories = ["전체"] + list(categories.values_list("name", flat=True))
+    all_categories = ["All"] + list(categories.values_list("name", flat=True))
     activities = Activity.objects.filter(
-        status=Activity.Status.APPROVED
+        status=Activity.Status.APPROVED,
+        region__name=JEJU_REGION,
     ).select_related("category", "region").annotate(
         avg_rating=Avg("reviews__rating"),
-    )
+    )[:6]
 
-    cookie_region = unquote(request.COOKIES.get("region", ""))
-    if cookie_region and Region.objects.filter(name=cookie_region).exists():
-        activities = activities.filter(region__name=cookie_region)
-
-    activities = activities[:6]
+    lang = request.COOKIES.get("lang", "en")
     courses = Course.objects.filter(is_active=True).prefetch_related("activities")[:6]
-    banners = _build_banners(cookie_region)
-    if not banners:
-        banners = _build_banners("")
+    banners = _build_banners(lang)
 
     return render(request, "core/home.html", {
         "categories": categories,
@@ -65,7 +61,6 @@ def home(request):
         "activities": activities,
         "courses": courses,
         "banners": banners,
-        "current_region": cookie_region,
     })
 
 
@@ -74,18 +69,18 @@ def search(request):
     results = []
     if query:
         results = Activity.objects.filter(
-            status=Activity.Status.APPROVED
+            status=Activity.Status.APPROVED,
+            region__name=JEJU_REGION,
         ).filter(
             Q(title__icontains=query) |
             Q(address__icontains=query) |
-            Q(category__name__icontains=query) |
-            Q(region__name__icontains=query)
+            Q(category__name__icontains=query)
         ).select_related("category", "region")[:20]
 
     return render(request, "core/search.html", {
         "query": query,
         "results": results,
-        "popular_keywords": ["제주", "서핑", "카약", "부산", "강원", "트레킹"],
+        "popular_keywords": ["Surfing", "Diving", "Kayaking", "Hiking", "Fishing", "Cycling"],
     })
 
 
@@ -163,7 +158,7 @@ def profile_edit(request):
             update_fields.append("phone")
 
         user.save(update_fields=update_fields)
-        messages.success(request, "프로필이 성공적으로 업데이트되었습니다.")
+        messages.success(request, "Profile updated successfully.")
         return redirect("core:profile")
 
     return render(request, "core/profile_edit.html")
@@ -194,3 +189,13 @@ def terms(request):
 
 def privacy(request):
     return render(request, "core/privacy.html")
+
+
+def set_lang(request):
+    lang = request.GET.get("lang", "en")
+    if lang not in ("en", "ko"):
+        lang = "en"
+    referer = request.META.get("HTTP_REFERER", "/")
+    response = redirect(referer)
+    response.set_cookie("lang", lang, max_age=365 * 24 * 60 * 60, path="/", samesite="Lax")
+    return response

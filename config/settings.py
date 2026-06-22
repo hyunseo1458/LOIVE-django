@@ -32,9 +32,9 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.kakao",
+    # "allauth.socialaccount.providers.kakao",  # kept for future
     "allauth.socialaccount.providers.google",
-    "allauth.socialaccount.providers.naver",
+    # "allauth.socialaccount.providers.naver",  # kept for future
     # Local
     "accounts",
     "activities",
@@ -71,6 +71,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "core.context_processors.lang",
             ],
         },
     },
@@ -113,11 +114,31 @@ ACCOUNT_MESSAGES = {
     "signed_up": {"level": 0, "text": ""},
 }
 
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "APPS": [
+            {
+                "client_id": env("GOOGLE_CLIENT_ID", default=""),
+                "secret": env("GOOGLE_CLIENT_SECRET", default=""),
+            },
+        ],
+    },
+}
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# --- Analytics ---
+GA_MEASUREMENT_ID = env("GA_MEASUREMENT_ID", default="")
+
+# --- Google Places API ---
+GOOGLE_PLACES_API_KEY = env("GOOGLE_PLACES_API_KEY", default="")
+
 # Email (dev: console / prod: SMTP)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # --- i18n ---
-LANGUAGE_CODE = "ko-kr"
+LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Seoul"
 USE_I18N = True
 USE_TZ = True

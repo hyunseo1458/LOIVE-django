@@ -1,0 +1,11 @@
+{% load core_tags %}
+<div class="flex h-7 rounded-full border border-outline-variant/40 overflow-hidden text-[11px] font-bold">
+    <a href="{% url 'core:set_lang' %}?lang=en"
+       class="px-2.5 flex items-center transition-colors {% if LANG == 'en' %}bg-ocean-blue text-white{% else %}text-outline hover:bg-surface-container-low{% endif %}">
+        EN
+    </a>
+    <a href="{% url 'core:set_lang' %}?lang=ko"
+       class="px-2.5 flex items-center transition-colors {% if LANG == 'ko' %}bg-ocean-blue text-white{% else %}text-outline hover:bg-surface-container-low{% endif %}">
+        KO
+    </a>
+</div>

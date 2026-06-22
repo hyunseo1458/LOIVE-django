@@ -1,221 +1,35 @@
 {% extends "base.html" %}
+{% load core_tags socialaccount %}
 
-{% block title %}회원가입{% endblock %}
+{% block title %}{% t "Sign Up" "회원가입" %}{% endblock %}
 
 {% block navbar %}{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
 
 {% block content %}
 <div class="min-h-[80vh] flex flex-col items-center justify-center px-5">
     <div class="w-full max-w-sm flex flex-col items-center">
-        <span class="text-ocean-blue text-[32px] font-extrabold tracking-tight mb-2">회원가입</span>
+        <span class="text-ocean-blue text-[32px] font-extrabold tracking-tight mb-2">LOIVE</span>
         <p class="text-[14px] text-on-surface-variant text-center mb-8">
-            로이브에 오신 것을 환영합니다
+            {% t "Create your account with Google" "Google로 간편하게 가입하세요" %}
         </p>
 
-        <form method="post" id="signup-form" class="w-full flex flex-col gap-3 mb-6">
-            {% csrf_token %}
-            <!-- 프로필 정보 -->
-            <p class="text-[12px] font-bold text-on-surface-variant tracking-wider mt-1">계정 정보</p>
-            <input type="email" name="email" placeholder="이메일" required
-                   value="{{ form.email.value|default:'' }}"
-                   class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
-            {% if form.email.errors %}
-            <p class="text-[12px] text-error-red -mt-1">{{ form.email.errors.0 }}</p>
-            {% endif %}
-
-            <input type="password" name="password1" placeholder="비밀번호" required
-                   class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
-            {% if form.password1.errors %}
-            <p class="text-[12px] text-error-red -mt-1">{{ form.password1.errors.0 }}</p>
-            {% endif %}
-
-            <input type="password" name="password2" placeholder="비밀번호 확인" required
-                   class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
-            {% if form.password2.errors %}
-            <p class="text-[12px] text-error-red -mt-1">{{ form.password2.errors.0 }}</p>
-            {% endif %}
-
-            <p class="text-[12px] font-bold text-on-surface-variant tracking-wider mt-3">프로필 설정</p>
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" name="last_name" placeholder="성" required
-                       class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
-                <input type="text" name="first_name" placeholder="이름" required
-                       class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
-            </div>
-            <input type="tel" name="phone" placeholder="연락처 (010-0000-0000)"
-                   class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20 focus:border-ocean-blue transition-all">
-
-            <!-- 약관 동의 -->
-            <div class="mt-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4">
-                <!-- 전체 동의 -->
-                <label class="flex items-center gap-3 cursor-pointer pb-3 border-b border-outline-variant/15 mb-3">
-                    <input type="checkbox" id="agree-all"
-                           class="w-5 h-5 rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
-                    <span class="text-[15px] font-bold text-on-surface">전체 동의</span>
-                </label>
-
-                <!-- 이용약관 (필수) -->
-                <div class="py-2">
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" id="agree-terms" name="agree_terms" class="agree-item agree-required w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
-                        <label for="agree-terms" class="text-[14px] text-on-surface flex-1 cursor-pointer">
-                            <span class="text-ocean-blue font-semibold">[필수]</span> 서비스 이용약관 동의
-                        </label>
-                        <button type="button" class="expand-btn text-outline hover:text-on-surface-variant transition-colors" data-target="terms-content">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-200"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
-                        </button>
-                    </div>
-                    <!-- 펼침 내용 -->
-                    <div id="terms-content" class="hidden mt-3 ml-[30px]">
-                        <div class="bg-surface-container-low rounded-xl p-4 max-h-[240px] overflow-y-auto text-[12px] text-on-surface-variant leading-relaxed space-y-3 border border-outline-variant/15">
-                            <p class="font-bold text-on-surface text-[13px]">서비스 이용약관</p>
-                            <p><span class="font-semibold text-on-surface">제 1 조 (목적)</span><br>이 약관은 LOIVE(이하 "회사")가 제공하는 로컬 체험 예약 서비스의 이용 조건과 절차, 회사와 회원 간의 권리·의무 및 책임 사항을 규정함을 목적으로 합니다.</p>
-                            <p><span class="font-semibold text-on-surface">제 2 조 (정의)</span><br>"서비스"란 회사가 운영하는 웹사이트 및 모바일 앱을 통해 제공하는 로컬 체험 검색, 예약, 결제 등 제반 서비스를 말합니다. "회원"이란 이 약관에 동의하고 회사와 이용 계약을 체결한 자를 말합니다.</p>
-                            <p><span class="font-semibold text-on-surface">제 3 조 (약관의 효력 및 변경)</span><br>이 약관은 서비스 화면에 게시하거나 기타의 방법으로 회원에게 공지함으로써 효력이 발생합니다.</p>
-                            <p><span class="font-semibold text-on-surface">제 4 조 (서비스의 제공)</span><br>로컬 체험 액티비티 검색 및 상세 정보 제공, 액티비티 예약 및 결제 대행, 예약 관리, 리뷰 작성 및 조회 등을 제공합니다.</p>
-                            <p><span class="font-semibold text-on-surface">제 5 조 (예약 및 결제)</span><br>회원은 서비스를 통해 액티비티를 예약하고 결제할 수 있으며, 결제가 완료되면 예약이 확정됩니다.</p>
-                            <p><span class="font-semibold text-on-surface">제 6 조 (취소 및 환불)</span><br>이용일 7일 전: 전액 환불 / 3~6일 전: 50% 환불 / 2일 이내: 환불 불가 / 천재지변: 전액 환불</p>
-                        </div>
-                        <button type="button" class="consent-btn w-full mt-2 py-2.5 bg-ocean-blue text-white text-[13px] font-semibold rounded-lg hover:bg-ocean-blue/90 active:scale-[0.98] transition-all" data-checkbox="agree-terms">
-                            동의합니다
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 개인정보 (필수) -->
-                <div class="py-2">
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" id="agree-privacy" name="agree_privacy" class="agree-item agree-required w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
-                        <label for="agree-privacy" class="text-[14px] text-on-surface flex-1 cursor-pointer">
-                            <span class="text-ocean-blue font-semibold">[필수]</span> 개인정보 처리방침 동의
-                        </label>
-                        <button type="button" class="expand-btn text-outline hover:text-on-surface-variant transition-colors" data-target="privacy-content">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 transition-transform duration-200"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
-                        </button>
-                    </div>
-                    <!-- 펼침 내용 -->
-                    <div id="privacy-content" class="hidden mt-3 ml-[30px]">
-                        <div class="bg-surface-container-low rounded-xl p-4 max-h-[240px] overflow-y-auto text-[12px] text-on-surface-variant leading-relaxed space-y-3 border border-outline-variant/15">
-                            <p class="font-bold text-on-surface text-[13px]">개인정보 처리방침</p>
-                            <p><span class="font-semibold text-on-surface">1. 수집하는 개인정보 항목</span><br>필수: 이메일, 비밀번호, 이름 / 선택: 연락처, 프로필 사진 / 자동: IP 주소, 브라우저 정보, 서비스 이용 기록</p>
-                            <p><span class="font-semibold text-on-surface">2. 수집 및 이용 목적</span><br>회원 식별 및 본인 확인, 서비스 제공 및 예약 처리, 결제 및 환불 처리, 고객 문의 대응, 서비스 개선 및 통계 분석</p>
-                            <p><span class="font-semibold text-on-surface">3. 보유 및 이용 기간</span><br>회원 탈퇴 시 즉시 파기. 계약/거래 기록: 5년, 결제 기록: 5년, 접속 로그: 3개월</p>
-                            <p><span class="font-semibold text-on-surface">4. 제3자 제공</span><br>원칙적으로 동의 없이 외부에 제공하지 않습니다. 예약 이행을 위해 파트너에게 예약자 이름과 연락처를 제공할 수 있습니다.</p>
-                            <p><span class="font-semibold text-on-surface">5. 이용자의 권리</span><br>개인정보 열람, 수정, 삭제 요청 / 처리 정지 요청 / 회원 탈퇴</p>
-                        </div>
-                        <button type="button" class="consent-btn w-full mt-2 py-2.5 bg-ocean-blue text-white text-[13px] font-semibold rounded-lg hover:bg-ocean-blue/90 active:scale-[0.98] transition-all" data-checkbox="agree-privacy">
-                            동의합니다
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 만 14세 이상 (필수) -->
-                <label class="flex items-center gap-3 cursor-pointer py-2">
-                    <input type="checkbox" name="agree_age" class="agree-item agree-required w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
-                    <span class="text-[14px] text-on-surface flex-1">
-                        <span class="text-ocean-blue font-semibold">[필수]</span> 만 14세 이상입니다
-                    </span>
-                </label>
-
-                <!-- 마케팅 (선택) -->
-                <label class="flex items-center gap-3 cursor-pointer py-2">
-                    <input type="checkbox" name="agree_marketing" class="agree-item w-[18px] h-[18px] rounded border-outline-variant text-ocean-blue focus:ring-ocean-blue/20 accent-ocean-blue cursor-pointer">
-                    <span class="text-[14px] text-on-surface-variant flex-1">
-                        <span class="text-outline font-semibold">[선택]</span> 마케팅 정보 수신 동의
-                    </span>
-                </label>
-            </div>
-
-            <p id="agree-error" class="text-[12px] text-error-red hidden">필수 약관에 모두 동의해주세요.</p>
-
-            <button type="submit" id="signup-btn"
-                    class="w-full h-12 bg-ocean-blue text-on-primary text-[16px] font-semibold rounded-lg shadow-md hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed mt-1"
-                    disabled>
-                가입하기
-            </button>
-        </form>
+        <a href="{% provider_login_url 'google' %}"
+           class="w-full h-14 rounded-xl flex items-center justify-center gap-3 font-medium text-[16px] transition-all active:scale-[0.98] shadow-sm bg-white text-on-surface border border-outline-variant hover:shadow-md mb-8">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            {% t "Continue with Google" "Google로 시작하기" %}
+        </a>
 
         <p class="text-[14px] text-outline">
-            이미 계정이 있으신가요?
-            <a href="{% url 'account_login' %}" class="text-ocean-blue font-semibold hover:underline">로그인</a>
+            {% t "Already have an account?" "이미 계정이 있으신가요?" %}
+            <a href="{% url 'account_login' %}" class="text-ocean-blue font-semibold hover:underline">{% t "Sign In" "로그인" %}</a>
         </p>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-(function() {
-    var allCheck = document.getElementById('agree-all');
-    var items = document.querySelectorAll('.agree-item');
-    var required = document.querySelectorAll('.agree-required');
-    var btn = document.getElementById('signup-btn');
-    var errMsg = document.getElementById('agree-error');
-
-    function syncAll() {
-        var allChecked = true;
-        items.forEach(function(cb) { if (!cb.checked) allChecked = false; });
-        allCheck.checked = allChecked;
-    }
-
-    function syncBtn() {
-        var ok = true;
-        required.forEach(function(cb) { if (!cb.checked) ok = false; });
-        btn.disabled = !ok;
-        if (ok) errMsg.classList.add('hidden');
-    }
-
-    allCheck.addEventListener('change', function() {
-        items.forEach(function(cb) { cb.checked = allCheck.checked; });
-        syncBtn();
-    });
-
-    items.forEach(function(cb) {
-        cb.addEventListener('change', function() { syncAll(); syncBtn(); });
-    });
-
-    // 펼치기/접기
-    document.querySelectorAll('.expand-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var target = document.getElementById(btn.dataset.target);
-            var chevron = btn.querySelector('svg');
-            var isOpen = !target.classList.contains('hidden');
-
-            if (isOpen) {
-                target.classList.add('hidden');
-                chevron.style.transform = '';
-            } else {
-                target.classList.remove('hidden');
-                chevron.style.transform = 'rotate(180deg)';
-            }
-        });
-    });
-
-    // "동의합니다" 버튼
-    document.querySelectorAll('.consent-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var cb = document.getElementById(btn.dataset.checkbox);
-            cb.checked = true;
-            cb.dispatchEvent(new Event('change'));
-
-            // 접기
-            var content = btn.closest('[id$="-content"]');
-            content.classList.add('hidden');
-            var expandBtn = content.previousElementSibling.querySelector('.expand-btn') ||
-                            content.parentElement.querySelector('.expand-btn');
-            if (expandBtn) expandBtn.querySelector('svg').style.transform = '';
-        });
-    });
-
-    // 제출 시 검증
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
-        var ok = true;
-        required.forEach(function(cb) { if (!cb.checked) ok = false; });
-        if (!ok) {
-            e.preventDefault();
-            errMsg.classList.remove('hidden');
-        }
-    });
-})();
-</script>
 {% endblock %}

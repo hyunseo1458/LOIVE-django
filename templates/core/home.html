@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load core_tags %}
 
-{% block title %}홈{% endblock %}
+{% block title %}{% t "Home" "홈" %}{% endblock %}
 
 {% block content %}
 <!-- Search Bar -->
@@ -11,7 +11,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0">
             <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
-        <span class="text-[13px]">지역, 체험, 키워드 검색</span>
+        <span class="text-[13px]">{% t "Search activities in Jeju" "제주 액티비티 검색" %}</span>
     </a>
 </div>
 
@@ -50,7 +50,7 @@
         <button type="button" data-category="{{ cat }}"
                 class="category-tab px-3.5 py-1 rounded-sm text-[11px] font-bold tracking-[0.08em] uppercase whitespace-nowrap transition-all active:scale-95
                 {% if forloop.first %}bg-ocean-blue text-white{% else %}bg-transparent text-outline border border-outline-variant/40 hover:border-ocean-blue/30 hover:text-ocean-blue{% endif %}">
-            {{ cat }}
+            {{ cat|cat_name:LANG }}
         </button>
         {% endfor %}
     </div>
@@ -61,27 +61,27 @@
     <div class="flex justify-between items-end mb-4">
         <div>
             <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-outline mb-0.5">Popular</p>
-            <h3 class="text-[20px] font-extrabold text-on-surface tracking-tight leading-none">인기 액티비티</h3>
+            <h3 class="text-[20px] font-extrabold text-on-surface tracking-tight leading-none">{% t "Top Activities" "인기 액티비티" %}</h3>
         </div>
-        <a href="{% url 'activities:explore' %}{% if current_region %}?region={{ current_region }}{% endif %}" class="text-on-surface text-[12px] font-semibold border-b border-on-surface/40 pb-0.5 hover:border-on-surface transition-colors">전체보기</a>
+        <a href="{% url 'activities:explore' %}" class="text-on-surface text-[12px] font-semibold border-b border-on-surface/40 pb-0.5 hover:border-on-surface transition-colors">{% t "View All" "전체보기" %}</a>
     </div>
     <div class="grid grid-cols-2 gap-3" id="activities-grid">
         {% for activity in activities %}
         <article class="activity-card relative bg-surface rounded-md overflow-hidden flex flex-col" data-category="{{ activity.category.name }}">
-            <a aria-label="{{ activity.title }}" class="absolute inset-0 z-0" href="{% url 'activities:detail' activity.pk %}"></a>
+            <a aria-label="{{ activity|loc:LANG }}" class="absolute inset-0 z-0" href="{% url 'activities:detail' activity.pk %}"></a>
             <div class="relative aspect-[4/3] w-full bg-surface-variant overflow-hidden pointer-events-none">
                 {% if activity.thumbnail_url %}
-                <img class="w-full h-full object-cover" alt="{{ activity.title }}" src="{{ activity.thumbnail_url }}" loading="lazy">
+                <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url }}" loading="lazy">
                 {% endif %}
-                <button type="button" aria-label="찜하기" data-wish-id="{{ activity.pk }}" class="wish-btn absolute top-2 right-2 z-20 w-8 h-8 rounded-md bg-black/25 backdrop-blur-sm flex items-center justify-center text-white transition-colors pointer-events-auto">
+                <button type="button" aria-label="{% t 'Save' '찜하기' %}" data-wish-id="{{ activity.pk }}" class="wish-btn absolute top-2 right-2 z-20 w-8 h-8 rounded-md bg-black/25 backdrop-blur-sm flex items-center justify-center text-white transition-colors pointer-events-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
                 </button>
             </div>
             <div class="pt-2.5 pb-3 flex flex-col gap-0.5 pointer-events-none">
-                <p class="text-[10px] font-semibold tracking-wider text-outline uppercase">{{ activity.region.name }}</p>
-                <h2 class="text-[14px] font-bold text-on-surface leading-snug line-clamp-2">{{ activity.title }}</h2>
+                <p class="text-[10px] font-semibold tracking-wider text-outline uppercase">{{ activity.category.name|cat_name:LANG }}</p>
+                <h2 class="text-[14px] font-bold text-on-surface leading-snug line-clamp-2">{{ activity|loc:LANG }}</h2>
                 <div class="flex items-center gap-1 mt-0.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 text-sun-yellow">
                         <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
@@ -91,13 +91,13 @@
                 <div class="flex items-center justify-between mt-1.5">
                     <span class="text-[15px] font-extrabold text-on-surface tracking-tight">{{ activity.price|currency }}</span>
                     <a class="bg-ocean-blue text-white text-[10px] font-bold px-3 py-1.5 rounded-sm tracking-wider uppercase hover:opacity-80 active:scale-95 transition-all pointer-events-auto"
-                       href="{% url 'bookings:form' activity.pk %}">예약</a>
+                       href="{% url 'activities:detail' activity.pk %}">{% t "Details" "상세" %}</a>
                 </div>
             </div>
         </article>
         {% empty %}
         <div class="col-span-2 text-center py-16 text-on-surface-variant">
-            <p class="text-lg font-semibold">해당 카테고리의 액티비티가 아직 없습니다</p>
+            <p class="text-lg font-semibold">{% t "No activities available yet" "아직 액티비티가 없습니다" %}</p>
         </div>
         {% endfor %}
     </div>
@@ -109,7 +109,7 @@
     <div class="mx-5 border-t border-on-surface/10 mb-6"></div>
     <div class="px-5 mb-4">
         <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-outline mb-0.5">Curated</p>
-        <h3 class="text-[20px] font-extrabold text-on-surface tracking-tight leading-none">테마별 코스</h3>
+        <h3 class="text-[20px] font-extrabold text-on-surface tracking-tight leading-none">{% t "Themed Courses" "테마별 코스" %}</h3>
     </div>
     <div class="flex flex-col gap-5 px-5">
         {% for course in courses %}
@@ -118,19 +118,19 @@
                 <div class="w-full h-[200px] relative overflow-hidden bg-surface-container-high">
                     {% with first_activity=course.activities.first %}
                     {% if first_activity and first_activity.thumbnail_url %}
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ course.title }}" src="{{ first_activity.thumbnail_url }}" loading="lazy">
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ course|loc:LANG }}" src="{{ first_activity.thumbnail_url }}" loading="lazy">
                     {% endif %}
                     {% endwith %}
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute bottom-4 left-4 right-4">
                         <span class="text-[10px] font-bold tracking-[0.15em] uppercase text-white/70 mb-1 block">
-                            {{ course.activities.count }} Experiences
+                            {{ course.activities.count }} {% t "Experiences" "체험" %}
                         </span>
-                        <h4 class="text-[19px] font-extrabold text-white leading-tight tracking-tight">{{ course.title }}</h4>
+                        <h4 class="text-[19px] font-extrabold text-white leading-tight tracking-tight">{{ course|loc:LANG }}</h4>
                     </div>
                 </div>
             </div>
-            <p class="text-[12px] text-outline mt-2 line-clamp-1 leading-relaxed px-0.5">{{ course.description }}</p>
+            <p class="text-[12px] text-outline mt-2 line-clamp-1 leading-relaxed px-0.5">{{ course|loc_desc:LANG }}</p>
         </a>
         {% endfor %}
     </div>
@@ -140,7 +140,6 @@
 
 {% block extra_js %}
 <script>
-// Banner auto-slide
 (function() {
     const slides = document.querySelectorAll('.banner-slide');
     const dots = document.querySelectorAll('.banner-dot');
@@ -166,7 +165,6 @@
     dots.forEach(d => d.addEventListener('click', () => show(parseInt(d.dataset.index))));
 })();
 
-// Category filter
 (function() {
     const tabs = document.querySelectorAll('.category-tab');
     const cards = document.querySelectorAll('.activity-card');
@@ -184,11 +182,10 @@
                 t.classList.toggle('border-outline-variant/40', !isActive);
             });
             cards.forEach(card => {
-                card.style.display = (category === '전체' || card.dataset.category === category) ? '' : 'none';
+                card.style.display = (category === 'All' || card.dataset.category === category) ? '' : 'none';
             });
         });
     });
 })();
-
 </script>
 {% endblock %}

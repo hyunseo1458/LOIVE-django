@@ -1,134 +1,22 @@
-{% load static %}
+{% load static core_tags %}
 
 <header class="app-header global-nav w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
     <div class="flex items-center justify-between px-5 h-12 w-full max-w-7xl mx-auto">
-        <!-- Region dropdown (left) -->
-        <div class="relative" id="region-dropdown">
-            <button type="button" id="region-btn"
-                    class="flex items-center gap-1 group -ml-2 px-2 py-1 rounded-full hover:bg-surface-container-high transition-colors">
-                <span class="text-[16px] md:text-[18px] font-bold text-on-surface group-hover:text-ocean-blue transition-colors" id="region-label">제주</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-outline group-hover:text-ocean-blue transition-all duration-200" id="region-chevron">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                </svg>
-            </button>
-
-            <!-- Dropdown panel -->
-            <div id="region-panel" class="hidden absolute top-full left-0 mt-2 bg-surface rounded-xl shadow-xl border border-outline-variant/20 z-[60] overflow-hidden" style="width:min(370px, 92vw); height:min(620px, calc(100vh - 140px));">
-                <div class="flex h-full">
-                    <div class="w-[72px] shrink-0 border-r border-outline-variant/15 overflow-y-auto py-1.5 px-1" id="region-list"></div>
-                    <div class="flex-1 flex flex-col overflow-hidden">
-                        <div class="flex items-center justify-between px-3 pt-2 pb-0.5">
-                            <span class="text-[11px] text-on-surface-variant" id="map-status">지역을 선택하세요</span>
-                            <button type="button" id="map-reset" class="hidden text-[11px] text-ocean-blue hover:text-ocean-blue/80 font-medium flex items-center gap-0.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
-                                전체 보기
-                            </button>
-                        </div>
-                        <div class="flex-1 px-2 pb-2 flex items-center justify-center overflow-hidden">
-                            <div id="map-container" class="w-full h-full"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Fixed location: Jeju -->
+        <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-ocean-blue">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <span class="text-[16px] md:text-[18px] font-bold text-on-surface">{% t "Jeju" "제주" %}</span>
         </div>
 
-        <!-- Logo (right) -->
-        <a href="{% url 'core:home' %}" class="flex-shrink-0">
-            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
-        </a>
+        <!-- Right: Lang toggle + Logo -->
+        <div class="flex items-center gap-3">
+            {% include "components/lang_toggle.html" %}
+            <a href="{% url 'core:home' %}" class="flex-shrink-0">
+                <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">LOIVE</span>
+            </a>
+        </div>
     </div>
 </header>
-
-<script>
-(function() {
-    const REGIONS = ["서울","경기","인천","강원","충북","충남","대전","전북","전남","광주","경북","경남","대구","울산","부산","제주"];
-    const SVG_TO_REGION = {"제주특별자치도":"제주","경상남도":"경남","경상북도":"경북","전라남도":"전남","전라북도":"전북","충청남도":"충남","충청북도":"충북","강원도":"강원","경기도":"경기","세종특별자치시":"충남","울산광역시":"울산","대전광역시":"대전","광주광역시":"광주","대구광역시":"대구","인천광역시":"인천","부산광역시":"부산","서울특별시":"서울"};
-    const REGION_TO_SVG = {"제주":["제주특별자치도"],"경남":["경상남도"],"경북":["경상북도"],"전남":["전라남도"],"전북":["전라북도"],"충남":["충청남도","세종특별자치시"],"충북":["충청북도"],"강원":["강원도"],"경기":["경기도"],"울산":["울산광역시"],"대전":["대전광역시"],"광주":["광주광역시"],"대구":["대구광역시"],"인천":["인천광역시"],"부산":["부산광역시"],"서울":["서울특별시"]};
-    const FULL_VB = "0 0 509 716.1";
-
-    function getCookie(n) { const m = document.cookie.match('(^|;)\\s*' + n + '=([^;]*)'); return m ? decodeURIComponent(m[2]) : null; }
-    const saved = getCookie('region');
-    let selected = (saved && REGIONS.includes(saved)) ? saved : '제주';
-    const initialRegion = selected;
-    let hovered = null, zoomed = selected, svgEl = null, open = false;
-
-    const btn = document.getElementById('region-btn');
-    const panel = document.getElementById('region-panel');
-    const label = document.getElementById('region-label');
-    const chevron = document.getElementById('region-chevron');
-    const list = document.getElementById('region-list');
-    const mapC = document.getElementById('map-container');
-    const mapStatus = document.getElementById('map-status');
-    const mapReset = document.getElementById('map-reset');
-
-    label.textContent = selected;
-
-    REGIONS.forEach(r => {
-        const b = document.createElement('button');
-        b.type = 'button'; b.textContent = r; b.dataset.region = r;
-        b.className = 'region-item w-full px-2 py-1.5 text-left text-[13px] text-center rounded-lg transition-colors text-on-surface-variant hover:bg-surface-container-low';
-        b.addEventListener('click', () => selectRegion(r));
-        b.addEventListener('mouseenter', () => { hovered = r; paint(); });
-        b.addEventListener('mouseleave', () => { hovered = null; paint(); });
-        list.appendChild(b);
-    });
-
-    function closePanel() {
-        open = false; panel.classList.add('hidden'); chevron.style.transform = '';
-        if (selected !== initialRegion) { location.reload(); }
-    }
-    function togglePanel() {
-        if (open) { closePanel(); return; }
-        open = true;
-        panel.classList.remove('hidden');
-        chevron.style.transform = 'rotate(180deg)';
-        zoomed = selected; paint(); updateList();
-    }
-    btn.addEventListener('click', togglePanel);
-    document.addEventListener('mousedown', e => {
-        if (open && !document.getElementById('region-dropdown').contains(e.target)) { closePanel(); }
-    });
-    mapReset.addEventListener('click', () => { zoomed = null; paint(); mapStatus.textContent = '지역을 선택하세요'; mapReset.classList.add('hidden'); });
-
-    function selectRegion(r) {
-        selected = r; zoomed = r; label.textContent = r;
-        document.cookie = 'region=' + encodeURIComponent(r) + ';path=/;max-age=31536000';
-        paint(); updateList();
-        mapStatus.textContent = r + ' 상세'; mapReset.classList.remove('hidden');
-    }
-    function updateList() {
-        list.querySelectorAll('.region-item').forEach(b => {
-            const active = b.dataset.region === selected;
-            b.className = 'region-item w-full px-3 py-2 text-left text-[13px] rounded-lg transition-colors ' +
-                (active ? 'bg-ocean-blue/10 text-ocean-blue font-bold' : 'text-on-surface-variant hover:bg-surface-container-low') + ' text-center';
-        });
-    }
-    function paint() {
-        if (!svgEl) return;
-        if (zoomed && REGION_TO_SVG[zoomed]) {
-            let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-            REGION_TO_SVG[zoomed].forEach(gId => { const g=svgEl.querySelector('[id="'+gId+'"]'); if(!g) return; const bb=g.getBBox(); minX=Math.min(minX,bb.x);minY=Math.min(minY,bb.y);maxX=Math.max(maxX,bb.x+bb.width);maxY=Math.max(maxY,bb.y+bb.height); });
-            if (minX<Infinity) { const w=maxX-minX,h=maxY-minY,pad=Math.max(w,h)*0.15; svgEl.setAttribute('viewBox',(minX-pad)+' '+(minY-pad)+' '+(w+pad*2)+' '+(h+pad*2)); }
-        } else { svgEl.setAttribute('viewBox', FULL_VB); }
-        svgEl.querySelectorAll('g[id]').forEach(g => {
-            const gId=g.getAttribute('id'); if(!(gId in SVG_TO_REGION)) return;
-            const code=SVG_TO_REGION[gId], isSel=code===selected, isHov=code===hovered, isDim=zoomed!=null&&code!==zoomed;
-            const fill=isSel?'#0EA5E9':isHov?'#7DD3FC':'#E0F2FE';
-            g.querySelectorAll('path,polygon').forEach(s => { s.setAttribute('fill',fill); s.setAttribute('stroke','#fff'); s.setAttribute('stroke-width','0.5'); s.style.opacity=isDim?'0.25':'1'; s.style.cursor='pointer'; s.style.transition='fill .2s,opacity .2s'; });
-        });
-    }
-    fetch('{% static "korea-map.svg" %}').then(r=>r.text()).then(text => {
-        mapC.innerHTML=text; svgEl=mapC.querySelector('svg');
-        if(!svgEl) return;
-        svgEl.removeAttribute('x');svgEl.removeAttribute('y');svgEl.removeAttribute('style');
-        svgEl.setAttribute('width','100%');svgEl.setAttribute('height','100%');svgEl.setAttribute('preserveAspectRatio','xMidYMid meet');svgEl.style.display='block';
-        const layer=svgEl.querySelector('#레이어_1'); if(layer) layer.remove();
-        const style=svgEl.querySelector('style'); if(style) style.remove();
-        svgEl.addEventListener('mouseover', e => { let el=e.target; while(el&&el!==svgEl){const id=el.getAttribute&&el.getAttribute('id'); if(id&&id in SVG_TO_REGION){hovered=SVG_TO_REGION[id];paint();return;} el=el.parentElement;} });
-        svgEl.addEventListener('mouseout', ()=>{hovered=null;paint();});
-        svgEl.addEventListener('click', e => { let el=e.target; while(el&&el!==svgEl){const id=el.getAttribute&&el.getAttribute('id'); if(id&&id in SVG_TO_REGION){selectRegion(SVG_TO_REGION[id]);return;} el=el.parentElement;} });
-        paint();
-    });
-    updateList();
-})();
-</script>

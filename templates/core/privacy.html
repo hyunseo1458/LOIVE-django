@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load core_tags %}
 
-{% block title %}개인정보처리방침{% endblock %}
+{% block title %}{% t "Privacy Policy" "개인정보처리방침" %}{% endblock %}
 
 {% block navbar %}
 <header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
@@ -9,94 +10,183 @@
             <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
             </a>
-            <h1 class="text-[17px] font-bold text-on-surface">개인정보처리방침</h1>
+            <h1 class="text-[17px] font-bold text-on-surface">{% t "Privacy Policy" "개인정보처리방침" %}</h1>
         </div>
-        <a href="{% url 'core:home' %}" class="flex-shrink-0">
-            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
-        </a>
+        <div class="flex items-center gap-3">
+            {% include "components/lang_toggle.html" %}
+            <a href="{% url 'core:home' %}" class="flex-shrink-0">
+                <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">LOIVE</span>
+            </a>
+        </div>
     </div>
 </header>
 {% endblock %}
 
 {% block content %}
-
 <div class="px-4 max-w-2xl mx-auto pb-8">
     <div class="bg-surface rounded-2xl border border-outline-variant/20 p-6 shadow-sm">
-        <p class="text-[12px] text-outline mb-6">시행일: 2026년 1월 1일</p>
+        <p class="text-[12px] text-outline mb-6">{% t "Effective: June 22, 2026" "시행일: 2026년 6월 22일" %}</p>
 
         <div class="space-y-8 text-[14px] text-on-surface-variant leading-relaxed">
+
+{% if LANG == 'ko' %}
             <section>
                 <h2 class="text-[16px] font-bold text-on-surface mb-3">1. 수집하는 개인정보 항목</h2>
-                <p class="mb-2">회사는 서비스 제공을 위해 아래와 같은 개인정보를 수집합니다.</p>
+                <p class="mb-2">LOIVE(이하 "회사")는 서비스 제공을 위해 아래 개인정보를 수집합니다.</p>
                 <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
                     <div class="flex gap-2">
-                        <span class="text-[13px] font-semibold text-on-surface w-16 shrink-0">필수</span>
-                        <span class="text-[13px]">이메일, 비밀번호, 이름</span>
+                        <span class="text-[13px] font-semibold text-on-surface w-20 shrink-0">필수 항목</span>
+                        <span class="text-[13px]">이메일 주소, 이름 (Google OAuth를 통해 수신)</span>
                     </div>
                     <div class="flex gap-2">
-                        <span class="text-[13px] font-semibold text-on-surface w-16 shrink-0">선택</span>
-                        <span class="text-[13px]">연락처, 프로필 사진</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="text-[13px] font-semibold text-on-surface w-16 shrink-0">자동</span>
-                        <span class="text-[13px]">IP 주소, 브라우저 정보, 서비스 이용 기록, 접속 로그</span>
+                        <span class="text-[13px] font-semibold text-on-surface w-20 shrink-0">자동 수집</span>
+                        <span class="text-[13px]">IP 주소, 브라우저 유형, 접속 일시, 페이지 열람 기록, 언어 설정 (Google Analytics를 통해 수집)</span>
                     </div>
                 </div>
+                <p class="mt-2 text-[13px] p-3 bg-surface-container-low rounded-lg"><strong>참고:</strong> 비밀번호는 Google이 관리하며, 회사는 비밀번호를 수신·저장하지 않습니다.</p>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">2. 개인정보의 수집 및 이용 목적</h2>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">2. 수집 및 이용 목적</h2>
                 <ul class="list-disc pl-5 space-y-1.5">
-                    <li>회원 식별 및 본인 확인</li>
-                    <li>서비스 제공 및 예약 처리</li>
-                    <li>결제 및 환불 처리</li>
-                    <li>고객 문의 대응</li>
-                    <li>서비스 개선 및 통계 분석</li>
-                    <li>마케팅 정보 제공 (별도 동의 시)</li>
+                    <li>회원 식별 및 서비스 로그인 처리</li>
+                    <li>위시리스트 등 개인화 기능 제공</li>
+                    <li>서비스 이용 통계 분석 및 개선 (Google Analytics 4)</li>
+                    <li>이용자 문의 대응</li>
                 </ul>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">3. 개인정보의 보유 및 이용 기간</h2>
-                <p class="mb-2">회원 탈퇴 시 즉시 파기합니다. 다만, 관련 법령에 따라 아래 기간 동안 보관합니다.</p>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">3. 제3자 제공 및 위탁</h2>
                 <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
                     <div class="flex gap-2">
-                        <span class="text-[13px] font-semibold text-on-surface min-w-[100px] shrink-0">계약/거래 기록</span>
-                        <span class="text-[13px]">5년 (전자상거래법)</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="text-[13px] font-semibold text-on-surface min-w-[100px] shrink-0">결제 기록</span>
-                        <span class="text-[13px]">5년 (전자상거래법)</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="text-[13px] font-semibold text-on-surface min-w-[100px] shrink-0">접속 로그</span>
-                        <span class="text-[13px]">3개월 (통신비밀보호법)</span>
+                        <span class="text-[13px] font-semibold text-on-surface min-w-[100px] shrink-0">Google LLC</span>
+                        <span class="text-[13px]">OAuth 인증 처리, 위치 정보 서비스(Maps), 웹 분석(Analytics)</span>
                     </div>
                 </div>
+                <p class="mt-2">위 외의 제3자에게 이용자의 개인정보를 제공하지 않습니다. 업체와의 예약·결제를 중개하지 않으므로, <strong>업체에 이용자 정보가 전달되지 않습니다.</strong></p>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">4. 개인정보의 제3자 제공</h2>
-                <p>회사는 원칙적으로 이용자의 동의 없이 개인정보를 외부에 제공하지 않습니다. 다만, 예약 이행을 위해 파트너에게 예약자 이름과 연락처를 제공할 수 있으며, 이 경우 사전 동의를 받습니다.</p>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">4. 보유 및 이용 기간</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>회원 탈퇴 시: 개인정보 <strong>즉시 파기</strong></li>
+                    <li>접속 로그: 3개월 보관 (통신비밀보호법 제15조의2)</li>
+                    <li>서비스 이용 기록: 탈퇴 시 삭제 (관련 법령에 따른 의무 보관 기간 제외)</li>
+                </ul>
             </section>
 
             <section>
                 <h2 class="text-[16px] font-bold text-on-surface mb-3">5. 이용자의 권리</h2>
-                <ul class="list-disc pl-5 space-y-1.5">
-                    <li>개인정보 열람, 수정, 삭제 요청</li>
+                <p>이용자는 언제든지 다음 권리를 행사할 수 있습니다:</p>
+                <ul class="list-disc pl-5 space-y-1.5 mt-2">
+                    <li>개인정보 열람·정정·삭제 요청</li>
                     <li>개인정보 처리 정지 요청</li>
-                    <li>회원 탈퇴</li>
+                    <li>계정 삭제 (탈퇴) 요청</li>
+                    <li>마케팅 수신 거부</li>
                 </ul>
-                <p class="mt-2">위 권리는 프로필 설정 또는 고객센터를 통해 행사할 수 있습니다.</p>
+                <p class="mt-2">권리 행사는 이메일(hyunseo1458@gmail.com)로 요청하실 수 있으며, 접수 후 10일 이내 처리합니다.</p>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">6. 개인정보 보호책임자</h2>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">6. 쿠키 및 트래킹</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li><strong>필수 쿠키:</strong> 로그인 세션 유지, 언어 설정 저장</li>
+                    <li><strong>분석 쿠키:</strong> Google Analytics 4를 통한 익명화된 사용 패턴 분석</li>
+                </ul>
+                <p class="mt-2">브라우저 설정에서 쿠키를 거부할 수 있으나, 일부 기능이 제한될 수 있습니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">7. 개인정보 보호책임자</h2>
                 <div class="bg-surface-container-low rounded-xl p-4 space-y-1">
-                    <p class="text-[13px]"><span class="font-semibold text-on-surface">담당자:</span> LOIVE 개인정보보호팀</p>
-                    <p class="text-[13px]"><span class="font-semibold text-on-surface">이메일:</span> privacy@loive.kr</p>
+                    <p class="text-[13px]"><span class="font-semibold text-on-surface">책임자:</span> LOIVE 운영팀</p>
+                    <p class="text-[13px]"><span class="font-semibold text-on-surface">이메일:</span> hyunseo1458@gmail.com</p>
+                </div>
+                <p class="mt-2">개인정보 침해에 대한 신고·상담은 아래 기관에도 문의하실 수 있습니다:</p>
+                <ul class="list-disc pl-5 space-y-1 mt-1 text-[13px]">
+                    <li>개인정보분쟁조정위원회 (www.kopico.go.kr / 1833-6972)</li>
+                    <li>한국인터넷진흥원 (privacy.kisa.or.kr / 118)</li>
+                </ul>
+            </section>
+
+{% else %}
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">1. Information We Collect</h2>
+                <p class="mb-2">LOIVE ("Company") collects the following personal information to provide the Service:</p>
+                <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
+                    <div class="flex gap-2">
+                        <span class="text-[13px] font-semibold text-on-surface w-20 shrink-0">Required</span>
+                        <span class="text-[13px]">Email address, name (received via Google OAuth)</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="text-[13px] font-semibold text-on-surface w-20 shrink-0">Automatic</span>
+                        <span class="text-[13px]">IP address, browser type, access time, pages viewed, language preference (via Google Analytics)</span>
+                    </div>
+                </div>
+                <p class="mt-2 text-[13px] p-3 bg-surface-container-low rounded-lg"><strong>Note:</strong> Passwords are managed by Google. The Company does not receive or store passwords.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">2. How We Use Your Information</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>User identification and login processing</li>
+                    <li>Personalization features (wishlist, preferences)</li>
+                    <li>Usage analytics and service improvement (Google Analytics 4)</li>
+                    <li>Responding to user inquiries</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">3. Third-Party Sharing</h2>
+                <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
+                    <div class="flex gap-2">
+                        <span class="text-[13px] font-semibold text-on-surface min-w-[100px] shrink-0">Google LLC</span>
+                        <span class="text-[13px]">OAuth authentication, Maps location services, Analytics</span>
+                    </div>
+                </div>
+                <p class="mt-2">We do not share your personal information with any other third parties. Since we do not facilitate bookings or payments, <strong>your information is never shared with listed businesses.</strong></p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">4. Data Retention</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>Upon account deletion: personal data is <strong>immediately destroyed</strong></li>
+                    <li>Access logs: retained for 3 months (Korean Telecommunications Privacy Act)</li>
+                    <li>Service usage records: deleted upon withdrawal (except where retention is required by law)</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">5. Your Rights</h2>
+                <p>You may exercise the following rights at any time:</p>
+                <ul class="list-disc pl-5 space-y-1.5 mt-2">
+                    <li>Request access to, correction of, or deletion of your personal data</li>
+                    <li>Request suspension of data processing</li>
+                    <li>Request account deletion</li>
+                    <li>Opt out of marketing communications</li>
+                </ul>
+                <p class="mt-2">To exercise these rights, contact us at hyunseo1458@gmail.com. Requests will be processed within 10 business days.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">6. Cookies & Tracking</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li><strong>Essential cookies:</strong> Login session management, language preference</li>
+                    <li><strong>Analytics cookies:</strong> Anonymized usage pattern analysis via Google Analytics 4</li>
+                </ul>
+                <p class="mt-2">You may reject cookies through your browser settings, though some features may be limited.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">7. Contact</h2>
+                <div class="bg-surface-container-low rounded-xl p-4 space-y-1">
+                    <p class="text-[13px]"><span class="font-semibold text-on-surface">Data Protection Officer:</span> LOIVE Operations Team</p>
+                    <p class="text-[13px]"><span class="font-semibold text-on-surface">Email:</span> hyunseo1458@gmail.com</p>
                 </div>
             </section>
+{% endif %}
+
         </div>
     </div>
 </div>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+{% load core_tags %}
+<html lang="{{ LANG }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>{% block title %}LOIVE{% endblock %} | 로컬 체험의 발견</title>
+    <title>{% block title %}LOIVE{% endblock %} | {% t "Discover Local Experiences in Jeju" "제주 로컬 체험의 발견" %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -80,6 +81,15 @@
             .app-header { padding-top: 44px !important; }
         }
     </style>
+    {% if GA_MEASUREMENT_ID %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ GA_MEASUREMENT_ID }}');
+    </script>
+    {% endif %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-screen bg-gray-100 font-sans flex">
@@ -186,7 +196,13 @@
             e.preventDefault(); e.stopPropagation();
             var id = parseInt(btn.dataset.wishId);
             LOIVE.toggleWish(id, function(wished) {
-                LOIVE.showToast(wished ? '찜 저장되었습니다' : '찜 목록에서 제거되었습니다');
+                if (typeof gtag === 'function') {
+                    gtag('event', wished ? 'add_to_wishlist' : 'remove_from_wishlist', { item_id: String(id) });
+                }
+                var lang = (document.cookie.match('(^|;)\\s*lang=([^;]*)') || [])[2] || 'en';
+                LOIVE.showToast(wished
+                    ? (lang === 'ko' ? '찜 목록에 저장되었습니다' : 'Saved to wishlist')
+                    : (lang === 'ko' ? '찜 목록에서 제거되었습니다' : 'Removed from wishlist'));
             });
         });
     });

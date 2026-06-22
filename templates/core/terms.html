@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load core_tags %}
 
-{% block title %}이용약관{% endblock %}
+{% block title %}{% t "Terms of Service" "이용약관" %}{% endblock %}
 
 {% block navbar %}
 <header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
@@ -9,76 +10,148 @@
             <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
             </a>
-            <h1 class="text-[17px] font-bold text-on-surface">이용약관</h1>
+            <h1 class="text-[17px] font-bold text-on-surface">{% t "Terms of Service" "이용약관" %}</h1>
         </div>
-        <a href="{% url 'core:home' %}" class="flex-shrink-0">
-            <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">로이브</span>
-        </a>
+        <div class="flex items-center gap-3">
+            {% include "components/lang_toggle.html" %}
+            <a href="{% url 'core:home' %}" class="flex-shrink-0">
+                <span class="text-ocean-blue text-[22px] font-extrabold tracking-tight">LOIVE</span>
+            </a>
+        </div>
     </div>
 </header>
 {% endblock %}
 
 {% block content %}
-
 <div class="px-4 max-w-2xl mx-auto pb-8">
     <div class="bg-surface rounded-2xl border border-outline-variant/20 p-6 shadow-sm">
-        <p class="text-[12px] text-outline mb-6">시행일: 2026년 1월 1일</p>
+        <p class="text-[12px] text-outline mb-6">{% t "Effective: June 22, 2026" "시행일: 2026년 6월 22일" %}</p>
 
         <div class="space-y-8 text-[14px] text-on-surface-variant leading-relaxed">
+
+{% if LANG == 'ko' %}
             <section>
                 <h2 class="text-[16px] font-bold text-on-surface mb-3">제 1 조 (목적)</h2>
-                <p>이 약관은 LOIVE (이하 "회사")가 제공하는 로컬 체험 예약 서비스(이하 "서비스")의 이용 조건과 절차, 회사와 회원 간의 권리·의무 및 책임 사항을 규정함을 목적으로 합니다.</p>
+                <p>이 약관은 LOIVE(이하 "회사")가 운영하는 제주 아웃도어 액티비티 정보 플랫폼(이하 "서비스")의 이용 조건, 회사와 이용자 간의 권리·의무 및 책임 사항을 규정함을 목적으로 합니다.</p>
             </section>
 
             <section>
                 <h2 class="text-[16px] font-bold text-on-surface mb-3">제 2 조 (정의)</h2>
                 <ul class="list-disc pl-5 space-y-1.5">
-                    <li>"서비스"란 회사가 운영하는 웹사이트 및 모바일 앱을 통해 제공하는 로컬 체험 검색, 예약, 결제 등 제반 서비스를 말합니다.</li>
-                    <li>"회원"이란 이 약관에 동의하고 회사와 이용 계약을 체결한 자를 말합니다.</li>
-                    <li>"파트너"란 회사와 별도 계약을 통해 액티비티를 등록·판매하는 사업자를 말합니다.</li>
+                    <li>"서비스"란 회사가 웹사이트(loive-django.onrender.com)를 통해 제공하는 제주도 소재 아웃도어 액티비티 업체의 정보 검색, 위치 안내, 연락처 제공 등 <strong>정보 제공 서비스</strong>를 말합니다.</li>
+                    <li>"이용자"란 이 약관에 동의하고 서비스를 이용하는 자를 말합니다.</li>
+                    <li>"업체 정보"란 Google Places API 등 외부 데이터 소스에서 수집하여 제공하는 업체명, 주소, 연락처, 평점, 사진 등의 공개 정보를 말합니다.</li>
                 </ul>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 3 조 (약관의 효력 및 변경)</h2>
-                <p>이 약관은 서비스 화면에 게시하거나 기타의 방법으로 회원에게 공지함으로써 효력이 발생합니다. 회사는 관련 법규를 위배하지 않는 범위 내에서 약관을 변경할 수 있으며, 변경 시 적용 일자 및 변경 사유를 명시하여 최소 7일 전 공지합니다.</p>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 3 조 (서비스의 내용)</h2>
+                <p>회사는 다음과 같은 <strong>정보 제공 서비스</strong>를 운영합니다:</p>
+                <ul class="list-disc pl-5 space-y-1.5 mt-2">
+                    <li>제주도 아웃도어 액티비티 업체 정보 검색 및 카테고리별 분류</li>
+                    <li>업체 위치 기반 길찾기(Google Maps 연동)</li>
+                    <li>업체 연락처 및 기본 정보 제공</li>
+                    <li>이용자 관심 업체 저장(위시리스트) 기능</li>
+                </ul>
+                <p class="mt-3 p-3 bg-surface-container-low rounded-lg text-[13px]"><strong>중요:</strong> 본 서비스는 업체와의 예약·결제를 중개하지 않습니다. 업체 이용에 대한 계약은 이용자와 해당 업체 간에 직접 이루어지며, 회사는 이에 대한 당사자가 아닙니다.</p>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 4 조 (서비스의 제공)</h2>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 4 조 (회원가입 및 계정)</h2>
                 <ul class="list-disc pl-5 space-y-1.5">
-                    <li>로컬 체험 액티비티 검색 및 상세 정보 제공</li>
-                    <li>액티비티 예약 및 결제 대행</li>
-                    <li>예약 관리 (확인, 변경, 취소)</li>
-                    <li>리뷰 작성 및 조회</li>
-                    <li>기타 회사가 정하는 서비스</li>
+                    <li>이용자는 Google OAuth를 통해 회원가입할 수 있습니다.</li>
+                    <li>회사는 Google로부터 이메일 주소와 이름만 수신하며, 비밀번호는 저장하지 않습니다.</li>
+                    <li>이용자는 언제든지 계정 삭제를 요청할 수 있으며, 요청 시 관련 데이터는 즉시 삭제됩니다.</li>
                 </ul>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 5 조 (예약 및 결제)</h2>
-                <p>회원은 서비스를 통해 액티비티를 예약하고 결제할 수 있으며, 결제가 완료되면 예약이 확정됩니다. 예약 확정 시 예약번호가 부여되며, 해당 번호로 예약 내역을 조회할 수 있습니다.</p>
-            </section>
-
-            <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 6 조 (취소 및 환불)</h2>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 5 조 (면책 조항)</h2>
                 <ul class="list-disc pl-5 space-y-1.5">
-                    <li>이용일 기준 7일 전 취소: 전액 환불</li>
-                    <li>이용일 기준 3~6일 전 취소: 50% 환불</li>
-                    <li>이용일 기준 2일 이내 취소: 환불 불가</li>
-                    <li>천재지변 등 불가항력 사유: 전액 환불</li>
+                    <li>회사가 제공하는 업체 정보는 Google Places API 등 외부 소스에서 수집된 것으로, 정보의 정확성·최신성을 보증하지 않습니다.</li>
+                    <li>업체의 실제 운영 시간, 가격, 서비스 품질, 안전성에 대해 회사는 책임을 지지 않습니다.</li>
+                    <li>이용자와 업체 간 발생한 분쟁에 대해 회사는 당사자가 아니며, 법적 책임을 지지 않습니다.</li>
+                    <li>이용자는 액티비티 참여 시 본인의 안전에 대해 스스로 책임져야 하며, 개인 보험 가입을 권장합니다.</li>
                 </ul>
             </section>
 
             <section>
-                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 7 조 (면책 조항)</h2>
-                <p>회사는 파트너가 제공하는 액티비티의 품질, 안전성 등에 대해 보증하지 않으며, 파트너와 회원 간의 분쟁에 대해 직접적인 책임을 지지 않습니다. 단, 회사는 분쟁 해결을 위해 성실히 중재합니다.</p>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 6 조 (지적재산권)</h2>
+                <p>서비스의 디자인, 소프트웨어, 로고 등 지적재산은 회사에 귀속됩니다. 업체 사진 및 리뷰 데이터는 Google의 이용약관에 따릅니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">제 7 조 (약관의 변경)</h2>
+                <p>회사는 관련 법규를 위배하지 않는 범위 내에서 약관을 변경할 수 있으며, 변경 시 적용 일자 및 변경 사유를 명시하여 최소 7일 전 서비스 내에 공지합니다.</p>
             </section>
 
             <section>
                 <h2 class="text-[16px] font-bold text-on-surface mb-3">제 8 조 (준거법 및 분쟁 해결)</h2>
-                <p>이 약관의 해석 및 회사와 회원 간의 분쟁에 대해서는 대한민국 법률을 적용하며, 분쟁 발생 시 서울중앙지방법원을 관할 법원으로 합니다.</p>
+                <p>이 약관은 대한민국 법률에 따라 해석되며, 분쟁 발생 시 제주지방법원을 제1심 관할 법원으로 합니다.</p>
             </section>
+
+{% else %}
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 1. Purpose</h2>
+                <p>These Terms govern the use of the Jeju outdoor activity information platform ("Service") operated by LOIVE ("Company"), including the rights, obligations, and responsibilities between the Company and users.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 2. Definitions</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li><strong>"Service"</strong> means the information discovery platform providing search, location guidance, and contact information for outdoor activity businesses located in Jeju Island, accessible at loive-django.onrender.com.</li>
+                    <li><strong>"User"</strong> means any person who agrees to these Terms and uses the Service.</li>
+                    <li><strong>"Business Information"</strong> means publicly available data such as business names, addresses, phone numbers, ratings, and photos collected from external sources including Google Places API.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 3. Scope of Service</h2>
+                <p>The Company operates the following <strong>information-only services</strong>:</p>
+                <ul class="list-disc pl-5 space-y-1.5 mt-2">
+                    <li>Search and categorized listing of outdoor activity businesses in Jeju</li>
+                    <li>Location-based directions via Google Maps integration</li>
+                    <li>Display of business contact information and basic details</li>
+                    <li>Wishlist functionality for saving businesses of interest</li>
+                </ul>
+                <p class="mt-3 p-3 bg-surface-container-low rounded-lg text-[13px]"><strong>Important:</strong> This Service does not facilitate bookings or payments. Any transaction between a user and a business is made directly between those parties. The Company is not a party to such transactions.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 4. Account & Authentication</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>Users may create an account via Google OAuth sign-in.</li>
+                    <li>The Company only receives your email address and name from Google. Passwords are never stored.</li>
+                    <li>Users may request account deletion at any time, upon which all associated data will be immediately removed.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 5. Disclaimer</h2>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>Business information is sourced from Google Places API and other external sources. The Company does not guarantee the accuracy or currency of this information.</li>
+                    <li>The Company is not responsible for actual operating hours, pricing, service quality, or safety standards of any listed business.</li>
+                    <li>The Company is not a party to any dispute between users and businesses and bears no legal liability for such disputes.</li>
+                    <li>Users participate in outdoor activities at their own risk. Personal insurance is recommended.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 6. Intellectual Property</h2>
+                <p>The Service's design, software, and logos are the property of the Company. Business photos and review data are subject to Google's Terms of Service.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 7. Amendments</h2>
+                <p>The Company may amend these Terms within the bounds of applicable law. Changes will be announced within the Service at least 7 days before the effective date, specifying the reason and effective date.</p>
+            </section>
+
+            <section>
+                <h2 class="text-[16px] font-bold text-on-surface mb-3">Article 8. Governing Law</h2>
+                <p>These Terms are governed by the laws of the Republic of Korea. In the event of a dispute, the Jeju District Court shall serve as the court of first instance.</p>
+            </section>
+{% endif %}
+
         </div>
     </div>
 </div>

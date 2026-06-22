@@ -13,26 +13,35 @@ IMG = {
 
 
 class Command(BaseCommand):
-    help = "Seed database with mock data matching the Next.js frontend"
+    help = "Seed database with Jeju outdoor activity data"
 
     def handle(self, *args, **options):
-        # Categories
+        # --- Categories: Jeju outdoor/marine activity types ---
         cats = {}
-        for i, (name, slug) in enumerate([
-            ("해양", "ocean"), ("자연", "nature"), ("문화", "culture"), ("음식", "food"), ("숙박", "stay"),
-        ]):
-            cats[slug], _ = Category.objects.get_or_create(name=name, defaults={"slug": slug, "order": i})
+        cat_defs = [
+            ("Surfing", "surfing", 0),
+            ("Diving", "diving", 1),
+            ("Kayak / SUP", "kayak", 2),
+            ("Jet Ski", "jet-ski", 3),
+            ("Parasailing", "parasailing", 4),
+            ("Hiking", "hiking", 5),
+            ("ATV / Buggy", "atv", 6),
+            ("Horse Riding", "horse-riding", 7),
+            ("Fishing", "fishing", 8),
+            ("Cycling", "cycling", 9),
+        ]
+        for name, slug, order in cat_defs:
+            cats[slug], _ = Category.objects.update_or_create(slug=slug, defaults={"name": name, "order": order})
 
-        # Regions
+        # --- Regions (keep all for future expansion) ---
         regions = {}
         for name in ["서울", "경기", "인천", "강원", "충북", "충남", "대전", "전북", "전남", "광주", "경북", "경남", "대구", "울산", "부산", "제주"]:
-            slug = name
-            regions[name], _ = Region.objects.get_or_create(name=name, defaults={"slug": slug})
+            regions[name], _ = Region.objects.get_or_create(name=name, defaults={"slug": name})
 
-        # Partner user
+        # --- Partner user ---
         partner_user, created = User.objects.get_or_create(
             username="partner1",
-            defaults={"email": "partner@loive.kr", "role": User.Role.PARTNER, "first_name": "로이브", "last_name": "파트너"},
+            defaults={"email": "partner@loive.kr", "role": User.Role.PARTNER, "first_name": "LOIVE", "last_name": "Partner"},
         )
         if created:
             partner_user.set_password("partner1234")
@@ -41,57 +50,143 @@ class Command(BaseCommand):
         partner, _ = Partner.objects.get_or_create(
             user=partner_user,
             defaults={
-                "business_name": "로이브 체험",
+                "business_name": "LOIVE Jeju",
                 "business_number": "123-45-67890",
-                "bank_name": "신한은행",
+                "bank_name": "Shinhan",
                 "account_number": "110-123-456789",
-                "account_holder": "로이브",
+                "account_holder": "LOIVE",
                 "status": Partner.Status.APPROVED,
                 "approved_at": timezone.now(),
             },
         )
 
-        # Activities (matching Next.js mock data)
+        # --- Jeju outdoor activities ---
+        jeju = regions["제주"]
         activities_data = [
-            {"title": "투명 카약 체험", "cat": "ocean", "region": "제주", "price": 45000, "loc": "애월 해안", "img": IMG["kayak"], "desc": "투명한 바다 위를 카약으로 누벼보세요. 맑은 날이면 바다 밑 산호초까지 보입니다."},
-            {"title": "프리미엄 서핑 강습", "cat": "ocean", "region": "제주", "price": 60000, "loc": "중문 색달 해변", "img": IMG["surf"], "desc": "전문 강사와 함께하는 2시간 서핑 강습. 초보자도 환영합니다."},
-            {"title": "해녀 체험 다이빙", "cat": "ocean", "region": "제주", "price": 80000, "loc": "우도", "img": IMG["dive"], "desc": "우도에서 즐기는 정통 해녀 체험. 장비 일체 포함."},
-            {"title": "해운대 서핑 클래스", "cat": "ocean", "region": "부산", "price": 55000, "loc": "해운대 해변", "img": IMG["kayak"], "desc": "해운대에서 즐기는 서핑. 보드와 웻슈트 제공."},
-            {"title": "감천문화마을 투어", "cat": "culture", "region": "부산", "price": 25000, "loc": "감천문화마을", "img": IMG["surf"], "desc": "다채로운 건물과 골목길을 걸으며 부산의 예술을 만나보세요."},
-            {"title": "태종대 트레킹", "cat": "nature", "region": "부산", "price": 15000, "loc": "태종대", "img": IMG["dive"], "desc": "부산 남단의 아름다운 해안 절벽을 따라 걸어보세요."},
-            {"title": "속초 서핑 체험", "cat": "ocean", "region": "강원", "price": 50000, "loc": "속초 해변", "img": IMG["trail"], "desc": "동해안의 파도에서 즐기는 서핑 체험."},
-            {"title": "설악산 등산 투어", "cat": "nature", "region": "강원", "price": 35000, "loc": "설악산", "img": IMG["mountain"], "desc": "전문 가이드와 함께하는 설악산 등산."},
-            {"title": "강릉 커피거리 투어", "cat": "culture", "region": "강원", "price": 20000, "loc": "강릉 안목해변", "img": IMG["kayak"], "desc": "안목해변의 유명 카페들을 순회하는 커피 투어."},
-            {"title": "통영 루지 체험", "cat": "nature", "region": "경남", "price": 18000, "loc": "통영 스카이라인", "img": IMG["surf"], "desc": "통영 스카이라인 루지를 타며 바다를 내려다보세요."},
-            {"title": "남해 독일마을 산책", "cat": "culture", "region": "경남", "price": 10000, "loc": "남해 독일마을", "img": IMG["dive"], "desc": "이국적인 독일마을에서 여유로운 산책을 즐겨보세요."},
-            {"title": "북촌 한옥마을 투어", "cat": "culture", "region": "서울", "price": 30000, "loc": "북촌", "img": IMG["trail"], "desc": "전통 한옥의 아름다움을 만끽하는 가이드 투어."},
-            {"title": "한강 카약 체험", "cat": "ocean", "region": "서울", "price": 40000, "loc": "여의도 한강공원", "img": IMG["mountain"], "desc": "도심 속 한강에서 즐기는 카약 체험."},
-            {"title": "남산 둘레길 트레킹", "cat": "nature", "region": "서울", "price": 15000, "loc": "남산", "img": IMG["kayak"], "desc": "서울 중심의 남산 둘레길을 걸으며 도시 전경을 감상하세요."},
-            {"title": "가평 레일바이크", "cat": "nature", "region": "경기", "price": 30000, "loc": "가평", "img": IMG["surf"], "desc": "아름다운 북한강변을 따라 달리는 레일바이크."},
-            {"title": "수원화성 야간 투어", "cat": "culture", "region": "경기", "price": 20000, "loc": "수원화성", "img": IMG["dive"], "desc": "유네스코 세계유산 수원화성의 아름다운 야경 투어."},
+            {
+                "title": "Jungmun Beach Surfing Lesson", "title_ko": "중문 해변 서핑 강습",
+                "cat": "surfing", "price": 60000, "duration": 120,
+                "address": "Jungmun Saekdal Beach, Seogwipo", "address_ko": "서귀포시 중문 색달해변",
+                "lat": "33.2436", "lng": "126.4108", "img": IMG["surf"],
+                "desc": "Catch your first wave at Jungmun Beach! 2-hour beginner-friendly lesson with all equipment included.",
+                "desc_ko": "중문 해변에서 첫 파도를 잡아보세요! 초보자 맞춤 2시간 강습, 장비 전부 포함.",
+            },
+            {
+                "title": "Woljeongri Beach Surf Experience", "title_ko": "월정리 해변 서핑 체험",
+                "cat": "surfing", "price": 55000, "duration": 120,
+                "address": "Woljeong-ri Beach, Gujwa-eup", "address_ko": "제주시 구좌읍 월정리 해변",
+                "lat": "33.5560", "lng": "126.8040", "img": IMG["surf"],
+                "desc": "Ride the waves at Jeju's most iconic beach. Crystal-clear turquoise water, perfect for beginners.",
+                "desc_ko": "제주 월정리 해변에서 서핑을 즐겨보세요. 투명한 에메랄드빛 바다, 초보자도 OK.",
+            },
+            {
+                "title": "Udo Island Snorkeling & Diving", "title_ko": "우도 스노클링 & 다이빙",
+                "cat": "diving", "price": 80000, "duration": 180,
+                "address": "Udo Island, Jeju", "address_ko": "제주시 우도면",
+                "lat": "33.5067", "lng": "126.9519", "img": IMG["dive"],
+                "desc": "Explore the underwater world around Udo Island. All gear provided. No experience necessary.",
+                "desc_ko": "우도 바다 속 세계를 탐험하세요. 장비 전부 제공, 경험 없어도 OK.",
+            },
+            {
+                "title": "Seogwipo Scuba Diving", "title_ko": "서귀포 문섬 스쿠버 다이빙",
+                "cat": "diving", "price": 95000, "duration": 180,
+                "address": "Munseom Island, Seogwipo", "address_ko": "서귀포시 문섬 해역",
+                "lat": "33.2290", "lng": "126.5650", "img": IMG["dive"],
+                "desc": "Dive into UNESCO-protected waters of Munseom. PADI-certified instructors for all levels.",
+                "desc_ko": "유네스코 보호 해역 문섬에서 다이빙. PADI 인증 강사, 모든 레벨 환영.",
+            },
+            {
+                "title": "Aewol Clear Kayak Tour", "title_ko": "애월 투명 카약 투어",
+                "cat": "kayak", "price": 45000, "duration": 90,
+                "address": "Aewol Coastal Road, Jeju", "address_ko": "제주시 애월읍 해안도로",
+                "lat": "33.4620", "lng": "126.3250", "img": IMG["kayak"],
+                "desc": "Paddle a transparent kayak over Aewol's crystal-clear waters.",
+                "desc_ko": "애월의 투명한 바다 위를 투명 카약으로 누벼보세요.",
+            },
+            {
+                "title": "Hallasan Summit Hiking", "title_ko": "한라산 정상 등반",
+                "cat": "hiking", "price": 40000, "duration": 480,
+                "address": "Hallasan National Park", "address_ko": "제주시 한라산국립공원",
+                "lat": "33.3617", "lng": "126.5292", "img": IMG["mountain"],
+                "desc": "Conquer South Korea's highest peak (1,950m). Full-day guided hike.",
+                "desc_ko": "대한민국 최고봉(1,950m) 한라산 종일 가이드 등반.",
+            },
+            {
+                "title": "Jeju Olle Trail Walk (Route 7)", "title_ko": "제주 올레길 7코스 걷기",
+                "cat": "hiking", "price": 25000, "duration": 240,
+                "address": "Olle Trail Route 7, Seogwipo", "address_ko": "서귀포시 올레길 7코스",
+                "lat": "33.2528", "lng": "126.4116", "img": IMG["trail"],
+                "desc": "Walk the most scenic section of Jeju Olle Trail. Coastal cliffs and hidden beaches.",
+                "desc_ko": "제주 올레길에서 가장 아름다운 구간. 해안 절벽과 숨겨진 해변.",
+            },
+            {
+                "title": "Chagwido Boat Fishing", "title_ko": "차귀도 선상 낚시",
+                "cat": "fishing", "price": 70000, "duration": 240,
+                "address": "Chagwido Island, Hallim", "address_ko": "제주시 한림읍 차귀도",
+                "lat": "33.3139", "lng": "126.1528", "img": IMG["trail"],
+                "desc": "Deep-sea fishing around Chagwido Island. All tackle and bait provided.",
+                "desc_ko": "차귀도 근해 선상 낚시. 낚시 장비·미끼 전부 제공.",
+            },
+            {
+                "title": "East Coast Scenic Cycling", "title_ko": "동부 해안 자전거 투어",
+                "cat": "cycling", "price": 30000, "duration": 180,
+                "address": "Woljeongri to Sehwa Beach", "address_ko": "월정리 ~ 세화해변 해안도로",
+                "lat": "33.4500", "lng": "126.9200", "img": IMG["trail"],
+                "desc": "Cycle along Jeju's stunning east coast. Bike rental, helmet, and route map included.",
+                "desc_ko": "제주 동부 해안을 따라 자전거를 타세요. 자전거·헬멧·지도 포함.",
+            },
+            {
+                "title": "Jeju Jet Ski Experience", "title_ko": "제주 제트스키 체험",
+                "cat": "jet-ski", "price": 50000, "duration": 30,
+                "address": "Iho Tewoo Beach, Jeju", "address_ko": "제주시 이호테우해변",
+                "lat": "33.4970", "lng": "126.4530", "img": IMG["surf"],
+                "desc": "Ride jet skis on Jeju's beautiful Iho Beach. Thrilling speed on the ocean.",
+                "desc_ko": "이호해변에서 제트스키를 타세요. 바다 위 스릴 만점 체험.",
+            },
+            {
+                "title": "Jeju ATV Off-Road Adventure", "title_ko": "제주 ATV 오프로드 체험",
+                "cat": "atv", "price": 45000, "duration": 60,
+                "address": "Hallim ATV Park, Jeju", "address_ko": "제주시 한림읍 ATV 체험장",
+                "lat": "33.3800", "lng": "126.2700", "img": IMG["mountain"],
+                "desc": "Off-road ATV adventure through Jeju's volcanic terrain and forests.",
+                "desc_ko": "제주 화산 지형과 숲을 가로지르는 ATV 오프로드 체험.",
+            },
+            {
+                "title": "Jeju Horse Riding by the Sea", "title_ko": "제주 해변 승마 체험",
+                "cat": "horse-riding", "price": 55000, "duration": 60,
+                "address": "Hallim Riding Club, Jeju", "address_ko": "제주시 한림읍 승마클럽",
+                "lat": "33.4000", "lng": "126.2500", "img": IMG["trail"],
+                "desc": "Ride horses along Jeju's beautiful coastline. Beginner-friendly, guided tour.",
+                "desc_ko": "제주 해안을 따라 말을 타세요. 초보자 가능, 가이드 동행.",
+            },
         ]
 
         from datetime import date, time, timedelta
 
         for data in activities_data:
-            activity, created = Activity.objects.get_or_create(
+            activity, created = Activity.objects.update_or_create(
                 title=data["title"],
                 defaults={
                     "partner": partner,
                     "category": cats[data["cat"]],
-                    "region": regions[data["region"]],
+                    "region": jeju,
                     "price": data["price"],
-                    "capacity": 20,
-                    "duration_minutes": 120,
-                    "address": data["loc"],
+                    "capacity": 12,
+                    "duration_minutes": data["duration"],
+                    "address": data["address"],
+                    "address_ko": data["address_ko"],
+                    "latitude": data["lat"],
+                    "longitude": data["lng"],
                     "description": data["desc"],
+                    "title_ko": data["title_ko"],
+                    "description_ko": data["desc_ko"],
                     "thumbnail_url": data["img"],
                     "status": Activity.Status.APPROVED,
                 },
             )
             if created:
                 today = date.today()
-                for d in range(7):
+                for d in range(14):
                     for t in [time(9, 0), time(13, 0), time(16, 0)]:
                         ActivitySlot.objects.create(
                             activity=activity,
@@ -100,28 +195,32 @@ class Command(BaseCommand):
                             remaining=activity.capacity,
                         )
 
-        # Courses
-        jeju_activities = Activity.objects.filter(region__name="제주")[:3]
-        course1, _ = Course.objects.get_or_create(
-            title="동부 해안 힐링 로드",
+        # --- Curated courses ---
+        surf_activities = Activity.objects.filter(category__slug="surfing", region=jeju)[:2]
+        course1, _ = Course.objects.update_or_create(
+            title="Jeju Ocean Adventure Day",
             defaults={
-                "description": "한적한 산책로와 해변 카페, 바다 옆 요가 클래스.",
-                "price": 150000,
+                "title_ko": "제주 해양 어드벤처 데이",
+                "description": "Surf in the morning, kayak at sunset. The ultimate Jeju water sports combo.",
+                "description_ko": "아침엔 서핑, 석양엔 카약. 제주 해양 스포츠 풀코스.",
+                "price": 95000,
                 "image": "",
             },
         )
-        course1.activities.set(jeju_activities)
+        course1.activities.set(surf_activities)
 
-        busan_activities = Activity.objects.filter(region__name="부산")[:3]
-        course2, _ = Course.objects.get_or_create(
-            title="럭셔리 요트 투어",
+        hike_activities = Activity.objects.filter(category__slug="hiking", region=jeju)[:2]
+        course2, _ = Course.objects.update_or_create(
+            title="Jeju Nature Explorer",
             defaults={
-                "description": "선셋 세일링, 프리미엄 다이닝과 돌고래 와칭.",
-                "price": 200000,
+                "title_ko": "제주 자연 탐험 코스",
+                "description": "Summit Hallasan and walk the Olle Trail. Two days of Jeju's best landscapes.",
+                "description_ko": "한라산 정상 등반 + 올레길 걷기. 제주 최고의 자연경관 이틀 코스.",
+                "price": 60000,
                 "image": "",
             },
         )
-        course2.activities.set(busan_activities)
+        course2.activities.set(hike_activities)
 
         self.stdout.write(self.style.SUCCESS(
             f"Seed complete: {Activity.objects.count()} activities, "

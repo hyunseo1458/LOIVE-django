@@ -1,26 +1,24 @@
-from urllib.parse import unquote
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db import transaction
 from django.db.models import Avg, Count, Q
-from .models import Activity, Category, Course, Region, Review
+from .models import Activity, Category, Course, Review
+
+
+JEJU_REGION = "제주"
 
 
 def explore(request):
     category_slug = request.GET.get("category", "")
     query = request.GET.get("q", "").strip()
-    sort = request.GET.get("sort", "추천순")
-    region_name = unquote(request.COOKIES.get("region", ""))
+    sort = request.GET.get("sort", "recommended")
 
     activities = Activity.objects.filter(
-        status=Activity.Status.APPROVED
+        status=Activity.Status.APPROVED,
+        region__name=JEJU_REGION,
     ).select_related("category", "region").annotate(
         avg_rating=Avg("reviews__rating"),
         review_count=Count("reviews"),
     )
-
-    if region_name:
-        activities = activities.filter(region__name=region_name)
 
     if query:
         activities = activities.filter(
@@ -31,11 +29,11 @@ def explore(request):
     if category_slug:
         activities = activities.filter(category__slug=category_slug)
 
-    if sort == "평점 높은순":
+    if sort == "rating":
         activities = activities.order_by("-avg_rating")
-    elif sort == "가격 낮은순":
+    elif sort == "price_low":
         activities = activities.order_by("price")
-    elif sort == "가격 높은순":
+    elif sort == "price_high":
         activities = activities.order_by("-price")
 
     categories = Category.objects.all()
@@ -45,9 +43,8 @@ def explore(request):
         "categories": categories,
         "current_category": category_slug,
         "current_query": query,
-        "current_region": region_name,
         "current_sort": sort,
-        "sort_options": ["추천순", "평점 높은순", "가격 낮은순", "가격 높은순"],
+        "sort_options": ["recommended", "rating", "price_low", "price_high"],
     })
 
 
@@ -112,7 +109,7 @@ def write_review(request, pk):
     ).exists()
 
     if not has_completed:
-        messages.error(request, "이용 완료된 예약이 있어야 리뷰를 작성할 수 있습니다.")
+        messages.error(request, "You can only write a review after completing a booking.")
         return redirect("activities:reviews", pk=pk)
 
     if request.method == "POST":
