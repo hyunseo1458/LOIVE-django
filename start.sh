@@ -18,13 +18,17 @@ from allauth.socialaccount.models import SocialApp
 from allauth.account.models import EmailAddress
 from django.contrib.sites.models import Site
 
-# 1. Check if we need to fetch places (no Google data yet)
+# 1. Delete old categories and check if we need to fetch places
+old_cats = Category.objects.filter(slug__in=['ocean', 'nature', 'culture', 'food', 'stay', 'surfing', 'diving', 'kayaking', 'cycling'])
+if old_cats.exists():
+    print(f'Deleting {old_cats.count()} old categories...')
+    Activity.objects.filter(category__in=old_cats).delete()
+    old_cats.delete()
+
 google_count = Activity.objects.exclude(google_place_id='').exclude(google_place_id__isnull=True).count()
 if google_count == 0:
     print('No Google Places data found - will fetch after server start')
-    # Delete old seed data
     Activity.objects.all().delete()
-    Category.objects.all().delete()
 
 # 2. Create admin if not exists
 if not User.objects.filter(username='hyunseo1458').exists():
