@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db import transaction
-from django.db.models import Avg, Count, Q
+from django.db import models
+from django.db.models import Avg, Count, Q, F, Value
+from django.db.models.functions import Coalesce, Log
 from .models import Activity, Category, Course, Review
 
 
@@ -15,26 +17,31 @@ def explore(request):
     activities = Activity.objects.filter(
         status=Activity.Status.APPROVED,
         region__name=JEJU_REGION,
-    ).select_related("category", "region").annotate(
-        avg_rating=Avg("reviews__rating"),
-        review_count=Count("reviews"),
-    )
+    ).select_related("category", "region")
 
     if query:
         activities = activities.filter(
             Q(title__icontains=query) |
+            Q(title_ko__icontains=query) |
             Q(address__icontains=query) |
+            Q(address_ko__icontains=query) |
             Q(category__name__icontains=query)
         )
     if category_slug:
         activities = activities.filter(category__slug=category_slug)
 
-    if sort == "rating":
-        activities = activities.order_by("-avg_rating")
-    elif sort == "price_low":
-        activities = activities.order_by("price")
-    elif sort == "price_high":
-        activities = activities.order_by("-price")
+    if sort == "best":
+        activities = activities.order_by("-google_rating", "-google_reviews_count")
+    elif sort == "most_reviewed":
+        activities = activities.order_by("-google_reviews_count", "-google_rating")
+    else:
+        from django.db.models import FloatField, ExpressionWrapper
+        activities = activities.annotate(
+            popularity=ExpressionWrapper(
+                Coalesce(F("google_rating"), Value(0.0)) * (F("google_reviews_count") + 1),
+                output_field=FloatField(),
+            )
+        ).order_by("-popularity")
 
     categories = Category.objects.all()
 
@@ -44,7 +51,7 @@ def explore(request):
         "current_category": category_slug,
         "current_query": query,
         "current_sort": sort,
-        "sort_options": ["recommended", "rating", "price_low", "price_high"],
+        "sort_options": ["recommended", "best", "most_reviewed"],
     })
 
 
@@ -129,6 +136,19 @@ def write_review(request, pk):
 
     return render(request, "activities/write_review.html", {
         "activity": activity,
+    })
+
+
+def place_reviews(request, pk):
+    activity = get_object_or_404(Activity, pk=pk, status=Activity.Status.APPROVED)
+    lang = request.COOKIES.get("lang", "en")
+    if lang == "ko":
+        reviews = activity.google_reviews or []
+    else:
+        reviews = activity.google_reviews_en or activity.google_reviews or []
+    return render(request, "activities/place_reviews.html", {
+        "activity": activity,
+        "reviews": reviews,
     })
 
 

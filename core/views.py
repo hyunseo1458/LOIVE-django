@@ -44,12 +44,17 @@ def _build_banners(lang="en"):
 def home(request):
     categories = Category.objects.all()
     all_categories = ["All"] + list(categories.values_list("name", flat=True))
+    from django.db.models import F, Value, FloatField, ExpressionWrapper
+    from django.db.models.functions import Coalesce
     activities = Activity.objects.filter(
         status=Activity.Status.APPROVED,
         region__name=JEJU_REGION,
     ).select_related("category", "region").annotate(
-        avg_rating=Avg("reviews__rating"),
-    )[:6]
+        popularity=ExpressionWrapper(
+            Coalesce(F("google_rating"), Value(0.0)) * (F("google_reviews_count") + 1),
+            output_field=FloatField(),
+        )
+    ).order_by("-popularity")[:6]
 
     lang = request.COOKIES.get("lang", "en")
     courses = Course.objects.filter(is_active=True).prefetch_related("activities")[:6]

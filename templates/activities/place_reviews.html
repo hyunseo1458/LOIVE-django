@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}{% t "Reviews" "리뷰" %} - {{ activity|loc:LANG }}{% endblock %}
+
+{% block navbar %}
+<header class="app-header w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex-shrink-0">
+    <div class="flex items-center justify-between px-5 h-12">
+        <div class="flex items-center gap-2">
+            <a href="javascript:history.back()" class="w-10 h-10 flex items-center justify-center -ml-2 text-on-surface">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+            </a>
+            <h1 class="text-[17px] font-bold text-on-surface line-clamp-1">{{ activity|loc:LANG }}</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            {% include "components/lang_toggle.html" %}
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block content %}
+<div class="px-4 pt-3 pb-8">
+    {# Rating summary #}
+    {% if activity.google_rating %}
+    <div class="flex items-center gap-3 mb-5">
+        <div class="text-center">
+            <p class="text-[32px] font-bold text-on-surface leading-none">{{ activity.google_rating }}</p>
+            <div class="flex items-center gap-0.5 mt-1 justify-center">
+                {% for i in "12345" %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 {% if forloop.counter <= activity.google_rating %}text-sun-yellow{% else %}text-outline-variant/40{% endif %}">
+                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                </svg>
+                {% endfor %}
+            </div>
+            <p class="text-[12px] text-outline mt-0.5">{{ activity.google_reviews_count|intcomma }} {% t "reviews" "리뷰" %}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Sort tabs #}
+    <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
+        <button type="button" data-sort="newest" class="sort-btn px-3 py-1.5 rounded-sm border text-[11px] font-semibold whitespace-nowrap border-ocean-blue bg-ocean-blue/5 text-ocean-blue">
+            {% t "Newest" "최신순" %}
+        </button>
+        <button type="button" data-sort="oldest" class="sort-btn px-3 py-1.5 rounded-sm border text-[11px] font-semibold whitespace-nowrap border-outline-variant/40 text-on-surface-variant">
+            {% t "Oldest" "오래된순" %}
+        </button>
+        <button type="button" data-sort="high" class="sort-btn px-3 py-1.5 rounded-sm border text-[11px] font-semibold whitespace-nowrap border-outline-variant/40 text-on-surface-variant">
+            {% t "Highest" "별점 높은순" %}
+        </button>
+        <button type="button" data-sort="low" class="sort-btn px-3 py-1.5 rounded-sm border text-[11px] font-semibold whitespace-nowrap border-outline-variant/40 text-on-surface-variant">
+            {% t "Lowest" "별점 낮은순" %}
+        </button>
+    </div>
+
+    {# Review list #}
+    <div class="flex flex-col gap-3" id="review-list">
+        {% for review in reviews %}
+        <div class="review-card bg-surface-container-lowest rounded-lg p-4 border border-outline-variant/20"
+             data-rating="{{ review.rating }}" data-index="{{ forloop.counter0 }}">
+            <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center gap-2">
+                    {% if review.photo %}
+                    <img src="{{ review.photo }}" alt="" class="w-9 h-9 rounded-full object-cover">
+                    {% else %}
+                    <div class="w-9 h-9 rounded-full bg-ocean-blue/10 text-ocean-blue flex items-center justify-center text-[13px] font-bold">
+                        {{ review.author|truncatechars:1 }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <p class="text-[13px] font-semibold text-on-surface leading-none">{{ review.author }}</p>
+                        <p class="text-[11px] text-outline mt-0.5">{{ review.time }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-0.5">
+                    {% for i in "12345" %}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 {% if forloop.counter <= review.rating %}text-sun-yellow{% else %}text-outline-variant/40{% endif %}">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                    </svg>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if review.text %}
+            <p class="text-[13px] text-on-surface-variant leading-relaxed">{{ review.text }}</p>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="text-[14px] text-outline text-center py-8">{% t "No reviews yet" "아직 리뷰가 없습니다" %}</p>
+        {% endfor %}
+    </div>
+
+    {# Google Maps link for all reviews #}
+    {% if activity.google_place_id %}
+    <a href="https://www.google.com/maps/place/?q=place_id:{{ activity.google_place_id }}"
+       target="_blank" rel="noopener"
+       class="block w-full mt-4 py-3 border border-outline-variant/40 rounded-lg text-center text-[14px] font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+        {% t "View all reviews on Google" "Google에서 전체 리뷰 보기" %}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 inline ml-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+        </svg>
+    </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var btns = document.querySelectorAll('.sort-btn');
+    var list = document.getElementById('review-list');
+    var cards = Array.from(list.querySelectorAll('.review-card'));
+
+    btns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            btns.forEach(function(b) {
+                b.classList.remove('border-ocean-blue', 'bg-ocean-blue/5', 'text-ocean-blue');
+                b.classList.add('border-outline-variant/40', 'text-on-surface-variant');
+            });
+            btn.classList.add('border-ocean-blue', 'bg-ocean-blue/5', 'text-ocean-blue');
+            btn.classList.remove('border-outline-variant/40', 'text-on-surface-variant');
+
+            var sort = btn.dataset.sort;
+            cards.sort(function(a, b) {
+                var ra = parseInt(a.dataset.rating), rb = parseInt(b.dataset.rating);
+                var ia = parseInt(a.dataset.index), ib = parseInt(b.dataset.index);
+                if (sort === 'high') return rb - ra;
+                if (sort === 'low') return ra - rb;
+                if (sort === 'oldest') return ib - ia;
+                return ia - ib;
+            });
+            cards.forEach(function(c) { list.appendChild(c); });
+        });
+    });
+})();
+</script>
+{% endblock %}

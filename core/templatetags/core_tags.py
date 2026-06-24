@@ -12,6 +12,14 @@ def currency(value):
 
 
 @register.filter
+def intcomma(value):
+    try:
+        return f"{int(value):,}"
+    except (ValueError, TypeError):
+        return value
+
+
+@register.filter
 def split(value, sep=","):
     return value.split(sep)
 
@@ -57,8 +65,51 @@ def loc_desc(obj, lang="en"):
     return obj.description
 
 
+HOURS_KO_TO_EN = {
+    "월요일": "Mon", "화요일": "Tue", "수요일": "Wed",
+    "목요일": "Thu", "금요일": "Fri", "토요일": "Sat", "일요일": "Sun",
+    "오전": "AM", "오후": "PM", "휴무일": "Closed", "24시간 영업": "Open 24h",
+}
+
+HOURS_KO_SHORT = {
+    "월요일": "월", "화요일": "화", "수요일": "수",
+    "목요일": "목", "금요일": "금", "토요일": "토", "일요일": "일",
+}
+
+
+@register.filter
+def loc_hours(hours_list, lang="en"):
+    if not hours_list:
+        return hours_list
+    result = []
+    for line in hours_list:
+        if lang == "ko":
+            for full, short in HOURS_KO_SHORT.items():
+                line = line.replace(full, short)
+        else:
+            for ko, en in HOURS_KO_TO_EN.items():
+                line = line.replace(ko, en)
+        result.append(line)
+    return result
+
+
+@register.filter
+def loc_reviews(obj, lang="en"):
+    if lang == "ko":
+        return obj.google_reviews or []
+    return obj.google_reviews_en or obj.google_reviews or []
+
+
 @register.filter
 def loc_addr(obj, lang="en"):
+    import re
     if lang == "ko":
-        return getattr(obj, "address_ko", "") or obj.address
-    return obj.address
+        addr = getattr(obj, "address_ko", "") or obj.address
+        for prefix in ["대한민국 ", "제주특별자치도 ", "특별자치도, ", "특별자치도 "]:
+            addr = addr.replace(prefix, "")
+    else:
+        addr = obj.address
+        for prefix in ["South Korea, ", "Jeju-do, ", "특별자치도, ", "특별자치도 "]:
+            addr = addr.replace(prefix, "")
+        addr = re.sub(r',\s*KR$', '', addr)
+    return addr.strip(", ")

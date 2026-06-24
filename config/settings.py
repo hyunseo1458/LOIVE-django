@@ -104,9 +104,15 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignupForm"}
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 ACCOUNT_MESSAGES = {
     "logged_in": {"level": 0, "text": ""},
@@ -118,12 +124,6 @@ SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": ["profile", "email"],
         "AUTH_PARAMS": {"access_type": "online"},
-        "APPS": [
-            {
-                "client_id": env("GOOGLE_CLIENT_ID", default=""),
-                "secret": env("GOOGLE_CLIENT_SECRET", default=""),
-            },
-        ],
     },
 }
 SOCIALACCOUNT_LOGIN_ON_GET = True

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load core_tags %}
+
+{% block title %}{% t "Signing in..." "로그인 중..." %}{% endblock %}
+{% block navbar %}{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex flex-col items-center justify-center px-5">
+    <span class="text-ocean-blue text-[40px] font-extrabold tracking-tight mb-4">LOIVE</span>
+
+    {% if form.errors %}
+    <div class="w-full max-w-sm mb-4">
+        <p class="text-[14px] text-outline mb-4">{% t "Complete sign up" "가입 완료" %}</p>
+        <form method="post" class="flex flex-col gap-3">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label class="text-[12px] text-outline block mb-1">{{ field.label }}</label>
+                <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}"
+                       class="w-full h-12 px-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-[14px] focus:outline-none focus:ring-2 focus:ring-ocean-blue/20">
+                {% if field.errors %}<p class="text-[12px] text-error-red mt-1">{{ field.errors.0 }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="w-full h-12 bg-ocean-blue text-white text-[16px] font-semibold rounded-lg hover:opacity-90 transition-all active:scale-[0.98]">
+                {% t "Continue" "계속" %}
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <p class="text-[14px] text-outline mb-4">{% t "Setting up your account..." "계정을 설정하는 중..." %}</p>
+    <div class="w-8 h-8 border-2 border-ocean-blue border-t-transparent rounded-full animate-spin mb-4"></div>
+    <form id="auto-signup" method="post" style="display:none">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <script>document.getElementById('auto-signup').submit();</script>
+    {% endif %}
+</div>
+{% endblock %}
