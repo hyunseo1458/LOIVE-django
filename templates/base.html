@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-{% load core_tags %}
+{% load core_tags static %}
 <html lang="{{ LANG }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}LOIVE{% endblock %} | {% t "Discover Local Experiences in Jeju" "제주 로컬 체험의 발견" %}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="LOIVE - {% t 'Discover Outdoor Activities in Jeju' '제주 아웃도어 액티비티' %}">
+    <meta property="og:description" content="{% t 'Find surfing, diving, hiking, and more outdoor activities in Jeju Island.' '제주도 서핑, 다이빙, 등산 등 아웃도어 액티비티를 찾아보세요.' %}">
+    <meta property="og:image" content="{% block og_image %}https://loive-django.onrender.com{% static 'images/og-logo.svg' %}{% endblock %}">
+    <meta property="og:url" content="https://loive-django.onrender.com{{ request.path }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LOIVE">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="LOIVE">
+    <meta name="twitter:description" content="{% t 'Discover Outdoor Activities in Jeju' '제주 아웃도어 액티비티' %}">
+    <meta name="twitter:image" content="https://loive-django.onrender.com{% static 'images/og-logo.svg' %}">
+
+    <meta name="description" content="{% t 'Find surfing, diving, hiking, and more outdoor activities in Jeju Island.' '제주도 서핑, 다이빙, 등산 등 아웃도어 액티비티를 찾아보세요.' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
