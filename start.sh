@@ -18,18 +18,20 @@ from allauth.socialaccount.models import SocialApp
 from allauth.account.models import EmailAddress
 from django.contrib.sites.models import Site
 
-# 1. Load fixture if no Google Places data
-google_count = Activity.objects.exclude(google_place_id='').exclude(google_place_id__isnull=True).count()
-if google_count < 100:
-    print('Loading fixture data...')
-    from django.core.management import call_command
-    # Clear old data first
-    Activity.objects.all().delete()
-    Category.objects.all().delete()
-    call_command('loaddata', 'fixtures/data.json', verbosity=1)
-    print(f'Loaded: {Activity.objects.count()} activities, {Category.objects.count()} categories')
-else:
-    print(f'Data exists: {google_count} activities')
+# 1. Force load fixture data (replaces all activity/category data)
+print('Clearing old data...')
+from django.core.management import call_command
+from activities.models import ActivitySlot, ActivityImage, Course
+from core.models import Wishlist
+Wishlist.objects.all().delete()
+Course.objects.all().delete()
+ActivitySlot.objects.all().delete()
+ActivityImage.objects.all().delete()
+Activity.objects.all().delete()
+Category.objects.all().delete()
+print('Loading fixture...')
+call_command('loaddata', 'fixtures/data.json', verbosity=1)
+print(f'Loaded: {Activity.objects.count()} activities, {Category.objects.count()} categories')
 
 # 2. Create admin if not exists
 if not User.objects.filter(username='hyunseo1458').exists():
