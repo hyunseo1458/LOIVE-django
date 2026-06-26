@@ -101,7 +101,7 @@
         </div>
 
         {# ── Fullscreen Photo Viewer ── #}
-        <div id="photo-viewer" class="fixed inset-0 z-[9999] bg-black/95 hidden flex-col items-center justify-center" style="display:none;">
+        <div id="photo-viewer" class="fixed inset-0 z-[9999] bg-black flex-col items-center justify-center" style="display:none;">
             <button id="pv-close" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>
@@ -240,14 +240,26 @@
         if (typeof gtag === 'function') gtag('event', 'call_business', { item_id: aid });
     });
 
-    // Photo viewer
-    var photos = [{% for url in activity.photo_urls %}'{{ url }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+    // Photo viewer - filter valid photos
+    var allPhotos = [{% for url in activity.photo_urls %}'{{ url }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+    var photos = [];
+    var photoMap = {};
     var viewer = document.getElementById('photo-viewer');
     var pvImg = document.getElementById('pv-img');
     var pvCounter = document.getElementById('pv-counter');
     var pvIdx = 0;
 
+    // Hide broken images in gallery + build valid photo list
+    document.querySelectorAll('.photo-thumb img').forEach(function(img, i) {
+        img.addEventListener('error', function() { img.closest('.photo-thumb').style.display = 'none'; });
+        img.addEventListener('load', function() {
+            photoMap[i] = photos.length;
+            photos.push(allPhotos[i]);
+        });
+    });
+
     function pvShow(i) {
+        if (!photos.length) return;
         pvIdx = (i + photos.length) % photos.length;
         pvImg.src = photos[pvIdx];
         pvCounter.textContent = (pvIdx + 1) + ' / ' + photos.length;
@@ -255,7 +267,9 @@
 
     document.querySelectorAll('.photo-thumb').forEach(function(el) {
         el.addEventListener('click', function() {
-            pvShow(parseInt(el.dataset.index));
+            var idx = photoMap[parseInt(el.dataset.index)];
+            if (idx !== undefined) pvShow(idx);
+            else pvShow(0);
             viewer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         });
