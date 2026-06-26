@@ -22,7 +22,7 @@
         <div class="absolute inset-0 bg-surface-container-high"></div>
         {% for banner in banners %}
         <a href="{% url 'activities:detail' banner.activity_id %}" class="banner-slide absolute inset-0 transition-opacity duration-700 {% if forloop.first %}opacity-100 z-10{% else %}opacity-0 z-0{% endif %}" data-index="{{ forloop.counter0 }}">
-            <img class="w-full h-full object-cover object-center" alt="{{ banner.title }}" src="{{ banner.thumbnail_url }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+            <img class="w-full h-full object-cover object-center" alt="{{ banner.title }}" src="{{ banner.thumbnail_url|photo_proxy }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
             <div class="absolute inset-x-0 bottom-0 p-4">
                 <span class="inline-block text-white/70 text-[10px] font-medium tracking-[0.15em] uppercase mb-1">
@@ -70,7 +70,7 @@
             <a aria-label="{{ activity|loc:LANG }}" class="absolute inset-0 z-0" href="{% url 'activities:detail' activity.pk %}"></a>
             <div class="relative aspect-[4/3] w-full bg-surface-variant overflow-hidden pointer-events-none">
                 {% if activity.thumbnail_url %}
-                <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url }}" loading="lazy">
+                <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}" loading="lazy">
                 {% endif %}
                 <button type="button" aria-label="{% t 'Save' '찜하기' %}" data-wish-id="{{ activity.pk }}" class="wish-btn absolute top-2 right-2 z-20 w-8 h-8 rounded-md bg-black/25 backdrop-blur-sm flex items-center justify-center text-white transition-colors pointer-events-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">

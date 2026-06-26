@@ -39,32 +39,36 @@
                         'on-secondary-container': '#7C2D12',
                         tertiary: '#0D9488',
                         'tertiary-container': '#14B8A6',
-                        surface: '#ffffff',
-                        'surface-dim': '#E0F2FE',
-                        'surface-bright': '#F8FDFF',
-                        'surface-container-lowest': '#ffffff',
-                        'surface-container-low': '#F0F9FF',
-                        'surface-container': '#E8F4FD',
-                        'surface-container-high': '#E0EFF8',
-                        'surface-container-highest': '#D6EAF5',
-                        'on-surface': '#0C1821',
-                        'on-surface-variant': '#3D5A6E',
-                        'inverse-surface': '#1B3A4B',
-                        'inverse-on-surface': '#E0F2FE',
-                        outline: '#6B8FA3',
-                        'outline-variant': '#B8D4E3',
+                        surface: '#FFFFFE',
+                        'surface-dim': '#F5F0E8',
+                        'surface-bright': '#FFFFFE',
+                        'surface-container-lowest': '#FFFFFE',
+                        'surface-container-low': '#FAF8F5',
+                        'surface-container': '#F5F3F0',
+                        'surface-container-high': '#EFECE8',
+                        'surface-container-highest': '#E8E5E0',
+                        'on-surface': '#1C1917',
+                        'on-surface-variant': '#57534E',
+                        'inverse-surface': '#292524',
+                        'inverse-on-surface': '#F5F5F4',
+                        outline: '#78716C',
+                        'outline-variant': '#D6D3D1',
                         'on-error': '#ffffff',
                         error: '#DC2626',
                         'error-container': '#FEE2E2',
-                        'ocean-blue': '#0EA5E9',
-                        'deep-teal': '#14B8A6',
-                        'sun-yellow': '#FBBF24',
+                        'ocean-blue': '#0891B2',
+                        'deep-teal': '#0D9488',
+                        'sun-yellow': '#F59E0B',
+                        'canola': '#FCD34D',
+                        'jeju-green': '#16A34A',
+                        'jeju-orange': '#EA580C',
                         coral: '#FF6B6B',
                         'error-red': '#EF4444',
                         'success-green': '#10B981',
-                        background: '#F0F9FF',
-                        'on-background': '#0C1821',
-                        'surface-variant': '#E0F2FE',
+                        'lava-gray': '#57534E',
+                        background: '#FAFAF5',
+                        'on-background': '#1C1917',
+                        'surface-variant': '#E7E5E4',
                     },
                     fontFamily: {
                         sans: ['Pretendard Variable', 'Pretendard', 'system-ui', 'sans-serif'],
@@ -108,14 +112,14 @@
     {% endif %}
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-gray-100 font-sans flex justify-center">
+<body class="min-h-screen bg-stone-100 font-sans flex justify-center">
     {% csrf_token %}
 
     <!-- Phone wrapper -->
     <div class="phone-wrapper relative flex-shrink-0 md:my-8" style="width: 390px; height: 844px;">
-        <div class="phone-body w-full h-full md:rounded-[44px] md:border-[3px] md:border-gray-800 bg-surface overflow-hidden md:shadow-2xl flex flex-col relative">
+        <div class="phone-body w-full h-full md:rounded-[44px] md:border-[3px] md:border-stone-700 bg-surface overflow-hidden md:shadow-2xl flex flex-col relative">
             <!-- Notch (desktop only) -->
-            <div class="phone-frame-decoration absolute top-0 left-1/2 -translate-x-1/2 z-[999] w-[126px] h-[34px] bg-gray-800 rounded-b-2xl"></div>
+            <div class="phone-frame-decoration absolute top-0 left-1/2 -translate-x-1/2 z-[999] w-[126px] h-[34px] bg-stone-700 rounded-b-2xl"></div>
 
             {% block navbar %}{% include "components/navbar.html" %}{% endblock %}
 
@@ -143,7 +147,7 @@
             </div>
 
             <!-- Home Indicator (desktop only) -->
-            <div class="phone-frame-decoration absolute bottom-2 left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-gray-800 rounded-full z-[999]"></div>
+            <div class="phone-frame-decoration absolute bottom-2 left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-stone-700 rounded-full z-[999]"></div>
         </div>
     </div>
 
