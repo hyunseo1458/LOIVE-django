@@ -18,18 +18,17 @@
 <!-- Hero Banner -->
 {% if banners %}
 <section class="px-5 mb-8 relative" id="hero-banner">
-    <div class="w-full aspect-[3/4] rounded-lg overflow-hidden relative cursor-pointer select-none">
+    <div class="w-full aspect-[4/3] rounded-lg overflow-hidden relative cursor-pointer select-none">
         <div class="absolute inset-0 bg-surface-container-high"></div>
         {% for banner in banners %}
         <a href="{% url 'activities:detail' banner.activity_id %}" class="banner-slide absolute inset-0 transition-opacity duration-700 {% if forloop.first %}opacity-100 z-10{% else %}opacity-0 z-0{% endif %}" data-index="{{ forloop.counter0 }}">
-            <img class="w-full h-full object-cover" alt="{{ banner.title }}" src="{{ banner.thumbnail_url }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-            <div class="absolute inset-x-0 bottom-0 p-5">
-                <span class="inline-block text-white/70 text-[11px] font-medium tracking-[0.15em] uppercase mb-2">
+            <img class="w-full h-full object-cover object-center" alt="{{ banner.title }}" src="{{ banner.thumbnail_url }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-4">
+                <span class="inline-block text-white/70 text-[10px] font-medium tracking-[0.15em] uppercase mb-1">
                     {{ banner.tag }}
                 </span>
-                <h2 class="text-white text-[24px] font-extrabold leading-[1.2] mb-1.5 tracking-tight">{{ banner.title }}</h2>
-                <p class="text-white/80 text-[13px] leading-relaxed">{{ banner.description }}</p>
+                <h2 class="text-white text-[18px] font-extrabold leading-none tracking-tight line-clamp-1">{{ banner.title }}</h2>
             </div>
         </a>
         {% endfor %}
@@ -69,7 +68,7 @@
         {% for activity in activities %}
         <article class="activity-card relative bg-surface rounded-md overflow-hidden flex flex-col" data-category="{{ activity.category.name }}">
             <a aria-label="{{ activity|loc:LANG }}" class="absolute inset-0 z-0" href="{% url 'activities:detail' activity.pk %}"></a>
-            <div class="relative aspect-[5/4] w-full bg-surface-variant overflow-hidden pointer-events-none">
+            <div class="relative aspect-[4/3] w-full bg-surface-variant overflow-hidden pointer-events-none">
                 {% if activity.thumbnail_url %}
                 <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url }}" loading="lazy">
                 {% endif %}
