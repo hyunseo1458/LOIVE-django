@@ -69,18 +69,22 @@
 
         {# ── Operating Hours ── #}
         {% with hours=activity.opening_hours|loc_hours:LANG %}
-        {% if hours %}
         <div class="mb-6">
             <h2 class="text-[16px] font-bold text-on-surface mb-3">{% t "Hours" "운영시간" %}</h2>
+            {% if hours %}
             <div class="bg-surface-container-low rounded-lg p-4 border border-outline-variant/20">
                 {% for day in hours %}
                 <div class="flex justify-between py-1.5 text-[13px] {% if not forloop.last %}border-b border-outline-variant/10{% endif %}">
-                    <span class="text-on-surface-variant">{{ day }}</span>
+                    <span class="{% if 'Closed' in day or '휴무' in day %}text-error-red font-semibold{% else %}text-on-surface-variant{% endif %}">{{ day }}</span>
                 </div>
                 {% endfor %}
             </div>
+            {% else %}
+            <p class="text-[13px] text-outline bg-surface-container-low rounded-lg p-4 border border-outline-variant/20">
+                {% t "Hours not available. Please contact the business directly for operating hours and closed days." "운영시간 정보가 없습니다. 정확한 운영시간 및 휴무일은 업체에 직접 문의해주세요." %}
+            </p>
+            {% endif %}
         </div>
-        {% endif %}
         {% endwith %}
 
         {# ── Photo Gallery ── #}
@@ -89,11 +93,26 @@
             <h2 class="text-[16px] font-bold text-on-surface mb-3">{% t "Photos" "사진" %} <span class="text-[12px] text-outline font-normal">({{ activity.photo_urls|length }})</span></h2>
             <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                 {% for photo_url in activity.photo_urls %}
-                <div class="w-56 h-40 rounded-lg overflow-hidden bg-surface-variant shrink-0">
+                <div class="w-56 h-40 rounded-lg overflow-hidden bg-surface-variant shrink-0 cursor-pointer photo-thumb" data-index="{{ forloop.counter0 }}">
                     <img class="w-full h-full object-cover" src="{{ photo_url }}" alt="{{ activity|loc:LANG }}" loading="lazy">
                 </div>
                 {% endfor %}
             </div>
+        </div>
+
+        {# ── Fullscreen Photo Viewer ── #}
+        <div id="photo-viewer" class="fixed inset-0 z-[9999] bg-black/95 hidden flex-col items-center justify-center" style="display:none;">
+            <button id="pv-close" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="absolute top-4 left-4 text-white/70 text-[14px]" id="pv-counter"></div>
+            <button id="pv-prev" class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+            </button>
+            <button id="pv-next" class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+            </button>
+            <img id="pv-img" class="max-w-full max-h-[80vh] object-contain" src="" alt="">
         </div>
         {% endif %}
 
@@ -219,6 +238,51 @@
     });
     document.getElementById('call-btn')?.addEventListener('click', function() {
         if (typeof gtag === 'function') gtag('event', 'call_business', { item_id: aid });
+    });
+
+    // Photo viewer
+    var photos = [{% for url in activity.photo_urls %}'{{ url }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+    var viewer = document.getElementById('photo-viewer');
+    var pvImg = document.getElementById('pv-img');
+    var pvCounter = document.getElementById('pv-counter');
+    var pvIdx = 0;
+
+    function pvShow(i) {
+        pvIdx = (i + photos.length) % photos.length;
+        pvImg.src = photos[pvIdx];
+        pvCounter.textContent = (pvIdx + 1) + ' / ' + photos.length;
+    }
+
+    document.querySelectorAll('.photo-thumb').forEach(function(el) {
+        el.addEventListener('click', function() {
+            pvShow(parseInt(el.dataset.index));
+            viewer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+    });
+    document.getElementById('pv-close')?.addEventListener('click', function() {
+        viewer.style.display = 'none';
+        document.body.style.overflow = '';
+    });
+    document.getElementById('pv-prev')?.addEventListener('click', function() { pvShow(pvIdx - 1); });
+    document.getElementById('pv-next')?.addEventListener('click', function() { pvShow(pvIdx + 1); });
+    viewer?.addEventListener('click', function(e) {
+        if (e.target === viewer) { viewer.style.display = 'none'; document.body.style.overflow = ''; }
+    });
+    document.addEventListener('keydown', function(e) {
+        if (viewer.style.display !== 'flex') return;
+        if (e.key === 'Escape') { viewer.style.display = 'none'; document.body.style.overflow = ''; }
+        if (e.key === 'ArrowLeft') pvShow(pvIdx - 1);
+        if (e.key === 'ArrowRight') pvShow(pvIdx + 1);
+    });
+
+    // Touch swipe for photo viewer
+    var touchX = 0;
+    pvImg?.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; });
+    pvImg?.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchX;
+        if (diff > 50) pvShow(pvIdx - 1);
+        else if (diff < -50) pvShow(pvIdx + 1);
     });
 })();
 </script>

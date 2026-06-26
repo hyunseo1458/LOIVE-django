@@ -20,9 +20,8 @@ def _build_banners(lang="en"):
         status=Activity.Status.APPROVED,
         region__name=JEJU_REGION,
         thumbnail_url__gt="",
-    ).select_related("category", "region")
-
-    qs = qs.annotate(avg_rating=Avg("reviews__rating")).order_by("-avg_rating", "-created_at")[:5]
+        google_rating__gte=4.0,
+    ).select_related("category", "region").order_by("?")[:5]
 
     tags = BANNER_TAGS_KO if lang == "ko" else BANNER_TAGS_EN
     banners = []
@@ -93,10 +92,10 @@ def search(request):
 def wishlist(request):
     items = Wishlist.objects.filter(
         user=request.user
-    ).select_related("activity__category", "activity__region").annotate(
-        activity_avg_rating=Avg("activity__reviews__rating"),
-    ).order_by("-created_at")
-    return render(request, "core/wishlist.html", {"items": items})
+    ).select_related("activity__category", "activity__region").order_by("-created_at")
+    categories = list(set(w.activity.category.name for w in items))
+    categories.sort()
+    return render(request, "core/wishlist.html", {"items": items, "categories": categories})
 
 
 def profile(request):
