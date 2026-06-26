@@ -1,7 +1,7 @@
 import json
 
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Q, Avg, Count
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -181,6 +181,18 @@ def my_reviews(request):
 
 def notifications(request):
     return render(request, "core/notifications.html")
+
+
+def photo_proxy(request):
+    import requests as req
+    url = request.GET.get("url", "")
+    if not url or "googleapis.com" not in url:
+        return HttpResponse(status=400)
+    try:
+        resp = req.get(url, timeout=10)
+        return HttpResponse(resp.content, content_type=resp.headers.get("content-type", "image/jpeg"))
+    except Exception:
+        return HttpResponse(status=502)
 
 
 def faq(request):

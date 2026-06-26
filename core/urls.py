@@ -17,4 +17,5 @@ urlpatterns = [
     path("terms/", views.terms, name="terms"),
     path("privacy/", views.privacy, name="privacy"),
     path("api/set-lang/", views.set_lang, name="set_lang"),
+    path("api/photo/", views.photo_proxy, name="photo_proxy"),
 ]

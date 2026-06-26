@@ -12,6 +12,20 @@ def currency(value):
 
 
 @register.filter
+def photo_proxy(url):
+    from urllib.parse import quote
+    if url and "googleapis.com" in url:
+        return f"/api/photo/?url={quote(url, safe='')}"
+    return url
+
+
+@register.filter
+def photo_proxy_list(urls):
+    from urllib.parse import quote
+    return [f"/api/photo/?url={quote(u, safe='')}" if "googleapis.com" in u else u for u in (urls or [])]
+
+
+@register.filter
 def intcomma(value):
     try:
         return f"{int(value):,}"
