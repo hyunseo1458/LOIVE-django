@@ -47,7 +47,7 @@
             <a href="{% url 'activities:detail' activity.pk %}" class="block">
                 <div class="relative h-[120px] bg-surface-variant overflow-hidden">
                     {% if activity.thumbnail_url %}
-                    <img src="{{ activity.thumbnail_url }}" alt="{{ activity|loc:LANG }}" class="w-full h-full object-cover" loading="lazy">
+                    <img src="{{ activity.thumbnail_url|photo_proxy }}" alt="{{ activity|loc:LANG }}" class="w-full h-full object-cover" loading="lazy">
                     {% endif %}
                     {% if activity.google_rating %}
                     <div class="absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold">

@@ -184,13 +184,27 @@ def notifications(request):
 
 
 def photo_proxy(request):
-    import requests as req
+    import hashlib, requests as req
+    from pathlib import Path
+
     url = request.GET.get("url", "")
     if not url or "googleapis.com" not in url:
         return HttpResponse(status=400)
+
+    cache_dir = Path(settings.BASE_DIR) / "media" / "photo_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_key = hashlib.md5(url.encode()).hexdigest()
+    cache_file = cache_dir / f"{cache_key}.jpg"
+
+    if cache_file.exists():
+        return HttpResponse(cache_file.read_bytes(), content_type="image/jpeg")
+
     try:
-        resp = req.get(url, timeout=10)
-        return HttpResponse(resp.content, content_type=resp.headers.get("content-type", "image/jpeg"))
+        resp = req.get(url, timeout=15)
+        if resp.status_code == 200:
+            cache_file.write_bytes(resp.content)
+            return HttpResponse(resp.content, content_type=resp.headers.get("content-type", "image/jpeg"))
+        return HttpResponse(status=resp.status_code)
     except Exception:
         return HttpResponse(status=502)
 

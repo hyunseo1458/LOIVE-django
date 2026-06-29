@@ -115,7 +115,7 @@
                 <div class="w-full h-[200px] relative overflow-hidden bg-surface-container-high">
                     {% with first_activity=course.activities.first %}
                     {% if first_activity and first_activity.thumbnail_url %}
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ course|loc:LANG }}" src="{{ first_activity.thumbnail_url }}" loading="lazy">
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ course|loc:LANG }}" src="{{ first_activity.thumbnail_url|photo_proxy }}" loading="lazy">
                     {% endif %}
                     {% endwith %}
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
