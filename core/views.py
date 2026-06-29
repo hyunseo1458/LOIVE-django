@@ -183,30 +183,42 @@ def notifications(request):
     return render(request, "core/notifications.html")
 
 
-def photo_proxy(request):
-    import hashlib, requests as req
+def photo_proxy(request, encoded):
+    import hashlib, base64, traceback
     from pathlib import Path
-
-    url = request.GET.get("url", "")
-    if not url or "googleapis.com" not in url:
-        return HttpResponse(status=400)
-
-    cache_dir = Path(settings.BASE_DIR) / "media" / "photo_cache"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_key = hashlib.md5(url.encode()).hexdigest()
-    cache_file = cache_dir / f"{cache_key}.jpg"
-
-    if cache_file.exists():
-        return HttpResponse(cache_file.read_bytes(), content_type="image/jpeg")
+    from django.conf import settings
 
     try:
-        resp = req.get(url, timeout=15)
-        if resp.status_code == 200:
-            cache_file.write_bytes(resp.content)
-            return HttpResponse(resp.content, content_type=resp.headers.get("content-type", "image/jpeg"))
-        return HttpResponse(status=resp.status_code)
+        padded = encoded + "=" * (4 - len(encoded) % 4) if len(encoded) % 4 else encoded
+        url = base64.urlsafe_b64decode(padded.encode()).decode()
+
+        if not url or "googleapis.com" not in url:
+            return HttpResponse(b"bad url", status=400)
+
+        activity_id = request.GET.get("aid", "shared")
+        cache_dir = Path(settings.BASE_DIR) / "media" / "photos" / str(activity_id)
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_key = hashlib.md5(url.encode()).hexdigest()[:12]
+        cache_file = cache_dir / f"{cache_key}.jpg"
+
+        if cache_file.exists():
+            return HttpResponse(cache_file.read_bytes(), content_type="image/jpeg")
+
+        from urllib.request import urlopen, Request
+        from urllib.error import HTTPError
+        try:
+            r = urlopen(Request(url, headers={"User-Agent": "LOIVE/1.0"}), timeout=15)
+            data = r.read()
+            ct = r.headers.get("Content-Type", "image/jpeg")
+        except HTTPError as he:
+            return HttpResponse(b"api error", status=he.code)
+        if len(data) > 100:
+            cache_file.write_bytes(data)
+            return HttpResponse(data, content_type=ct)
+        return HttpResponse(b"empty", status=404)
     except Exception:
-        return HttpResponse(status=502)
+        traceback.print_exc()
+        return HttpResponse(b"proxy error", status=502)
 
 
 def faq(request):

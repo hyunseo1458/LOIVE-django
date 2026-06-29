@@ -11,7 +11,7 @@
     {# ── Hero Image ── #}
     <section class="relative w-full aspect-[4/3] md:h-[420px] bg-surface-variant overflow-hidden">
         {% if activity.thumbnail_url %}
-        <img class="absolute inset-0 w-full h-full object-cover object-center" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}">
+        {% photo_url activity.thumbnail_url activity as hero_img %}<img class="absolute inset-0 w-full h-full object-cover object-center" alt="{{ activity|loc:LANG }}" src="{{ hero_img }}">
         {% endif %}
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent"></div>
         <div class="absolute top-0 left-0 w-full px-4 pt-11 flex justify-between items-center z-20">
@@ -67,6 +67,12 @@
             {% endif %}
         </div>
 
+        {# ── Description ── #}
+        <div class="mb-6">
+            <h2 class="text-[16px] font-bold text-on-surface mb-2">{% t "About" "소개" %}</h2>
+            <p class="text-[14px] text-on-surface-variant leading-relaxed">{{ activity|auto_desc:LANG }}</p>
+        </div>
+
         {# ── Operating Hours ── #}
         {% with hours=activity.opening_hours|loc_hours:LANG %}
         <div class="mb-6">
@@ -94,7 +100,7 @@
             <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                 {% for photo_url in activity.photo_urls %}
                 <div class="w-56 h-40 rounded-lg overflow-hidden bg-surface-variant shrink-0 cursor-pointer photo-thumb" data-index="{{ forloop.counter0 }}">
-                    <img class="w-full h-full object-cover" src="{{ photo_url|photo_proxy }}" alt="{{ activity|loc:LANG }}" loading="lazy">
+                    {% photo_url photo_url activity as thumb_src %}<img class="w-full h-full object-cover" src="{{ thumb_src }}" alt="{{ activity|loc:LANG }}" loading="lazy">
                 </div>
                 {% endfor %}
             </div>
@@ -241,7 +247,7 @@
     });
 
     // Photo viewer - filter valid photos
-    var allPhotos = [{% for url in activity.photo_urls %}'{{ url|photo_proxy }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+    var allPhotos = [{% for url in activity.photo_urls %}{% photo_url url activity as purl %}'{{ purl }}'{% if not forloop.last %},{% endif %}{% endfor %}];
     var photos = [];
     var photoMap = {};
     var viewer = document.getElementById('photo-viewer');

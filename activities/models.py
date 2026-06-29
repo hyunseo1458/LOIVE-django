@@ -1,5 +1,10 @@
+import shutil
+from pathlib import Path
+
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 
 class Category(models.Model):
@@ -84,6 +89,13 @@ class Activity(models.Model):
         if not reviews.exists():
             return 0
         return round(reviews.aggregate(avg=models.Avg("rating"))["avg"], 1)
+
+
+@receiver(post_delete, sender=Activity)
+def delete_activity_photos(sender, instance, **kwargs):
+    photo_dir = Path(settings.BASE_DIR) / "media" / "photos" / str(instance.pk)
+    if photo_dir.exists():
+        shutil.rmtree(photo_dir, ignore_errors=True)
 
 
 class ActivityImage(models.Model):
