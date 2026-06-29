@@ -60,6 +60,7 @@ CATEGORY_KO = {
     "Horse Riding": "승마",
     "Fishing": "낚시",
     "Cycling": "자전거",
+    "Other": "기타",
 }
 
 
@@ -248,28 +249,41 @@ CATEGORY_VIBE_KO = {
 
 @register.filter
 def auto_desc(obj, lang="en"):
-    desc = ""
-    if lang == "ko":
-        desc = getattr(obj, "description_ko", "") or ""
-    else:
-        desc = getattr(obj, "description", "") or ""
-    if desc:
-        return desc
+    desc_en = getattr(obj, "description", "") or ""
+    desc_ko = getattr(obj, "description_ko", "") or ""
+    is_spot = desc_en == "SPOT"
+
+    if not is_spot:
+        desc = desc_ko if lang == "ko" else desc_en
+        if desc:
+            return desc
 
     cat = obj.category.name if hasattr(obj, "category") else ""
     rating = float(getattr(obj, "google_rating", 0) or 0)
     reviews = int(getattr(obj, "google_reviews_count", 0) or 0)
+    is_business = not is_spot
+
     vibes = CATEGORY_VIBE_KO.get(cat, {}) if lang == "ko" else CATEGORY_VIBE_EN.get(cat, {})
 
     if not vibes:
-        return "제주에서 즐기는 특별한 아웃도어 체험." if lang == "ko" else "A special outdoor experience in Jeju."
+        if lang == "ko":
+            return "🌴 제주에서 즐기는 특별한 체험. 자세한 정보는 업체에 직접 문의해주세요."
+        return "🌴 A unique experience in Jeju. Contact the business for more details."
 
     parts = [vibes["intro"]]
     if rating >= 4.5 and reviews >= 10:
         parts.append(vibes["high"])
     else:
         parts.append(vibes["mid"])
-    parts.append(vibes["features"])
+
+    if is_business:
+        parts.append(vibes["features"])
+    else:
+        if lang == "ko":
+            parts.append("📍 자연 명소입니다. 방문 전 현지 상황을 확인해주세요.")
+        else:
+            parts.append("📍 This is a natural spot. Check local conditions before visiting.")
+
     return " ".join(parts)
 
 

@@ -51,9 +51,10 @@
     {% for activity in activities %}
     <article class="relative bg-surface-container-lowest rounded-md border border-outline-variant/15 overflow-hidden flex flex-row h-28">
         <a href="{% url 'activities:detail' activity.pk %}" class="absolute inset-0 z-0"></a>
-        <div class="relative w-28 shrink-0 bg-surface-container-high overflow-hidden">
+        <div class="relative w-28 shrink-0 overflow-hidden skeleton-wrap">
+            <div class="absolute inset-0 skeleton skeleton-ph"></div>
             {% if activity.thumbnail_url %}
-            <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}" loading="lazy">
+            <img class="w-full h-full object-cover relative z-[1]" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}" loading="lazy" style="opacity:0;transition:opacity .3s">
             {% endif %}
         </div>
         <div class="flex-1 p-2.5 flex flex-col justify-between min-w-0 relative">

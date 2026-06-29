@@ -19,7 +19,7 @@
 {% if banners %}
 <section class="px-5 mb-8 relative" id="hero-banner">
     <div class="w-full aspect-[4/3] rounded-lg overflow-hidden relative cursor-pointer select-none">
-        <div class="absolute inset-0 bg-surface-container-high"></div>
+        <div class="absolute inset-0 skeleton rounded-lg"></div>
         {% for banner in banners %}
         <a href="{% url 'activities:detail' banner.activity_id %}" class="banner-slide absolute inset-0 transition-opacity duration-700 {% if forloop.first %}opacity-100 z-10{% else %}opacity-0 z-0{% endif %}" data-index="{{ forloop.counter0 }}">
             <img class="w-full h-full object-cover object-center" alt="{{ banner.title }}" src="{{ banner.thumbnail_url|photo_proxy }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
@@ -62,20 +62,23 @@
             <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-outline mb-0.5">Popular</p>
             <h3 class="text-[20px] font-extrabold text-on-surface tracking-tight leading-none">{% t "Top Activities" "인기 액티비티" %}</h3>
         </div>
-        <a href="{% url 'activities:explore' %}" class="text-on-surface text-[12px] font-semibold border-b border-on-surface/40 pb-0.5 hover:border-on-surface transition-colors">{% t "View All" "전체보기" %}</a>
+        <a href="{% url 'activities:explore' %}" id="view-all-link" class="text-on-surface text-[12px] font-semibold border-b border-on-surface/40 pb-0.5 hover:border-on-surface transition-colors">{% t "View All" "전체보기" %}</a>
     </div>
-    <div class="grid grid-cols-2 gap-3" id="activities-grid">
+
+
+
+    <!-- All -->
+    <div class="grid grid-cols-2 gap-3 cat-grid" data-cat="All">
         {% for activity in activities %}
-        <article class="activity-card relative bg-surface rounded-md overflow-hidden flex flex-col" data-category="{{ activity.category.name }}">
+        <article class="relative bg-surface rounded-md overflow-hidden flex flex-col">
             <a aria-label="{{ activity|loc:LANG }}" class="absolute inset-0 z-0" href="{% url 'activities:detail' activity.pk %}"></a>
-            <div class="relative aspect-[4/3] w-full bg-surface-variant overflow-hidden pointer-events-none">
+            <div class="relative aspect-[4/3] w-full overflow-hidden pointer-events-none skeleton-wrap">
+                <div class="absolute inset-0 skeleton skeleton-ph"></div>
                 {% if activity.thumbnail_url %}
-                <img class="w-full h-full object-cover" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}" loading="lazy">
+                <img class="w-full h-full object-cover relative z-[1]" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}" loading="lazy" style="opacity:0;transition:opacity .3s">
                 {% endif %}
                 <button type="button" aria-label="{% t 'Save' '찜하기' %}" data-wish-id="{{ activity.pk }}" class="wish-btn absolute top-2 right-2 z-20 w-8 h-8 rounded-md bg-black/25 backdrop-blur-sm flex items-center justify-center text-white transition-colors pointer-events-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>
                 </button>
             </div>
             <div class="pt-2 pb-2 flex flex-col gap-0.5 pointer-events-none">
@@ -83,9 +86,7 @@
                 <h2 class="text-[13px] font-bold text-on-surface leading-snug line-clamp-1">{{ activity|loc:LANG }}</h2>
                 {% if activity.google_rating %}
                 <div class="flex items-center gap-0.5 mt-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 text-sun-yellow">
-                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 text-sun-yellow"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
                     <span class="text-[11px] font-semibold text-on-surface">{{ activity.google_rating }}</span>
                     <span class="text-[10px] text-outline">({{ activity.google_reviews_count|intcomma }})</span>
                 </div>
@@ -98,6 +99,37 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- Per-category grids (hidden by default) -->
+    {% for cat_name, cat_acts in cat_activities.items %}
+    <div class="grid grid-cols-2 gap-3 cat-grid hidden" data-cat="{{ cat_name }}">
+        {% for activity in cat_acts %}
+        <article class="relative bg-surface rounded-md overflow-hidden flex flex-col">
+            <a aria-label="{{ activity|loc:LANG }}" class="absolute inset-0 z-0" href="{% url 'activities:detail' activity.pk %}"></a>
+            <div class="relative aspect-[4/3] w-full overflow-hidden pointer-events-none skeleton-wrap">
+                <div class="absolute inset-0 skeleton skeleton-ph"></div>
+                {% if activity.thumbnail_url %}
+                <img class="w-full h-full object-cover relative z-[1]" alt="{{ activity|loc:LANG }}" src="{{ activity.thumbnail_url|photo_proxy }}" loading="lazy" style="opacity:0;transition:opacity .3s">
+                {% endif %}
+                <button type="button" aria-label="{% t 'Save' '찜하기' %}" data-wish-id="{{ activity.pk }}" class="wish-btn absolute top-2 right-2 z-20 w-8 h-8 rounded-md bg-black/25 backdrop-blur-sm flex items-center justify-center text-white transition-colors pointer-events-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>
+                </button>
+            </div>
+            <div class="pt-2 pb-2 flex flex-col gap-0.5 pointer-events-none">
+                <p class="text-[10px] font-semibold tracking-wider text-outline uppercase">{{ activity.category.name|cat_name:LANG }}</p>
+                <h2 class="text-[13px] font-bold text-on-surface leading-snug line-clamp-1">{{ activity|loc:LANG }}</h2>
+                {% if activity.google_rating %}
+                <div class="flex items-center gap-0.5 mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 text-sun-yellow"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
+                    <span class="text-[11px] font-semibold text-on-surface">{{ activity.google_rating }}</span>
+                    <span class="text-[10px] text-outline">({{ activity.google_reviews_count|intcomma }})</span>
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% endfor %}
 </section>
 
 <!-- Themed Courses -->
@@ -137,49 +169,84 @@
 
 {% block extra_js %}
 <script>
+// Banner slider with touch swipe + auto resume
 (function() {
-    const slides = document.querySelectorAll('.banner-slide');
-    const dots = document.querySelectorAll('.banner-dot');
+    var slides = document.querySelectorAll('.banner-slide');
+    var dots = document.querySelectorAll('.banner-dot');
+    var banner = document.getElementById('hero-banner');
     if (!slides.length) return;
-    let active = 0;
-    const count = slides.length;
-    function show(index) {
-        slides.forEach((s, i) => {
-            s.classList.toggle('opacity-100', i === index);
-            s.classList.toggle('z-10', i === index);
-            s.classList.toggle('opacity-0', i !== index);
-            s.classList.toggle('z-0', i !== index);
+    var active = 0, count = slides.length, timer = null, touchX = 0, swiping = false;
+
+    function show(i) {
+        active = ((i % count) + count) % count;
+        slides.forEach(function(s, idx) {
+            s.classList.toggle('opacity-100', idx === active);
+            s.classList.toggle('z-10', idx === active);
+            s.classList.toggle('opacity-0', idx !== active);
+            s.classList.toggle('z-0', idx !== active);
         });
-        dots.forEach((d, i) => {
-            d.classList.toggle('w-6', i === index);
-            d.classList.toggle('bg-ocean-blue', i === index);
-            d.classList.toggle('w-1.5', i !== index);
-            d.classList.toggle('bg-outline-variant', i !== index);
+        dots.forEach(function(d, idx) {
+            d.classList.toggle('w-6', idx === active);
+            d.classList.toggle('bg-ocean-blue', idx === active);
+            d.classList.toggle('w-1.5', idx !== active);
+            d.classList.toggle('bg-outline-variant', idx !== active);
         });
-        active = index;
     }
-    setInterval(() => show((active + 1) % count), 5000);
-    dots.forEach(d => d.addEventListener('click', () => show(parseInt(d.dataset.index))));
+
+    function startAuto() { stopAuto(); timer = setInterval(function() { show(active + 1); }, 5000); }
+    function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
+
+    // Touch swipe
+    banner.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; swiping = true; stopAuto(); }, {passive: true});
+    banner.addEventListener('touchend', function(e) {
+        if (!swiping) return;
+        swiping = false;
+        var diff = e.changedTouches[0].clientX - touchX;
+        if (diff > 40) show(active - 1);
+        else if (diff < -40) show(active + 1);
+        startAuto();
+    });
+
+    // Dot click
+    dots.forEach(function(d) { d.addEventListener('click', function() { stopAuto(); show(parseInt(d.dataset.index)); startAuto(); }); });
+
+    startAuto();
 })();
 
+// Category tab switching
 (function() {
-    const tabs = document.querySelectorAll('.category-tab');
-    const cards = document.querySelectorAll('.activity-card');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const category = tab.dataset.category;
-            tabs.forEach(t => {
-                const isActive = t === tab;
+    var tabs = document.querySelectorAll('.category-tab');
+    var grids = document.querySelectorAll('.cat-grid');
+    var viewAllLink = document.getElementById('view-all-link');
+    var baseUrl = '{% url "activities:explore" %}';
+    var catSlugs = { {% for cat in categories %}'{{ cat.name }}': '{{ cat.slug }}'{% if not forloop.last %}, {% endif %}{% endfor %} };
+
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var category = tab.dataset.category;
+
+            tabs.forEach(function(t) {
+                var isActive = t === tab;
                 t.classList.toggle('bg-ocean-blue', isActive);
                 t.classList.toggle('text-white', isActive);
-                t.classList.toggle('shadow-sm', isActive);
                 t.classList.toggle('bg-transparent', !isActive);
                 t.classList.toggle('text-outline', !isActive);
                 t.classList.toggle('border', !isActive);
                 t.classList.toggle('border-outline-variant/40', !isActive);
             });
-            cards.forEach(card => {
-                card.style.display = (category === 'All' || card.dataset.category === category) ? '' : 'none';
+
+            grids.forEach(function(g) {
+                g.classList.toggle('hidden', g.dataset.cat !== category);
+            });
+
+            if (category === 'All') {
+                viewAllLink.href = baseUrl;
+            } else {
+                viewAllLink.href = baseUrl + '?category=' + (catSlugs[category] || '');
+            }
+
+            document.querySelectorAll('.cat-grid:not(.hidden) .skeleton-wrap img').forEach(function(img) {
+                if (img.complete) { img.style.opacity = '1'; var ph = img.parentElement.querySelector('.skeleton-ph'); if (ph) ph.remove(); }
             });
         });
     });

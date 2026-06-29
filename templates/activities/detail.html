@@ -9,9 +9,10 @@
 <div class="w-full max-w-3xl mx-auto relative min-h-screen bg-surface">
 
     {# ── Hero Image ── #}
-    <section class="relative w-full aspect-[4/3] md:h-[420px] bg-surface-variant overflow-hidden">
+    <section class="relative w-full aspect-[4/3] md:h-[420px] overflow-hidden skeleton-wrap">
+        <div class="absolute inset-0 skeleton skeleton-ph"></div>
         {% if activity.thumbnail_url %}
-        {% photo_url activity.thumbnail_url activity as hero_img %}<img class="absolute inset-0 w-full h-full object-cover object-center" alt="{{ activity|loc:LANG }}" src="{{ hero_img }}">
+        {% photo_url activity.thumbnail_url activity as hero_img %}<img class="absolute inset-0 w-full h-full object-cover object-center z-[1]" alt="{{ activity|loc:LANG }}" src="{{ hero_img }}" style="opacity:0;transition:opacity .3s">
         {% endif %}
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent"></div>
         <div class="absolute top-0 left-0 w-full px-4 pt-11 flex justify-between items-center z-20">
@@ -93,17 +94,56 @@
         </div>
         {% endwith %}
 
-        {# ── Photo Gallery ── #}
+        {# ── Photo Gallery (Magazine Style) ── #}
         {% if activity.photo_urls %}
         <div class="mb-6">
-            <h2 class="text-[16px] font-bold text-on-surface mb-3">{% t "Photos" "사진" %} <span class="text-[12px] text-outline font-normal">({{ activity.photo_urls|length }})</span></h2>
-            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                {% for photo_url in activity.photo_urls %}
-                <div class="w-56 h-40 rounded-lg overflow-hidden bg-surface-variant shrink-0 cursor-pointer photo-thumb" data-index="{{ forloop.counter0 }}">
-                    {% photo_url photo_url activity as thumb_src %}<img class="w-full h-full object-cover" src="{{ thumb_src }}" alt="{{ activity|loc:LANG }}" loading="lazy">
-                </div>
-                {% endfor %}
+            {% for photo_url in activity.photo_urls %}
+            {% if forloop.counter <= 6 %}
+            {% photo_url photo_url activity as mag_src %}
+
+            {% if forloop.counter == 1 %}
+            <div class="rounded-xl overflow-hidden mb-4 cursor-pointer photo-thumb skeleton-wrap relative" data-index="0">
+                <div class="absolute inset-0 skeleton skeleton-ph" style="aspect-ratio:16/9"></div>
+                <img class="w-full aspect-[16/9] object-cover relative z-[1]" src="{{ mag_src }}" alt="{{ activity|loc:LANG }}" loading="eager" style="opacity:0;transition:opacity .3s">
             </div>
+            {% elif forloop.counter == 2 %}
+            <div class="flex gap-2 mb-4">
+                <div class="flex-1 rounded-xl overflow-hidden cursor-pointer photo-thumb skeleton-wrap relative" data-index="1">
+                    <div class="absolute inset-0 skeleton skeleton-ph"></div>
+                    <img class="w-full aspect-square object-cover relative z-[1]" src="{{ mag_src }}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
+                </div>
+            {% elif forloop.counter == 3 %}
+                <div class="flex-1 rounded-xl overflow-hidden cursor-pointer photo-thumb skeleton-wrap relative" data-index="2">
+                    <div class="absolute inset-0 skeleton skeleton-ph"></div>
+                    <img class="w-full aspect-square object-cover relative z-[1]" src="{{ mag_src }}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
+                </div>
+            </div>
+            {% elif forloop.counter == 4 %}
+            <div class="rounded-xl overflow-hidden mb-4 cursor-pointer photo-thumb skeleton-wrap relative" data-index="3">
+                <div class="absolute inset-0 skeleton skeleton-ph" style="aspect-ratio:21/9"></div>
+                <img class="w-full aspect-[21/9] object-cover relative z-[1]" src="{{ mag_src }}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
+            </div>
+            {% elif forloop.counter == 5 %}
+            <div class="flex gap-2 mb-4">
+                <div class="flex-1 rounded-xl overflow-hidden cursor-pointer photo-thumb skeleton-wrap relative" data-index="4">
+                    <div class="absolute inset-0 skeleton skeleton-ph"></div>
+                    <img class="w-full aspect-[4/3] object-cover relative z-[1]" src="{{ mag_src }}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
+                </div>
+            {% elif forloop.counter == 6 %}
+                <div class="flex-1 rounded-xl overflow-hidden cursor-pointer photo-thumb skeleton-wrap relative" data-index="5">
+                    <div class="absolute inset-0 skeleton skeleton-ph"></div>
+                    <img class="w-full aspect-[4/3] object-cover relative z-[1]" src="{{ mag_src }}" alt="" loading="lazy" style="opacity:0;transition:opacity .3s">
+                    {% if activity.photo_urls|length > 6 %}
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer photo-thumb" data-index="5">
+                        <span class="text-white text-[18px] font-bold">+{{ activity.photo_urls|length|add:"-6" }} {% t "more" "더보기" %}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% endif %}
+            {% endfor %}
         </div>
 
         {# ── Fullscreen Photo Viewer ── #}
@@ -229,6 +269,23 @@
 (function() {
     var aid = '{{ activity.pk }}', aname = '{{ activity|loc:LANG|escapejs }}';
     if (typeof gtag === 'function') gtag('event', 'view_item', { item_id: aid, item_name: aname });
+
+    // Save to recently viewed
+    try {
+        var recent = JSON.parse(localStorage.getItem('loive_recent') || '[]');
+        recent = recent.filter(function(r) { return r.id !== aid; });
+        recent.unshift({
+            id: aid,
+            title: '{{ activity.title|escapejs }}',
+            title_ko: '{{ activity.title_ko|escapejs }}',
+            thumb: '{{ activity.thumbnail_url|photo_proxy }}',
+            rating: '{{ activity.google_rating|default:"" }}',
+            cat: '{{ activity.category.name|escapejs }}',
+            ts: Date.now()
+        });
+        if (recent.length > 20) recent = recent.slice(0, 20);
+        localStorage.setItem('loive_recent', JSON.stringify(recent));
+    } catch(e) {}
 
     document.getElementById('share-btn')?.addEventListener('click', function() {
         if (typeof gtag === 'function') gtag('event', 'share', { item_id: aid });

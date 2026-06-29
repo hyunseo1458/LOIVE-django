@@ -45,7 +45,8 @@ def home(request):
     all_categories = ["All"] + list(categories.values_list("name", flat=True))
     from django.db.models import F, Value, FloatField, ExpressionWrapper
     from django.db.models.functions import Coalesce
-    activities = Activity.objects.filter(
+
+    base_qs = Activity.objects.filter(
         status=Activity.Status.APPROVED,
         region__name=JEJU_REGION,
     ).select_related("category", "region").annotate(
@@ -53,7 +54,12 @@ def home(request):
             Coalesce(F("google_rating"), Value(0.0)) * (F("google_reviews_count") + 1),
             output_field=FloatField(),
         )
-    ).order_by("-popularity")[:6]
+    ).order_by("-popularity")
+
+    activities = list(base_qs[:6])
+    cat_activities = {}
+    for cat in categories:
+        cat_activities[cat.name] = list(base_qs.filter(category=cat)[:6])
 
     lang = request.COOKIES.get("lang", "en")
     courses = Course.objects.filter(is_active=True).prefetch_related("activities")[:6]
@@ -63,6 +69,7 @@ def home(request):
         "categories": categories,
         "all_categories": all_categories,
         "activities": activities,
+        "cat_activities": cat_activities,
         "courses": courses,
         "banners": banners,
     })
